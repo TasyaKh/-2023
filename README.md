@@ -14,3 +14,11 @@
 3. Открыть  vs code и нажать клонировать репозиторий, ввести эту https://github.com/TasyaKh/Praktika-2023.git ссылку во всплывающее окно
 
 ![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/4ce63485-cd98-415a-a561-06d414d8f8a5)
+
+# Справка
+может вы заметили, что некоторые файлы подсвечиваются красным, путь не найден, нужно скачать расширение в vs code во вкладке extensions "TypeScript Vue Plugin"
+
+Советую пошариться в плагинах и настроить по себя, плагины у меня:
+
+> vscode-icons
+> IntelliSense for CSS class
