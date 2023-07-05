@@ -1,0 +1,23 @@
+
+@authToken = 11b01aac035046e19c646a3a8532ef8e
+@userID = 359112
+
+GET https://api.topvisor.com/v2/json/get/projects_2/projects HTTP/1.1
+User-Id:{{userID}}
+Authorization:{{authToken}}
+
+###
+
+
+GET http://localhost:3000/api/topvisor/projects HTTP/1.1
+
+
+###
+
+POST http://localhost:3000/api/forms HTTP/1.1
+content-type: application/json
+
+{
+    "User-Id":6
+   
+}

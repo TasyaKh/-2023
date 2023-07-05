@@ -51,5 +51,5 @@ npm run dev
 
 Советую пошариться в плагинах и настроить по себя, плагины у меня:
 
-> vscode-icons
-> IntelliSense for CSS class
+1. vscode-icons
+2. IntelliSense for CSS class
