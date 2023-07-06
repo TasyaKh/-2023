@@ -8,6 +8,7 @@ export const TOPVISOR_API_URL = {
   };
 
 
-//   export const YANDEX_API_URL = {
-//     baseUrl: 'https://api.example.com',
-//   };
+  export const YANDEX_API_URL = {
+    baseUrl: 'https://api-metrika.yandex.net',
+    oAuthToken: 'y0_AgAAAABHgSr5AAokkwAAAADnHo7R8VVjBUVxSOS69PI2Y4mHAXn9bQs'
+  };

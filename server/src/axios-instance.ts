@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TOPVISOR_API_URL } from "./config";
+import { TOPVISOR_API_URL, YANDEX_API_URL } from "./config";
 
 export const axiosTopvisorInstance = axios.create({
     baseURL: TOPVISOR_API_URL.baseUrl,
@@ -10,6 +10,9 @@ export const axiosTopvisorInstance = axios.create({
     }
 })
 
-// export const axiosYandexInstance = axios.create({
-//     baseURL:TOPVISOR_API_URL.baseUrl
-// })
+export const axiosYandexInstance = axios.create({
+    baseURL:YANDEX_API_URL.baseUrl,
+    headers: {
+        'Authorization': `OAuth ${YANDEX_API_URL.oAuthToken}`,
+    }
+})

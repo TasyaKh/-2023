@@ -1,10 +1,11 @@
 
+# TOPVISOR
 @authToken = 11b01aac035046e19c646a3a8532ef8e
 @userID = 359112
 
-GET https://api.topvisor.com/v2/json/get/projects_2/projects HTTP/1.1
-User-Id:{{userID}}
-Authorization:{{authToken}}
+# GET https://api.topvisor.com/v2/json/get/projects_2/projects HTTP/1.1
+# User-Id:{{userID}}
+# Authorization:{{authToken}}
 
 ###
 
@@ -21,3 +22,25 @@ content-type: application/json
     "User-Id":6
    
 }
+
+
+
+
+
+# YANDEX 
+
+@OAuthToken = 'OAuth y0_AgAAAABHgSr5AAokkwAAAADnHo7R8VVjBUVxSOS69PI2Y4mHAXn9bQs'
+
+# ###
+# GET https://api-metrika.yandex.net/management/v1/counters HTTP/1.1
+# Authorization:{{OAuthToken}}
+
+###
+GET http://localhost:3000/api/yandex/projects?search_string=94156620 HTTP/1.1
+
+
+
+# GENERAL
+
+### get projects
+GET http://localhost:3000/api/general/projects HTTP/1.1

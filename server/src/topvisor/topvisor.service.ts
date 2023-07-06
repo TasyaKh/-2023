@@ -1,15 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTopvisorDto } from './dto/create-topvisor.dto';
-import { UpdateTopvisorDto } from './dto/update-topvisor.dto';
 import { axiosTopvisorInstance } from 'src/axios-instance';
-import { TOPVISOR_API_URL } from 'src/config';
-import { FindProjectsDto } from './dto/find-projects.dto';
+import { FindProjectsDto } from 'src/general/dto/find-projects.dto';
 
 @Injectable()
 export class TopvisorService {
-  create(createTopvisorDto: CreateTopvisorDto) {
-    return 'This action adds a new topvisor';
-  }
 
 
   async findProjects(findProjectsDto:FindProjectsDto) {
@@ -22,7 +16,8 @@ export class TopvisorService {
       include_positions_summary_params:{
         show_dynamics: 0,
         show_tops:1
-      }
+      },
+      fields:["id","name", "site", "date"]
     }
 
     await axiosTopvisorInstance.get("/v2/json/get/projects_2/projects", {data:params}).then((response) => {
@@ -34,17 +29,5 @@ export class TopvisorService {
     }
     
     return res
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} topvisor`;
-  }
-
-  update(id: number, updateTopvisorDto: UpdateTopvisorDto) {
-    return `This action updates a #${id} topvisor`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} topvisor`;
   }
 }
