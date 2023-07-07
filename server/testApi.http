@@ -20,14 +20,18 @@ GET http://localhost:3000/api/topvisor/positions?project_id=7784199&regions_inde
 
 # YANDEX 
 
-@OAuthToken = 'OAuth y0_AgAAAABHgSr5AAokkwAAAADnHo7R8VVjBUVxSOS69PI2Y4mHAXn9bQs'
+@OAuthToken = 'OAuth y0_AgAAAABu9NRrAAomKAAAAADnMtO185qHccw3TkWlYwQonI26xu0sFTg'
 
-# ###
-# GET https://api-metrika.yandex.net/management/v1/counters HTTP/1.1
-# Authorization:{{OAuthToken}}
 
 ###
 GET http://localhost:3000/api/yandex/projects?search_string=94156620 HTTP/1.1
+
+
+### dashboards device
+GET  http://localhost:3000/api/yandex/dashboards/visits?date1=2023-06-07&date2=2023-07-07&ids=12418261 HTTP/1.1
+
+
+
 
 
 
@@ -35,4 +39,7 @@ GET http://localhost:3000/api/yandex/projects?search_string=94156620 HTTP/1.1
 
 ### get projects
 GET http://localhost:3000/api/general/projects?search_string=gitddhub HTTP/1.1
+
+
+
 
