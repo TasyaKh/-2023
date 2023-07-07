@@ -35,5 +35,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # files
-config.ts
-testApi.http
+/src/config.ts
+/src/testApi.http
+.env
