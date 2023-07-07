@@ -1,3 +1,2 @@
-# files
-config.ts
-testApi.http
+server/.env
+server/src/config.ts
