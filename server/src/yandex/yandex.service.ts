@@ -27,16 +27,4 @@ export class YandexService {
     return res
   }
 
-
-  findOne(id: number) {
-    return `This action returns a #${id} yandex`;
-  }
-
-  update(id: number, updateYandexDto: UpdateYandexDto) {
-    return `This action updates a #${id} yandex`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} yandex`;
-  }
 }

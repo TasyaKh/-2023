@@ -15,19 +15,4 @@ findProjects(@Query()  findProjectsDto: FindProjectsDto) {
   return this.yandexService.findProjects(findProjectsDto);
 }
 
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.yandexService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateYandexDto: UpdateYandexDto) {
-    return this.yandexService.update(+id, updateYandexDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.yandexService.remove(+id);
-  }
 }

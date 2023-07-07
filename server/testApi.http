@@ -8,21 +8,12 @@
 # Authorization:{{authToken}}
 
 ###
-
-
 GET http://localhost:3000/api/topvisor/projects HTTP/1.1
 
 
-###
 
-POST http://localhost:3000/api/forms HTTP/1.1
-content-type: application/json
-
-{
-    "User-Id":6
-   
-}
-
+### get positions
+GET http://localhost:3000/api/topvisor/positions?project_id=7784199&regions_indexes=88&regions_indexes=152&date1=2023-06-27&date2=2023-07-06 HTTP/1.1
 
 
 
@@ -43,4 +34,5 @@ GET http://localhost:3000/api/yandex/projects?search_string=94156620 HTTP/1.1
 # GENERAL
 
 ### get projects
-GET http://localhost:3000/api/general/projects HTTP/1.1
+GET http://localhost:3000/api/general/projects?search_string=gitddhub HTTP/1.1
+
