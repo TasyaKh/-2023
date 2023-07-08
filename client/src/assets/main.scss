@@ -1,0 +1,20 @@
+@import './base.scss';
+
+:root{
+  --tc-c-lilac: #E0E3FF;
+  --tc-c-white: #FFFFFF;
+  --tc-c-pink: #F23B67;
+  --tc-c-purple: #352958;
+  --tc-c-gray: #3D3D3D;
+}
+
+@font-face {
+  font-family: 'Panton';
+  src: url('./fonts/PANTON-REGULAR.OTF') format('otf');
+}
+
+body {
+ background-color: var(--tc-c-lilac);
+ font-family: "Panton";
+ color: var(--tc-c-purple);
+}

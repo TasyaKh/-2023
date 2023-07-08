@@ -1,0 +1,20 @@
+
+.btn{
+  &-primary{
+    background-color: var(--tc-c-pink);
+  }
+
+  &-secondary{
+    background-color: var(--tc-c-white);
+  }
+}
+
+.elem{
+  background-color: white;
+}
+
+a{
+  color: var(--tc-c-purple);
+  text-decoration: none;
+  padding: 0 !important;
+}
