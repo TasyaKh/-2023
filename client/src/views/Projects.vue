@@ -6,7 +6,6 @@ import { useGeneralStore } from '@/stores/general';
 const generalStore = useGeneralStore();
 
 const projects = ref()
-const projectName = ref()
 
 onBeforeMount(async () => {
     const data = await generalStore.getProjects()
@@ -28,7 +27,7 @@ function getLogo(siteURL: string) {
 </script>
 
 <template >
-    {{ projects }}
+    <!-- {{ projects }} -->
     <div class="container">
 
         <div class="row my-3">
