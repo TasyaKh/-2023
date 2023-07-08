@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
 
 const logoUrl = ref()
@@ -23,18 +24,7 @@ function getLogo(siteURL: string) {
             <div class="col">
                 <!-- Поисковые строки -->
 
-                <div class="search-container">
-
-                    <div class="row">
-                        <div class="col-auto"> <a href="#" class="search-btn">
-                                <img :src="getLogo('bgazobeton.ru')" alt="">
-                            </a></div>
-                        <div class="col"> <input type="search" class="search-input" placeholder="Поиск по проектам" />
-
-                        </div>
-                    </div>
-
-                </div>
+               <Search />
             </div>
 
         </div>
@@ -100,28 +90,6 @@ function getLogo(siteURL: string) {
 </template>
 
 <style lang="scss" scoped>
-.search-container {
-    background-color: var(--tc-c-white);
-    border-radius: 30px;
-    padding: 8px 20px;
-
-    input {
-        font-family: "Panton";
-    }
-
-    .search-btn {
-        margin: 0 20px;
-        cursor: pointer;
-    }
-}
-
-
-.search-container .search-input {
-
-    width: 100%;
-    border: none;
-    outline: none;
-}
 
 
 .projects {
@@ -141,12 +109,17 @@ function getLogo(siteURL: string) {
 
         tbody {
             text-align: center;
+            background-color: var(--tc-c-white);
 
             td {
                 font-weight: bold;
                 padding: 10px;
-                background-color: var(--tc-c-white);
                 border-bottom: 2px solid #E4DFF0;
+            }
+
+            tr:hover {
+                background-color: #F0F1FF;
+                transition: 0.3s;
             }
         }
 
@@ -161,6 +134,7 @@ function getLogo(siteURL: string) {
             }
 
         }
+        
 
     }
 }
