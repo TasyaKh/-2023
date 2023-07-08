@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
+import { useGeneralStore } from '@/stores/general';
 
-const logoUrl = ref()
+const generalStore = useGeneralStore();
+
+const projects = ref()
+const projectName = ref()
 
 onBeforeMount(async () => {
-
+    const data = await generalStore.getProjects()
+    projects.value = data
 })
 
+async function handleEventStartSearch(text:string){
+   
+    const data = await generalStore.getProjects(text)
+    projects.value = data
+}
 
 function getLogo(siteURL: string) {
 
@@ -18,13 +28,14 @@ function getLogo(siteURL: string) {
 </script>
 
 <template >
+    {{ projects }}
     <div class="container">
 
         <div class="row my-3">
             <div class="col">
                 <!-- Поисковые строки -->
 
-               <Search />
+                <Search :handleEventStartSearch="handleEventStartSearch"/>
             </div>
 
         </div>
@@ -42,7 +53,7 @@ function getLogo(siteURL: string) {
 
 
                             <th rowspan="2" colspan="2">
-                                Топ 10 (Yandex/Topvisor)
+                                Топ 10 (Google/Yandex)
 
                             </th>
 
@@ -51,34 +62,37 @@ function getLogo(siteURL: string) {
 
                     </thead>
                     <tbody>
-                        <tr class="">
+                        <tr v-for="project in projects">
                             <td class="project">
                                 <div class="row">
-                                    {{ logoUrl }}
-                                    <div class="col-auto d-flex align-items-center"><img :src="getLogo('bgazobeton.ru')"
+                                    <div class="col-auto d-flex align-items-center"><img :src="getLogo(project.topvisorProject.site)"
                                             alt="site logo">
                                     </div>
                                     <div class="col">
                                         <div class="row">
-                                            Байкальский газобетон
+                                            {{project.yandexProject.name}}
 
                                         </div>
                                         <div class="row project__site">
-                                            <a href="http://bgazobeton.ru">
-                                                bgazobeton.ru
+                                            <a href="https://{{project.topvisorProject.site}}">
+                                              {{ project.topvisorProject.site }}
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td>46</td>
-                            <td>3</td>
-                            <td>2 39 5</td>
+                            <td>{{ project.topvisorProject.positions_summary.dynamics.all }}</td>
+                            <td>{{  project.topvisorProject.positions_summary.avgs[0] }}</td>
+                            <td>{{ project.topvisorProject.positions_summary.dynamics.up }}
+                                {{ project.topvisorProject.positions_summary.dynamics.stay }}
+                                {{ project.topvisorProject.positions_summary.dynamics.down }}
+                            </td>
 
 
 
-                            <td>43</td>
-                            <td>45</td>
+                            <td>{{ project.topvisorProject.positions_summary.tops[0]["1_10"] }}</td>
+                           
+                            <td>{{ project.topvisorProject.positions_summary.tops[1]["1_10"] }}</td>
 
                         </tr>
 
@@ -90,8 +104,6 @@ function getLogo(siteURL: string) {
 </template>
 
 <style lang="scss" scoped>
-
-
 .projects {
     .project {
         text-align: start;
@@ -134,7 +146,7 @@ function getLogo(siteURL: string) {
             }
 
         }
-        
+
 
     }
 }
