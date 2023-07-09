@@ -14,23 +14,40 @@ const loading = ref(false) //проекты грузятся
 const ordersTopvisor = ref()
 const search_string = ref("")
 
+// состояние фильтров
+const stateDate = ref(0)
+const stateProject = ref(0)
+
 onBeforeMount(async () => {
     await getProjects()
 })
 
 // сортировать по имени
 async function handleEventChangeStateFilterName(state: number) {
-    let sortBy = []
+    stateProject.value = state
+    stateDate.value = 0
+    setOrder(state, "name")
+}
 
+// сортировать по дате
+async function handleEventChangeStateFilterDate(state: number) {
+    stateDate.value = state
+    stateProject.value = 0
+    setOrder(state, "date")
+}
+
+async function setOrder(state: number, name: string) {
+
+    let sortBy = []
     switch (state) {
         case -1:
-            sortBy.push({ name: "name", direction: "DESC" })
+            sortBy.push({ name: name, direction: "DESC" })
             break
         case 0:
             sortBy = []
             break
         case 1:
-            sortBy.push({ name: "name", direction: "ASC" })
+            sortBy.push({ name: name, direction: "ASC" })
             break
 
     }
@@ -95,12 +112,22 @@ function isPositionsSummary(project: any) {
                                     <div class="col-auto">Проект</div>
                                     <!-- filter -->
                                     <div class="col">
-                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterName" />
+                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterName" :state="stateProject" />
 
                                     </div>
                                 </div>
 
 
+                            </th>
+                            <th>
+                                <div class="row">
+                                    <div class="col-auto">Дата создания</div>
+                                    <!-- filter -->
+                                    <div class="col">
+                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterDate"  :state="stateDate" />
+
+                                    </div>
+                                </div>
                             </th>
                             <th>Запросы</th>
                             <th>Ср. позиция</th>
@@ -113,16 +140,17 @@ function isPositionsSummary(project: any) {
                             </th>
 
                         </tr>
-
-
                     </thead>
+
+
                     <tbody v-if="!loading">
                         <tr v-for="project in projects">
+
                             <td class="project">
                                 <div class="row">
                                     <!-- получить логотип -->
-                                    <div class="col-auto d-flex align-items-center"><img
-                                            :src="getLogo(project.topvisorProject.site)" alt="site logo">
+                                    <div class="col-auto d-flex align-items-center">
+                                        <img :src="getLogo(project.topvisorProject.site)" alt="site logo">
                                     </div>
                                     <div class="col">
                                         <!-- имя проекта -->
@@ -139,6 +167,11 @@ function isPositionsSummary(project: any) {
                                     </div>
                                 </div>
                             </td>
+
+                            <!-- дата создания -->
+                            <td class="date-create">{{ project.topvisorProject.date }}</td>
+
+
                             <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.dynamics.all
                             }}</td>
                             <td v-else> - </td>
@@ -147,12 +180,64 @@ function isPositionsSummary(project: any) {
                             </td>
                             <td v-else> - </td>
 
-                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.dynamics.up
-                            }}
-                                {{ project.topvisorProject.positions_summary.dynamics.stay }}
-                                {{ project.topvisorProject.positions_summary.dynamics.down }}
+                            <!-- динамика -->
+                            <td>
+                                <!-- рост -->
+                                <div class="row">
+
+                                    <div class="col d-flex justify-content-center">
+                                        <div class="row ">
+
+                                            <div class="col-6 d-flex align-items-center">
+                                                <p v-if="isPositionsSummary(project)"> {{
+                                                    project.topvisorProject.positions_summary.dynamics.up }}</p>
+                                                <p v-else>-</p>
+                                            </div>
+
+                                            <div class="col-6 d-flex justify-content-center">
+                                                <img src="@/assets/images/стрелка вверх длинная.svg" alt="">
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- всего -->
+                                    <div class="col d-flex justify-content-center">
+                                        <div class="row ">
+
+                                            <div class="col-6 d-flex align-items-center">
+                                                <p v-if="isPositionsSummary(project)"> {{
+                                                    project.topvisorProject.positions_summary.dynamics.stay }}</p>
+                                                <p v-else>-</p>
+                                            </div>
+
+                                            <div class="col-6 d-flex justify-content-center">
+                                                <img src="@/assets/images/иконка равно.svg" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- падение -->
+                                    <div class="col d-flex justify-content-center">
+                                        <div class="row ">
+                                            <div class="col-6 d-flex align-items-center">
+                                                <p v-if="isPositionsSummary(project)"> {{
+                                                    project.topvisorProject.positions_summary.dynamics.down }}</p>
+                                                <p v-else>-</p>
+                                            </div>
+
+                                            <div class="col-6 d-flex justify-content-center">
+                                                <img src="@/assets/images/стрелка вниз длинная.svg" alt="">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
                             </td>
-                            <td v-else> - </td>
+
 
 
                             <!-- топ 10 гугл -->
@@ -184,6 +269,10 @@ function isPositionsSummary(project: any) {
         }
     }
 
+    .date-create {
+        font-weight: normal;
+    }
+
     table {
         width: 100%;
         border-collapse: separate;
@@ -198,22 +287,22 @@ function isPositionsSummary(project: any) {
             td {
                 font-weight: bold;
                 padding: 10px;
-                border-bottom: 2px solid #E4DFF0;
+                border-bottom: 2px solid #3D3D3D1A;
             }
 
             tr:hover {
-                background-color: #F0F1FF;
+                background-color: #EDEBFC;
                 transition: 0.3s;
             }
         }
 
         thead {
-            background-color: #F0F1FF;
+            background-color: #E5E8FF;
 
             th {
 
                 padding: 20px;
-                border-bottom: 2px solid #E4DFF0;
+                // border-bottom: 2px solid #E4DFF0;
 
             }
 

@@ -6,6 +6,8 @@
   --tc-c-pink: #F23B67;
   --tc-c-purple: #352958;
   --tc-c-gray: #3D3D3D;
+
+  --tc-c-body:#F6F7FF;
 }
 
 @font-face {
@@ -14,7 +16,7 @@
 }
 
 body {
- background-color: var(--tc-c-lilac);
+ background-color: var(--tc-c-body);
  font-family: "Panton";
  color: var(--tc-c-purple);
 }

@@ -36,7 +36,7 @@ function startSearch() {
     border: 1px solid #E4DFF0;
     background-color: var(--tc-c-white);
     padding: 8px 20px;
-    box-shadow: 3px 5px 17px -4px rgba(152, 131, 197, 0.33) inset;
+    // box-shadow: 3px 5px 17px -4px rgba(152, 131, 197, 0.33) inset;
 
     input {
         font-family: "Panton";
