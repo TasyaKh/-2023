@@ -8,7 +8,7 @@ const props = defineProps<{
     handleEventStartSearch: Function,
 }>()
 
-function startSearch(){
+function startSearch() {
     props.handleEventStartSearch(searchTxt.value)
 }
 
@@ -21,7 +21,8 @@ function startSearch(){
             <div class="col-auto"> <a href="#" class="search-btn" @click="startSearch()">
                     <img src="./icons/иконка поиска.svg" alt="">
                 </a></div>
-            <div class="col"> <input type="search" class="search-input" placeholder="Поиск по проектам" v-model="searchTxt" />
+            <div class="col"> <input type="search" class="search-input" placeholder="Поиск по проектам"
+                    v-model="searchTxt" />
 
             </div>
         </div>
@@ -31,9 +32,11 @@ function startSearch(){
 
 <style lang="scss" scoped>
 .search-container {
+    border-radius: 13px;
+    border: 1px solid #E4DFF0;
     background-color: var(--tc-c-white);
-    border-radius: 30px;
     padding: 8px 20px;
+    box-shadow: 3px 5px 17px -4px rgba(152, 131, 197, 0.33) inset;
 
     input {
         font-family: "Panton";

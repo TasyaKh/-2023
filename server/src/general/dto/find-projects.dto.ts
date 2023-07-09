@@ -12,5 +12,12 @@ export class FindProjectsDto {
 
     @IsOptional()
     search_string:string
+
+    // @IsOptional()
+    // filters:string[]
+
+    // topvisor
+    @IsOptional()
+    orders = []
 }
 

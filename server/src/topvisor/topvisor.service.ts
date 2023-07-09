@@ -12,8 +12,7 @@ export class TopvisorService {
     let res = null
 
     const params = {
-      limit: findProjectsDto.limit,
-      offset: findProjectsDto.offset,
+     ...findProjectsDto,
       include_positions_summary_params: {
         show_dynamics: 0,
         show_tops: 1

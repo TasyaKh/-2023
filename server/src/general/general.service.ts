@@ -30,12 +30,13 @@ export class GeneralService {
 
     const unifiedProjects = [];
 
-    yandexProjects.forEach(yandexProject => {
+  
+    topvisorProjects.forEach(topvisorProjects => {
 
-      topvisorProjects.forEach(topvisorProject => {
+      yandexProjects.forEach(yandexProjects => {
         // если сайт совпал
-        if (yandexProject.site == topvisorProject.site) {
-          unifiedProjects.push({ yandexProject: yandexProject, topvisorProject: topvisorProject })
+        if (topvisorProjects.site == yandexProjects.site) {
+          unifiedProjects.push({ yandexProject: yandexProjects, topvisorProject: topvisorProjects })
         }
       });
 

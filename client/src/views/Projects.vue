@@ -2,26 +2,71 @@
 import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useGeneralStore } from '@/stores/general';
+import FilterButton from '@/components/FilterButton.vue';
 
 const generalStore = useGeneralStore();
 
 const projects = ref()
 
+const loading = ref(false) //проекты грузятся
+
+// сортирока проектов топвизор
+const ordersTopvisor = ref()
+const search_string = ref("")
+
 onBeforeMount(async () => {
-    const data = await generalStore.getProjects()
-    projects.value = data
+    await getProjects()
 })
 
-async function handleEventStartSearch(text:string){
-   
-    const data = await generalStore.getProjects(text)
+// сортировать по имени
+async function handleEventChangeStateFilterName(state: number) {
+    let sortBy = []
+
+    switch (state) {
+        case -1:
+            sortBy.push({ name: "name", direction: "DESC" })
+            break
+        case 0:
+            sortBy = []
+            break
+        case 1:
+            sortBy.push({ name: "name", direction: "ASC" })
+            break
+
+    }
+
+    ordersTopvisor.value = sortBy
+    await getProjects()
+}
+
+async function getProjects() {
+    setLoading(true)
+    const data = await generalStore.getProjects(search_string.value, ordersTopvisor.value)
     projects.value = data
+    setLoading(false)
+}
+
+
+// в процессе загрузки
+function setLoading(load: boolean) {
+    loading.value = load
+}
+
+
+async function handleEventStartSearch(text: string) {
+
+    search_string.value = text
+    await getProjects()
 }
 
 function getLogo(siteURL: string) {
 
     const url = `https://favicon.yandex.net/favicon/${siteURL}?size=16`
     return url
+}
+
+function isPositionsSummary(project: any) {
+    return project.topvisorProject.positions_summary && project.topvisorProject.positions_summary.length > 0
 }
 
 </script>
@@ -34,7 +79,7 @@ function getLogo(siteURL: string) {
             <div class="col">
                 <!-- Поисковые строки -->
 
-                <Search :handleEventStartSearch="handleEventStartSearch"/>
+                <Search :handleEventStartSearch="handleEventStartSearch" />
             </div>
 
         </div>
@@ -45,7 +90,18 @@ function getLogo(siteURL: string) {
                 <table class="table" cellspacing="0">
                     <thead>
                         <tr class="">
-                            <th>Проект</th>
+                            <th>
+                                <div class="row">
+                                    <div class="col-auto">Проект</div>
+                                    <!-- filter -->
+                                    <div class="col">
+                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterName" />
+
+                                    </div>
+                                </div>
+
+
+                            </th>
                             <th>Запросы</th>
                             <th>Ср. позиция</th>
                             <th>Динамика</th>
@@ -60,42 +116,58 @@ function getLogo(siteURL: string) {
 
 
                     </thead>
-                    <tbody>
+                    <tbody v-if="!loading">
                         <tr v-for="project in projects">
                             <td class="project">
                                 <div class="row">
-                                    <div class="col-auto d-flex align-items-center"><img :src="getLogo(project.topvisorProject.site)"
-                                            alt="site logo">
+                                    <!-- получить логотип -->
+                                    <div class="col-auto d-flex align-items-center"><img
+                                            :src="getLogo(project.topvisorProject.site)" alt="site logo">
                                     </div>
                                     <div class="col">
+                                        <!-- имя проекта -->
                                         <div class="row">
-                                            {{project.yandexProject.name}}
+                                            {{ project.topvisorProject.name }}
 
                                         </div>
+                                        <!-- сайт -->
                                         <div class="row project__site">
                                             <a href="https://{{project.topvisorProject.site}}">
-                                              {{ project.topvisorProject.site }}
+                                                {{ project.topvisorProject.site }}
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ project.topvisorProject.positions_summary.dynamics.all }}</td>
-                            <td>{{  project.topvisorProject.positions_summary.avgs[0] }}</td>
-                            <td>{{ project.topvisorProject.positions_summary.dynamics.up }}
+                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.dynamics.all
+                            }}</td>
+                            <td v-else> - </td>
+
+                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.avgs[0] }}
+                            </td>
+                            <td v-else> - </td>
+
+                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.dynamics.up
+                            }}
                                 {{ project.topvisorProject.positions_summary.dynamics.stay }}
                                 {{ project.topvisorProject.positions_summary.dynamics.down }}
                             </td>
+                            <td v-else> - </td>
 
 
-
-                            <td>{{ project.topvisorProject.positions_summary.tops[0]["1_10"] }}</td>
-                           
-                            <td>{{ project.topvisorProject.positions_summary.tops[1]["1_10"] }}</td>
-
+                            <!-- топ 10 гугл -->
+                            <td v-if="isPositionsSummary(project)">{{
+                                project.topvisorProject.positions_summary.tops[0]["1_10"] }}</td>
+                            <td v-else> - </td>
+                            <!-- топ 10 яндекс -->
+                            <td v-if="isPositionsSummary(project)">{{
+                                project.topvisorProject.positions_summary.tops[1]["1_10"] }}</td>
+                            <td v-else> - </td>
                         </tr>
 
                     </tbody>
+                    <div v-else>Загрузка ...</div>
+
                 </table>
             </div>
         </div>
@@ -121,6 +193,7 @@ function getLogo(siteURL: string) {
         tbody {
             text-align: center;
             background-color: var(--tc-c-white);
+            cursor: pointer;
 
             td {
                 font-weight: bold;
