@@ -4,7 +4,7 @@ export const useChartConverterStore = defineStore('chartConverter', () => {
 
 
     // данные с яндекса подготовить для вывода в круговую диаграмму
-    function yandexDeviceToPie(data: any) {
+    function yandexDataToPie(data: any) {
 
         let d = []
 
@@ -35,7 +35,7 @@ export const useChartConverterStore = defineStore('chartConverter', () => {
     }
 
     return {
-        yandexDeviceToPie,
+        yandexDataToPie,
         charts
     }
 })

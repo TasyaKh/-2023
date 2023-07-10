@@ -36,6 +36,8 @@ npm i
 ```
 
 # Запуск проекта
+
+## Клиент
 в папке client 6-го шага настройки написать (вы должны быть в папке client проекта)
 
 ```
@@ -45,6 +47,17 @@ npm run dev
 
 ![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/dee34e17-123e-45f5-a673-c420351549d8)
 
+## Сервер
+во 2-м терминале перейти в папку
+
+```
+cd .\server\
+```
+запустить сервер 
+
+```
+npm run start:dev
+```
 
 # Справка
 может вы заметили, что некоторые файлы подсвечиваются красным, путь не найден, нужно скачать расширение в vs code во вкладке extensions "TypeScript Vue Plugin"
@@ -53,3 +66,21 @@ npm run dev
 
 1. vscode-icons
 2. IntelliSense for CSS class
+
+> на сервере обязательно должен быть config.ts след. вида
+
+```
+export const TOPVISOR_API_URL = {
+  baseUrl: {url топвизора},
+  userID: {id юзера в топвизоре},
+  authToken: { авторизационый токен}
+};
+
+
+export const YANDEX_API_URL = {
+  baseUrl: {url яндекса},
+  oAuthToken: { авторизационый токен}
+};
+
+```
+

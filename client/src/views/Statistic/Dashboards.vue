@@ -42,7 +42,7 @@ async function fetchGraphics() {
     // convert to pie chart
     if (dataDeviceCategory) {
         preparedData.value.deviceCategory.data = chartConverterStore
-            .yandexDeviceToPie(dataDeviceCategory.data)
+            .yandexDataToPie(dataDeviceCategory.data)
 
     }
 }
@@ -57,6 +57,7 @@ async function fetchGraphics() {
 
         <div class="row">
             <div class="col">
+
                 <!-- устройства -->
                 <div class="block-content">
 
@@ -67,6 +68,8 @@ async function fetchGraphics() {
 
                     </div>
                 </div>
+
+                
             </div>
         </div>
 
