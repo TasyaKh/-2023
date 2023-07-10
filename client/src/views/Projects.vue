@@ -3,6 +3,10 @@ import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useGeneralStore } from '@/stores/general';
 import FilterButton from '@/components/FilterButton.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 
 const generalStore = useGeneralStore();
 
@@ -83,7 +87,18 @@ function getLogo(siteURL: string) {
 }
 
 function isPositionsSummary(project: any) {
-    return project.topvisorProject.positions_summary && project.topvisorProject.positions_summary.length > 0
+    //  && project.topvisorProject.positions_summary.length > 0
+    return project.topvisorProject.positions_summary &&  project.topvisorProject.positions_summary.dynamics
+    &&  project.topvisorProject.positions_summary.avgs
+}
+
+function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: number) {
+    router.push({
+        name: 'Statistic', params: {
+            yandex_id: yandexProjectId,
+            topvisor_id: topvisorProjectId
+        }
+    });
 }
 
 </script>
@@ -112,7 +127,8 @@ function isPositionsSummary(project: any) {
                                     <div class="col-auto">Проект</div>
                                     <!-- filter -->
                                     <div class="col">
-                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterName" :state="stateProject" />
+                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterName"
+                                            :state="stateProject" />
 
                                     </div>
                                 </div>
@@ -124,7 +140,8 @@ function isPositionsSummary(project: any) {
                                     <div class="col-auto">Дата создания</div>
                                     <!-- filter -->
                                     <div class="col">
-                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterDate"  :state="stateDate" />
+                                        <FilterButton :handleEventChangeState="handleEventChangeStateFilterDate"
+                                            :state="stateDate" />
 
                                     </div>
                                 </div>
@@ -144,9 +161,17 @@ function isPositionsSummary(project: any) {
 
 
                     <tbody v-if="!loading">
-                        <tr v-for="project in projects">
+
+                        <tr v-for="project in projects" :key="project.topvisorProject.id"
+                            @click="navigateToPageStatistic(project.yandexProject.id, project.topvisorProject.id)">
+
+                            <!-- <router-link class=" "
+                                :to="`/statistic/${project.yandexProject.id}/${project.topvisorProject.id}`">
+ -->
 
                             <td class="project">
+
+                                <!-- {{ project }} -->
                                 <div class="row">
                                     <!-- получить логотип -->
                                     <div class="col-auto d-flex align-items-center">
@@ -172,11 +197,13 @@ function isPositionsSummary(project: any) {
                             <td class="date-create">{{ project.topvisorProject.date }}</td>
 
 
-                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.dynamics.all
+                            <td v-if="isPositionsSummary(project)">{{
+                                project.topvisorProject.positions_summary.dynamics.all
                             }}</td>
                             <td v-else> - </td>
 
-                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.avgs[0] }}
+                            <td v-if="isPositionsSummary(project)">{{ project.topvisorProject.positions_summary.avgs[0]
+                            }}
                             </td>
                             <td v-else> - </td>
 
@@ -248,6 +275,7 @@ function isPositionsSummary(project: any) {
                             <td v-if="isPositionsSummary(project)">{{
                                 project.topvisorProject.positions_summary.tops[1]["1_10"] }}</td>
                             <td v-else> - </td>
+
                         </tr>
 
                     </tbody>
@@ -271,6 +299,7 @@ function isPositionsSummary(project: any) {
 
     .date-create {
         font-weight: normal;
+        text-align: start;
     }
 
     table {
