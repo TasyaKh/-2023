@@ -19,8 +19,8 @@ const yandexId = Number(route.params.yandex_id);
 const topvisorId = Number(route.params.topvisor_id);
 
 // filters-----------------------------------------------------------------  
-//8_6400_000 - one day
-const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 7))
+//8_6400_000 - one day, 
+const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
 // today
 const date2 = ref(new Date())
 

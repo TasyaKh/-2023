@@ -54,18 +54,21 @@ export class YandexController {
   }
 
 
-  // визиты с поисковых систем
+  // 4) посещаесомть из поисковых систем
   @Get('dashboards/search-engine')
   findDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
-    dshbYDto.dimensions.push("ym:s:lastSignSearchEngine")
-    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
-    dshbYDto.group = "Week"
+    dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot")
+    dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngine")
+    dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase")
+
+    dshbYDto.filters.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot!n")
+    dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    return this.yandexService.findDashboards(dshbYDto);
+    return this.yandexService.findDashboardsByTime(dshbYDto);
   }
 
     // визиты по времени

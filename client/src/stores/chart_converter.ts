@@ -30,7 +30,12 @@ export const useChartConverterStore = defineStore('chartConverter', () => {
                 }],
                 name: "Устройства",
                 subname: "визиты"
+            },
+
+            searchEngine: {
+                
             }
+
         }
     }
 
