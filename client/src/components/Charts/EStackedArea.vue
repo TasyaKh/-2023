@@ -3,12 +3,13 @@
 
 import { use } from "echarts/core";
 import { LineChart } from "echarts/charts";
+import * as echarts from 'echarts';
 
 import {
     TooltipComponent,
     ToolboxComponent
 } from "echarts/components";
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, onBeforeMount, onMounted, ref, watch } from "vue";
 
 use([
     ToolboxComponent,
@@ -20,12 +21,13 @@ const dateX = ref()
 const dataLegend = ref()
 const series = ref()
 
-onBeforeMount(async () => {
-    await initData()
-})
+// onBeforeMount(async () => {
+//     await initData()
+// })
 
 watch(() => props.data, async () => {
     await initData()
+    renderChart()
 })
 
 
@@ -89,11 +91,22 @@ const props = defineProps<{
 
 // }
 
-// computed 
-const options = computed(() => {
-    return {
+const chartContainer = ref()
+
+
+onMounted(async () => {
+    await initData()
+    renderChart()
+})
+
+
+function renderChart() {
+    const chart = echarts.init(chartContainer.value);
+
+    // computed 
+    const options = {
         title: {
-            text: props.title,
+            text: props.title
         },
         tooltip: {
             trigger: 'axis',
@@ -106,7 +119,7 @@ const options = computed(() => {
         },
         legend: {
             data: dataLegend.value,
-            bottom:0
+            bottom: 0
         },
         toolbox: {
             feature: {
@@ -116,7 +129,7 @@ const options = computed(() => {
         grid: {
             left: '3%',
             right: '4%',
-            bottom: '20%',
+            bottom: '15%',
             top: '10%',
             containLabel: true
         },
@@ -133,9 +146,13 @@ const options = computed(() => {
             }
         ],
         series: series.value
+    };
 
-    }
-})
+    chart.setOption(options)
+}
+
+
+
 
 
 </script>
@@ -151,20 +168,21 @@ const options = computed(() => {
     {{ dataLegend }}
     ---
     {{ series }} -->
-    <div class="charts-wrapper">
-        <v-chart class="chart " :option="options" />
-    </div>
+    <!-- <div class="charts-wrapper"> -->
+    <div ref="chartContainer" class="chart "></div>
+    <!-- </div> -->
 </template>
 
 <style scoped>
-.charts-wrapper {
+/* .charts-wrapper {
     width: 100%;
     min-width: 400px;
     min-height: 400px;
-}
+} */
 
 .chart {
-
+    min-width: 400px;
+    min-height: 400px;
     width: 100%;
     display: flex;
     justify-content: center;
