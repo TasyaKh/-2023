@@ -25,7 +25,7 @@ export class YandexController {
     return this.yandexService.findDashboards(dshbYDto);
   }
 
-  // визиты получить данные посещений девайсов
+  // 4) визиты получить данные посещений девайсов
   @Get('dashboards/device')
   findDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -39,14 +39,16 @@ export class YandexController {
   }
 
 
-  // визиты доля брендового и небрендового траффика
+  // 5) визиты доля брендового и небрендового траффика
   @Get('dashboards/search-phrase')
   findDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
-    dshbYDto.dimensions.push("ym:s:searchPhrase")
-    dshbYDto.filters.push("ym:s:searchPhrase!n")
-    dshbYDto.group = "Week"
+    dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase")
+    dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot")
+
+    dshbYDto.filters.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase!n")
+    dshbYDto.group = "all"
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
@@ -54,7 +56,7 @@ export class YandexController {
   }
 
 
-  // 4) посещаесомть из поисковых систем
+  // 6) посещаемость из поисковых систем
   @Get('dashboards/search-engine')
   findDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
 

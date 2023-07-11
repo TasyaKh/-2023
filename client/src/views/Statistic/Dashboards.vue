@@ -29,9 +29,8 @@ const chartConverterStore = useChartConverterStore();
 // data ---------------------------------------------------------------
 
 const searchEngineData = ref()
-const preparedData = ref(
-    chartConverterStore.charts()
-)
+const segmentTrafficData = ref()
+const dataDeviceCategory = ref()
 
 onBeforeMount(async () => {
     await fetchGraphics()
@@ -39,20 +38,17 @@ onBeforeMount(async () => {
 
 async function fetchGraphics() {
 
-    // 6) device category
-    let dataDeviceCategory = await yandexlStore
-        .getDeviceCategory(props.yandexId, props.date1, props.date2)
-
-    // convert to pie chart
-    if (dataDeviceCategory) {
-        preparedData.value.deviceCategory.data = chartConverterStore
-            .yandexDataToPie(dataDeviceCategory.data)
-    }
-
     // 4) посещаемость из поисковых систем
-
     searchEngineData.value = await yandexlStore
         .visitsFromSearchSystems(props.yandexId, props.date1, props.date2)
+
+    // 5) доля брендового и небрендового трафика
+    segmentTrafficData.value = await yandexlStore
+        .segmentTraffic(props.yandexId, props.date1, props.date2)
+
+    // 6) device category
+    dataDeviceCategory.value = await yandexlStore
+        .getDeviceCategory(props.yandexId, props.date1, props.date2)
 
 }
 
@@ -71,8 +67,22 @@ async function fetchGraphics() {
 
                     <div class="row d-flex justify-content-center text-center">
 
-                        <EPie :subtext="preparedData.deviceCategory.subname" :name="preparedData.deviceCategory.name"
-                            :data="preparedData.deviceCategory.data" />
+                        <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'" :name="'Устройства'"
+                            :data="dataDeviceCategory.data" />
+
+                    </div>
+                </div>
+            </div>
+
+            <!--  5) доля брендового и небрендового трафика -->
+            <div class="col-12">
+
+                <div class="block-content-full">
+
+                    <div class="row d-flex justify-content-center text-center">
+
+                        <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
+                            :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
 
                     </div>
                 </div>
@@ -85,9 +95,10 @@ async function fetchGraphics() {
 
                     <div class="row d-flex justify-content-center text-center">
 
-                        <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'" :data="searchEngineData.data"
-                            :time_intervals="searchEngineData.time_intervals" />
+                        <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
+                            :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
 
+                        <!-- <EStackedArea /> -->
                     </div>
                 </div>
             </div>
@@ -106,7 +117,8 @@ async function fetchGraphics() {
 
 
 // copied from Statistic
-.block-content, .block-content-full {
+.block-content,
+.block-content-full {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     border-radius: 20px;
     padding: 20px;
@@ -116,7 +128,7 @@ async function fetchGraphics() {
 
 }
 
-.block-content-full{
+.block-content-full {
     width: auto;
 
 }

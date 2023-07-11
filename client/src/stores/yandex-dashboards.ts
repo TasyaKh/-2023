@@ -9,12 +9,16 @@ export const useYandexStore = defineStore('yandex', () => {
         return getDahshboards(ids, date1, date2, 'device')
     }
 
+     // 5) доля брендового и небрендового трафика
+     function segmentTraffic(ids: number, date1: Date, date2: Date) {
+        return getDahshboards(ids, date1, date2, 'search-phrase')
+    }
+
 
     // 4) посещаемость из поисковых систем
     function visitsFromSearchSystems(ids: number, date1: Date, date2: Date) {
         return getDahshboards(ids, date1, date2, 'search-engine')
     }
-
 
     async function getDahshboards(ids: number, date1: Date, date2: Date, typeDashboard: string) {
 
@@ -33,6 +37,7 @@ export const useYandexStore = defineStore('yandex', () => {
 
     return {
         getDeviceCategory,
-        visitsFromSearchSystems
+        visitsFromSearchSystems,
+        segmentTraffic
     }
 })

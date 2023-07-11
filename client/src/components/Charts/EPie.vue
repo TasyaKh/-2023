@@ -10,7 +10,7 @@ import {
   LegendComponent,
   TitleComponent,
 } from "echarts/components";
-import { computed } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 use([
   CanvasRenderer,
@@ -23,13 +23,36 @@ use([
 
 
 const props = defineProps<{
-  data: {
-    value: number;
-    name: string;
-  }[],
+  data: any,
   name: string,
   subtext: string
 }>()
+
+const data = ref([{
+  value: -1,
+  name: "string"
+}])
+
+onBeforeMount(async () => {
+  data.value = await yandexDataToPie(props.data)
+})
+
+
+async function yandexDataToPie(data: any) {
+
+  let d = []
+
+  for (let i = 0; i < data.length; i++) {
+
+    d.push({
+      value: data[i].metrics[0],
+      name: data[i].dimensions[0].name,
+    })
+  }
+
+  return d
+}
+
 
 // const props = {
 //   data: [{
@@ -66,7 +89,7 @@ const options = computed(() => {
         // name: 'Access From',
         type: 'pie',
         radius: '50%',
-        data: props.data,
+        data: data.value,
         label: {
           show: true,
           formatter(param) {
