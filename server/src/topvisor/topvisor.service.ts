@@ -6,13 +6,29 @@ import { PositionsTopvisorDto } from './dto/positions-topvisor.dto';
 @Injectable()
 export class TopvisorService {
 
+  // async findProject(id: number) {
+
+  //   let res = null
+
+  //   await axiosTopvisorInstance.get("/v2/json/get/project/" + id)
+  //     .then((response) => {
+  //       res = response.data
+  //     })
+
+
+  //   if (res.errors) {
+  //     throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
+  //   }
+
+  //   return res
+  // }
 
   async findProjects(findProjectsDto: FindProjectsDto) {
 
     let res = null
 
     const params = {
-     ...findProjectsDto,
+      ...findProjectsDto,
       include_positions_summary_params: {
         show_dynamics: 0,
         show_tops: 1
@@ -35,6 +51,7 @@ export class TopvisorService {
 
   async checkPositions(positionsTopvisorDto: PositionsTopvisorDto) {
 
+    // console.log(positionsTopvisorDto)
     let res = null
 
     const params = {

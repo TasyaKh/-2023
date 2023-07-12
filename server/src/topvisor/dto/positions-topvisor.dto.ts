@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { IsArray, IsDateString, IsNumber, IsOptional } from "class-validator";
 
 export class PositionsTopvisorDto {
@@ -9,6 +9,7 @@ export class PositionsTopvisorDto {
     project_id: number
 
     // Индекс региона
+    @Transform(({ value }) => (Array.isArray(value) ? value : [value]), { toClassOnly: true })
     @IsArray()
     regions_indexes: number[]
 
