@@ -16,7 +16,7 @@
 }
 
 body {
- background-color: var(--tc-c-body);
- font-family: "Panton";
- color: var(--tc-c-purple);
+ background-color: var(--tc-c-body) !important;
+ font-family: "Panton" !important;
+ color: var(--tc-c-purple) !important;
 }

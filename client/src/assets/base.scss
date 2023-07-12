@@ -1,20 +1,35 @@
-
-.btn{
-  &-primary{
+.btn {
+  &-primary {
     background-color: var(--tc-c-pink);
   }
 
-  &-secondary{
+  &-secondary {
     background-color: var(--tc-c-white);
   }
 }
 
-.elem{
+.elem {
   background-color: white;
 }
 
-a{
+a {
   color: var(--tc-c-purple);
   text-decoration: none;
   padding: 0 !important;
+}
+
+
+.form-select {
+  border-radius: 13px;
+  border: 1px solid rgba(61, 61, 61, 0.10);
+  box-shadow: none;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border: 1px solid rgba(61, 61, 61, 0.10) !important;
+    box-shadow: none !important;
+  }
+
+
 }

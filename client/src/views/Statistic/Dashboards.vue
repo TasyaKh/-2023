@@ -8,13 +8,21 @@ import { useChartConverterStore } from '@/stores/chart_converter';
 // graphics
 import EPie from '@/components/Charts/EPie.vue';
 import EStackedArea from '@/components/Charts/EStackedArea.vue';
+import { useRoute } from 'vue-router';
+import NavbarStatistic from '@/components/NavbarStatistic.vue';
 
-const props = defineProps<{
-    yandexId: number,
-    topvisorId: number,
-    date1: Date,
-    date2: Date
-}>()
+const route = useRoute()
+
+// fetch ids from route
+const yandexId = Number(route.params.yandex_id);
+const topvisorId = Number(route.params.topvisor_id);
+
+// filters-----------------------------------------------------------------  
+//8_6400_000 - one day, 
+const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
+// today
+const date2 = ref(new Date())
+
 
 const yandexlStore = useYandexStore();
 const topvisorStore = useTopvisorStore();
@@ -40,70 +48,73 @@ async function fetchGraphics() {
 
     // 4) посещаемость из поисковых систем
     searchEngineData.value = await yandexlStore
-        .visitsFromSearchSystems(props.yandexId, props.date1, props.date2)
+        .visitsFromSearchSystems(yandexId, date1.value, date2.value)
 
     // 5) доля брендового и небрендового трафика
     segmentTrafficData.value = await yandexlStore
-        .segmentTraffic(props.yandexId, props.date1, props.date2)
+        .segmentTraffic(yandexId, date1.value, date2.value)
 
     // 6) device category
     dataDeviceCategory.value = await yandexlStore
-        .getDeviceCategory(props.yandexId, props.date1, props.date2)
+        .getDeviceCategory(yandexId, date1.value, date2.value)
 
 }
 
 </script>
 
 <template>
-    <!-- {{ preparedData.deviceCategory }} -->
-    <div class="chart-container">
-        <!-- statistic -->
+    <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
-        <div class="row">
-            <!-- 6 устройства -->
-            <div class="col">
+    <div class="container">
+        <!-- {{ preparedData.deviceCategory }} -->
+        <div class="chart-container">
+            <!-- statistic -->
 
-                <div class="block-content">
+            <div class="row">
+                <!-- 6 устройства -->
+                <div class="col">
 
-                    <div class="row d-flex justify-content-center text-center">
+                    <div class="block-content">
 
-                        <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'" :name="'Устройства'"
-                            :data="dataDeviceCategory.data" />
+                        <div class="row d-flex justify-content-center text-center">
 
+                            <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'"
+                                :name="'Устройства'" :data="dataDeviceCategory.data" />
+
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!--  5) доля брендового и небрендового трафика -->
-            <div class="col-12">
+                <!--  5) доля брендового и небрендового трафика -->
+                <div class="col-12">
 
-                <div class="block-content-full">
+                    <div class="block-content-full">
 
-                    <div class="row d-flex justify-content-center text-center">
+                        <div class="row d-flex justify-content-center text-center">
 
-                        <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
-                            :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
+                            <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
+                                :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
 
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 4 визиты -->
-            <div class="col-12">
+                <!-- 4 визиты -->
+                <div class="col-12">
 
-                <div class="block-content-full">
+                    <div class="block-content-full">
 
-                    <div class="row d-flex justify-content-center text-center">
+                        <div class="row d-flex justify-content-center text-center">
 
-                        <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
-                            :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
+                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
+                                :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
 
-                        <!-- <EStackedArea /> -->
+                            <!-- <EStackedArea /> -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -119,18 +130,22 @@ async function fetchGraphics() {
 // copied from Statistic
 .block-content,
 .block-content-full {
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border: 2px solid #3D3D3D1A;
     border-radius: 20px;
     padding: 20px;
     margin: 30px auto 30px auto;
     width: fit-content;
     background: white;
-
+    
 }
 
 .block-content-full {
     width: auto;
 
+}
+
+.container {
+    margin-top: 5rem;
 }
 </style>
 

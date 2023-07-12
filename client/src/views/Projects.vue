@@ -88,13 +88,13 @@ function getLogo(siteURL: string) {
 
 function isPositionsSummary(project: any) {
     //  && project.topvisorProject.positions_summary.length > 0
-    return project.topvisorProject.positions_summary &&  project.topvisorProject.positions_summary.dynamics
-    &&  project.topvisorProject.positions_summary.avgs
+    return project.topvisorProject.positions_summary && project.topvisorProject.positions_summary.dynamics
+        && project.topvisorProject.positions_summary.avgs
 }
 
 function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: number) {
     router.push({
-        name: 'Statistic', params: {
+        name: 'Dashboards', params: {
             yandex_id: yandexProjectId,
             topvisor_id: topvisorProjectId
         }
@@ -119,7 +119,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         <!-- projects -->
         <div class="row">
             <div class="projects">
-                <table class="table" cellspacing="0">
+                <table class="table-projects" cellspacing="0">
                     <thead>
                         <tr class="">
                             <th>
@@ -216,9 +216,9 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                                         <div class="row ">
 
                                             <div class="col-6 d-flex align-items-center">
-                                                <p v-if="isPositionsSummary(project)"> {{
+                                                <p class="m-auto" v-if="isPositionsSummary(project)"> {{
                                                     project.topvisorProject.positions_summary.dynamics.up }}</p>
-                                                <p v-else>-</p>
+                                                <p class="m-auto" v-else>-</p>
                                             </div>
 
                                             <div class="col-6 d-flex justify-content-center">
@@ -233,9 +233,9 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                                         <div class="row ">
 
                                             <div class="col-6 d-flex align-items-center">
-                                                <p v-if="isPositionsSummary(project)"> {{
+                                                <p class="m-auto" v-if="isPositionsSummary(project)"> {{
                                                     project.topvisorProject.positions_summary.dynamics.stay }}</p>
-                                                <p v-else>-</p>
+                                                <p class="m-auto" v-else>-</p>
                                             </div>
 
                                             <div class="col-6 d-flex justify-content-center">
@@ -249,9 +249,9 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                                     <div class="col d-flex justify-content-center">
                                         <div class="row ">
                                             <div class="col-6 d-flex align-items-center">
-                                                <p v-if="isPositionsSummary(project)"> {{
+                                                <p class="m-auto" v-if="isPositionsSummary(project)"> {{
                                                     project.topvisorProject.positions_summary.dynamics.down }}</p>
-                                                <p v-else>-</p>
+                                                <p class="m-auto" v-else>-</p>
                                             </div>
 
                                             <div class="col-6 d-flex justify-content-center">
@@ -302,7 +302,8 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         text-align: start;
     }
 
-    table {
+    .table-projects {
+        font-family: "Panton";
         width: 100%;
         border-collapse: separate;
         border-radius: 10px 10px 0px 0px;
@@ -310,7 +311,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
 
         tbody {
             text-align: center;
-            background-color: var(--tc-c-white);
+            background-color: var(--tc-c-white) ;
             cursor: pointer;
 
             td {
@@ -326,13 +327,11 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         }
 
         thead {
-            background-color: #E5E8FF;
+            background-color: #E5E8FF ;
 
             th {
-
                 padding: 20px;
                 // border-bottom: 2px solid #E4DFF0;
-
             }
 
         }
