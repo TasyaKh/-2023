@@ -1,16 +1,17 @@
 <script setup lang="ts">
+
 import { onBeforeMount, ref } from 'vue';
 import { useYandexStore } from '@/stores/yandex-dashboards';
-import { useTopvisorStore } from '@/stores/topvisor-dashboards';
-
-import { useChartConverterStore } from '@/stores/chart_converter';
 
 // graphics
 import EPie from '@/components/Charts/EPie.vue';
 import EStackedArea from '@/components/Charts/EStackedArea.vue';
+
+
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
 import TimeButton from '@/components/TimeButton.vue';
+import Totals from '@/components/Charts/Totals.vue';
 
 const route = useRoute()
 
@@ -26,26 +27,24 @@ const date2 = ref(new Date())
 
 
 const yandexlStore = useYandexStore();
-const topvisorStore = useTopvisorStore();
 
-const chartConverterStore = useChartConverterStore();
+// data for graphics ---------------------------------------------------------------
 
-// const dataDeviceCategory = ref()
-// const graphics = ref(
-//     [deviceCategory = null]
-// )
-
-// data ---------------------------------------------------------------
-
+const sourceTraffic = ref()
 const searchEngineData = ref()
 const segmentTrafficData = ref()
 const dataDeviceCategory = ref()
+const visitsBrowsers = ref()
 
 onBeforeMount(async () => {
     await fetchGraphics()
 })
 
 async function fetchGraphics() {
+
+    // 3)источники трафика
+    sourceTraffic.value = await yandexlStore
+        .sourceTraffic(yandexId, date1.value, date2.value)
 
     // 4) посещаемость из поисковых систем
     searchEngineData.value = await yandexlStore
@@ -59,6 +58,11 @@ async function fetchGraphics() {
     dataDeviceCategory.value = await yandexlStore
         .getDeviceCategory(yandexId, date1.value, date2.value)
 
+    // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
+    visitsBrowsers.value = await yandexlStore
+        .visitsBrowsers(yandexId, date1.value, date2.value)
+
+
 }
 
 </script>
@@ -66,6 +70,7 @@ async function fetchGraphics() {
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
+  
     <div class="container">
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
@@ -85,6 +90,36 @@ async function fetchGraphics() {
                         </div>
                     </div>
                 </div>
+
+                <!-- 7  Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)-->
+                <div class="col">
+
+                    <div class="block-content">
+
+                        <div class="row d-flex justify-content-center text-center">
+
+                            <Totals v-if="visitsBrowsers && visitsBrowsers.data" title="Поисковые системы" :data="visitsBrowsers.data" />
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--  3)  источники трафика -->
+                <div class="col-12">
+
+                    <div class="block-content-full">
+
+                        <div class="row d-flex justify-content-center text-center">
+
+                            <EPie v-if="sourceTraffic && sourceTraffic.data" :subtext="'визиты'" :name="'Источники трафика'"
+                                :data="sourceTraffic.data" />
+
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <!--  5) доля брендового и небрендового трафика -->
                 <div class="col-12">

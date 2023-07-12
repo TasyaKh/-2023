@@ -13,7 +13,7 @@ export class YandexController {
     return this.yandexService.findProjects(findProjectsDto);
   }
 
-  // визиты получить данные источники трафика
+  // 3)  источники трафика
   @Get('dashboards/source-traffic')
   findDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -73,14 +73,17 @@ export class YandexController {
     return this.yandexService.findDashboardsByTime(dshbYDto);
   }
 
-    // визиты по времени
-    @Get('dashboards/visits')
-    findDashboardsVisits(@Query() dshbYDto: FindDashboardsYandexDto) {
-  
-      dshbYDto.metrics.push("ym:s:visits")
-      dshbYDto.group = "day"
-      dshbYDto.sort.push("-ym:s:visits")
-  
-      return this.yandexService.findDashboardsByTime(dshbYDto);
-    }
+  // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
+  @Get('dashboards/browsers')
+  findDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    dshbYDto.metrics.push("ym:s:visits")
+    dshbYDto.dimensions.push("ym:s:lastSignSearchEngine")
+    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
+    dshbYDto.group = "Week"
+    dshbYDto.sort.push("-ym:s:visits")
+    dshbYDto.limit = 10
+
+    return this.yandexService.findDashboards(dshbYDto);
+  }
 }
