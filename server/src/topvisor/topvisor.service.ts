@@ -58,7 +58,22 @@ export class TopvisorService {
       ...positionsTopvisorDto,
       show_headers: 1,
       type_range: 2,
+     
     }
+
+
+    //       show_exists_dates:1,
+    //  show_headers: 1,
+    // show_top_by_depth: 10,
+    // show_visitors: 1,
+    // positions_fields: ["position", "relevant_url", "snippet_ext", "visitors"]
+    // , orders: [],
+    // group_folder_id_depth: 1,
+    // filter_by_dynamic: [],
+    // filter_by_positions: [],
+    // filters: [],
+
+    // fields: ["name", "positionStatus:88", "volume:63:0:1", "volume:63:0:2", "volume:63:0:3", "volume:63:0:5"]
 
     await axiosTopvisorInstance.get("/v2/json/get/positions_2/history", { data: params })
       .then((response) => {

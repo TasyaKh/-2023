@@ -1,11 +1,45 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+
 const props = defineProps<{
     // data from topvisor
     data: any
 
 }>()
 
+// watch(() => props.data, async (data) => {
+//     getDatesWidthRegionIndexesFromSearchers(
+//         data.result.headers.dates, data.result.headers.projects[0].searchers
+//     )
+// })
 
+function getPosition(item: any, date: any) {
+    let position = '-'
+    let dateExtracted = '-'
+
+    for (let key in item.positionsData) {
+        let dataArray = key.split(":")
+        dateExtracted = dataArray[0]
+
+        if (dateExtracted == date) {
+            position = item.positionsData[key].position
+        }
+    }
+
+    return position
+}
+
+// const datesRegions = ref()
+// function getDatesWidthRegionIndexesFromSearchers(dates: any, searchers: any) {
+
+//     let res = []
+//     for (let key in searchers) {
+//         const index = searchers[key].regions[0].index
+//         res.push({ [index]: dates })
+//     }
+
+//     datesRegions.value = res
+// }
 </script>
 
 <template>
@@ -13,36 +47,28 @@ const props = defineProps<{
     <!-- data{{ data }} -->
     <table class="table-positions" cellspacing="0">
         <thead>
-            <!-- <tr class="">
-                <th colspan="2">
-                    Поискова система
-                </th>
-                <th v-for="searcher in data.result.headers.projects[0].searchers" colspan="2" class="text-center">
-                    {{ searcher.name }}
-                </th>
-
-            </tr> -->
-            <!-- <tr class="">
-                <th colspan="2">
-                    Регион
-                </th>
-                <th colspan="2">
-                    Иркутск
-                </th>
-                <th colspan="2">
-                    Иркутск
-                </th>
-
-
-            </tr> -->
 
             <!-- dates -->
             <tr>
                 <!-- <th class="">icon</th> -->
+                <th class="">Поисковая система</th>
+
+                <th v-for="search in data.result.headers.projects[0].searchers" :colspan="data.result.headers.dates.length">
+                    {{ search.name }}
+                </th>
+
+            </tr>
+
+            <tr>
+                <!-- <th class="">icon</th> -->
                 <th class="">Запросы</th>
 
-                <th v-for="date in data.result.headers.dates">
-                    {{ date }}</th>
+                <th v-for="date in data.result.headers.dates" >
+                    {{ date }}
+                </th>
+                <!-- <th v-for="search in data.result.headers.projects[0].searchers" :colspan="data.result.headers.dates.length">
+                    {{ search.regions[0].index}}
+                </th> -->
 
             </tr>
         </thead>
@@ -54,9 +80,14 @@ const props = defineProps<{
                 <td class="queries">
                     {{ item.name }}
                 </td>
-                <td v-for="(positionData, index) in item.positionsData" :key="index">
-                    {{ positionData.position }}
+                <!-- разместить позиции в соответствующих колонках -->
+                <td v-for="date in data.result.headers.dates">
+                    {{ getPosition(item, date) }}
+                    <!-- <p v-for="(positionData, index) in item.positionsData"> {{ positionData.position }}</p> -->
                 </td>
+                <!-- <td v-for="(positionData, index) in item.positionsData" :key="index">
+                    {{ positionData.position }}
+                </td> -->
 
             </tr>
 
@@ -95,7 +126,7 @@ const props = defineProps<{
 
         }
 
-        .queries{
+        .queries {
             text-align: start;
         }
     }

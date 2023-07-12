@@ -26,5 +26,10 @@ export class PositionsTopvisorDto {
 
     @IsDateString()
     date2:Date
+
+    // @IsOptional()
+    // orders:any[]=[{"name":"date","direction":"DESC"}]
+    // @IsOptional()
+    // fields:any[] = ["date","info","sum"]
 }
 

@@ -10,6 +10,7 @@ import EPie from '@/components/Charts/EPie.vue';
 import EStackedArea from '@/components/Charts/EStackedArea.vue';
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
+import TimeButton from '@/components/TimeButton.vue';
 
 const route = useRoute()
 
@@ -136,8 +137,8 @@ async function fetchGraphics() {
     margin: 30px auto 30px auto;
     width: fit-content;
     background: white;
-    
 }
+
 
 .block-content-full {
     width: auto;

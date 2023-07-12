@@ -35,6 +35,7 @@ export const useYandexStore = defineStore('yandex', () => {
         return data
     }
 
+    
     return {
         getDeviceCategory,
         visitsFromSearchSystems,

@@ -19,7 +19,17 @@ export const useTopvisorStore = defineStore('topvisor', () => {
     return data
   }
 
+  async function getProjects() {
+    
+    const res = await axios.get('/api/topvisor/projects/')
+
+    const data = res.data
+
+    return data
+  }
+
   return {
-    getSitePositions
+    getSitePositions,
+    getProjects
   }
 })
