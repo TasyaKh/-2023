@@ -9,10 +9,23 @@ export class TopvisorController {
   constructor(private readonly topvisorService: TopvisorService) { }
 
 
+  // database------------------------------------------------------------------------------
   // получить список проектов
   @Get('projects')
   findProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
     return this.topvisorService.findProjects(findProjectsDto);
+  }
+
+
+  // remote api-------------------------------------------------------------
+  // получить список проектов
+  @Get('fetch/projects')
+  async fetchProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
+    let projects = await this.topvisorService.fetchProjects(findProjectsDto);
+    // save projects in database
+    this.topvisorService.saveProjectsDatabase(projects)
+
+    return projects
   }
 
   // получить список проектов

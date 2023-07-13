@@ -29,7 +29,7 @@ export class GeneralService {
     // console.log(yandexProjects)
     // console.log(topvisorProjects)
 
-    const unitedProjects = this.uniteProjects(yandexProjects.counters, topvisorProjects.result)
+    const unitedProjects = this.uniteProjects(yandexProjects, topvisorProjects)
     return unitedProjects;
   }
 

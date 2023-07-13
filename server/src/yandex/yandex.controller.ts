@@ -7,10 +7,25 @@ import { FindDashboardsYandexDto } from './dto/find-dashboards.dto';
 export class YandexController {
   constructor(private readonly yandexService: YandexService) { }
 
+  // database------------------------------------------------------------------------------
   // получить список проектов
   @Get('projects')
-  findProjects(@Query() findProjectsDto: FindProjectsDto) {
-    return this.yandexService.findProjects(findProjectsDto);
+  async findProjects(@Query() findProjectsDto: FindProjectsDto) {
+
+    const projects = await this.yandexService.findProjects(findProjectsDto);
+
+    return projects
+  }
+
+  // remote api-------------------------------------------------------------
+  // получить список проектов
+  @Get('fetch/projects')
+  async fetchProjects(@Query() findProjectsDto: FindProjectsDto) {
+
+    const projects = await this.yandexService.fetchProjects(findProjectsDto);
+
+    await this.yandexService.saveProjectsDatabase(projects)
+    return projects
   }
 
   // 3)  источники трафика
@@ -21,6 +36,7 @@ export class YandexController {
     dshbYDto.dimensions.push("ym:s:lastSignTrafficSource")
     dshbYDto.group = "all"
     dshbYDto.sort.push("-ym:s:visits")
+
 
     return this.yandexService.findDashboards(dshbYDto);
   }
@@ -86,4 +102,8 @@ export class YandexController {
 
     return this.yandexService.findDashboards(dshbYDto);
   }
+
+
+
+
 }

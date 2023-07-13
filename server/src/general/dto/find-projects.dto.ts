@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { IsNumber, IsOptional } from "class-validator";
 
 export class FindProjectsDto {
@@ -11,6 +12,7 @@ export class FindProjectsDto {
     offset:number
 
     @IsOptional()
+    @Transform(({ value }) => value.toLowerCase())
     search_string:string
 
     // @IsOptional()
