@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useTopvisorStore } from '@/stores/topvisor-dashboards';
 import { onBeforeMount, ref } from 'vue';
-
 
 // const selectedItem = ref(1)
 const selectedProject = ref(1)
+
+const topvisorStore = useTopvisorStore()
 
 const props = defineProps<{
     yandexId: number,
@@ -13,21 +15,31 @@ const props = defineProps<{
     // handleEventSelectedItem: Function
 }>()
 
-// function setSelectedItem(item: number) {
-//     selectedItem.value = item
-//     props.handleEventSelectedItem(item)
-// }
+onBeforeMount(async () => {
+   await getProject()
+})
 
+const projectTopvisor = ref()
+const projects = ref()
+
+async function getProject() {
+    projectTopvisor.value = await topvisorStore.getProjects(props.topvisorId)
+    projects.value = [{yandexProject:null, topvisorProject:projectTopvisor.value}]
+    selectedProject.value = projectTopvisor.value.result[0].id
+}
 
 
 </script>
 
 <template>
+
+    
     <nav class="navbar bg-white fixed-top">
         <div class="container-fluid">
 
             <div class="row">
-                <!-- mtnu button -->
+
+                <!-- menu button -->
                 <div class="col-auto">
                     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -36,10 +48,12 @@ const props = defineProps<{
                 </div>
 
 
-                <!-- projects -->
+                <!-- search projects -->
                 <div class="col">
                     <select class="form-select" aria-label="project" v-model="selectedProject">
-                        <option value="1" :selected="selectedProject==1">Проект</option>
+                        <option v-for="project in projects" :value="project.topvisorProject.result[0].id" :selected="selectedProject == project.topvisorProject.result[0].id">
+                            {{project.topvisorProject.result[0].name  }}
+                        </option>
                     </select>
                 </div>
 
@@ -47,7 +61,7 @@ const props = defineProps<{
 
 
 
-
+            <!-- выезжающее меню -->
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
 
@@ -122,6 +136,4 @@ const props = defineProps<{
 .offcanvas {
     max-width: 230px;
 }
-
-
 </style>

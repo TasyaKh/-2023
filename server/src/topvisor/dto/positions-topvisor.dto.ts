@@ -10,7 +10,7 @@ export class PositionsTopvisorDto {
 
     // Индекс региона
     @Transform(({ value }) => (Array.isArray(value) ? value : [value]), { toClassOnly: true })
-    @IsArray()
+    @IsArray({message:"регионы не указаны"})
     regions_indexes: number[]
 
     // Произвольные даты проверок

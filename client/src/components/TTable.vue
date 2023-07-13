@@ -26,32 +26,18 @@ function initData() {
 function getPosition(date: any, project_id: any, searcherRegion_index: any, keyword: any) {
 
     let qualifiers = `${date}:${project_id}:${searcherRegion_index}`;
-    let position = ''
 
     let p = keyword.positionsData[qualifiers].position
 
-    position = p ? p : '--';
-
-    return position
+    return p
 }
 
-// const datesRegions = ref()
-// function getDatesWidthRegionIndexesFromSearchers(dates: any, searchers: any) {
-
-//     let res = []
-//     for (let key in searchers) {
-//         const index = searchers[key].regions[0].index
-//         res.push({ [index]: dates })
-//     }
-
-//     datesRegions.value = res
-// }
 </script>
 
 <template>
     <!-- {{ data.result.headers.projects }} -->
     <!-- data{{ data }} -->
-    <table class="table-positions" cellspacing="0">
+    <table class="table-positions  p-0 m-0" cellspacing="0">
         <thead>
 
             <!-- dates -->
@@ -62,9 +48,6 @@ function getPosition(date: any, project_id: any, searcherRegion_index: any, keyw
                 <th v-for="date in dates">
                     {{ date }}
                 </th>
-                <!-- <th v-for="search in data.result.headers.projects[0].searchers" :colspan="data.result.headers.dates.length">
-                    {{ search.regions[0].index}}
-                </th> -->
 
             </tr>
         </thead>

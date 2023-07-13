@@ -3,6 +3,8 @@ import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useGeneralStore } from '@/stores/general';
 import FilterButton from '@/components/FilterButton.vue';
+import Loading from '@/components/Loading.vue';
+
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -160,7 +162,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                     </thead>
 
 
-                    <tbody v-if="!loading">
+                    <tbody v-if="projects">
 
                         <tr v-for="project in projects" :key="project.topvisorProject.id"
                             @click="navigateToPageStatistic(project.yandexProject.id, project.topvisorProject.id)">
@@ -279,7 +281,11 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                         </tr>
 
                     </tbody>
-                    <div v-else>Загрузка ...</div>
+                    <div v-else>
+                        <Loading />
+                    </div>
+
+
 
                 </table>
             </div>
@@ -311,7 +317,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
 
         tbody {
             text-align: center;
-            background-color: var(--tc-c-white) ;
+            background-color: var(--tc-c-white);
             cursor: pointer;
 
             td {
@@ -327,7 +333,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         }
 
         thead {
-            background-color: #E5E8FF ;
+            background-color: #E5E8FF;
 
             th {
                 padding: 20px;

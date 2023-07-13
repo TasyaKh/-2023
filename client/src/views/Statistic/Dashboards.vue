@@ -12,6 +12,7 @@ import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
 import TimeButton from '@/components/TimeButton.vue';
 import Totals from '@/components/Charts/Totals.vue';
+import Loading from '@/components/Loading.vue';
 
 const route = useRoute()
 
@@ -70,7 +71,7 @@ async function fetchGraphics() {
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
-  
+
     <div class="container">
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
@@ -86,6 +87,7 @@ async function fetchGraphics() {
 
                             <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'"
                                 :name="'Устройства'" :data="dataDeviceCategory.data" />
+                            <Loading v-else />
 
                         </div>
                     </div>
@@ -98,8 +100,9 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <Totals v-if="visitsBrowsers && visitsBrowsers.data" title="Поисковые системы" :data="visitsBrowsers.data" />
-
+                            <Totals v-if="visitsBrowsers && visitsBrowsers.data" title="Поисковые системы"
+                                :data="visitsBrowsers.data" />
+                            <Loading v-else />
 
                         </div>
                     </div>
@@ -114,7 +117,7 @@ async function fetchGraphics() {
 
                             <EPie v-if="sourceTraffic && sourceTraffic.data" :subtext="'визиты'" :name="'Источники трафика'"
                                 :data="sourceTraffic.data" />
-
+                            <Loading v-else />
                         </div>
                     </div>
                 </div>
@@ -130,7 +133,7 @@ async function fetchGraphics() {
 
                             <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
                                 :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
-
+                            <Loading v-else />
                         </div>
                     </div>
                 </div>
@@ -144,8 +147,7 @@ async function fetchGraphics() {
 
                             <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
                                 :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
-
-                            <!-- <EStackedArea /> -->
+                            <Loading v-else />
                         </div>
                     </div>
                 </div>
