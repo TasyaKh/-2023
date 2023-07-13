@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FindProjectsDto } from './dto/find-projects.dto';
 import { YandexService } from 'src/yandex/yandex.service';
 import { TopvisorService } from 'src/topvisor/topvisor.service';
+import { FindProjectsTopvisorDto } from 'src/topvisor/dto/find-projects-topvisor.dto';
 
 @Injectable()
 export class GeneralService {
@@ -15,7 +16,15 @@ export class GeneralService {
   async findProjects(findProjectsDto: FindProjectsDto) {
 
     const yandexProjects = await this.yandexService.findProjects(findProjectsDto)
-    const topvisorProjects = await this.topvisorService.findProjects(findProjectsDto)
+
+    // topvisor
+    let findProjectsTopvisorDto = new FindProjectsTopvisorDto()
+    findProjectsTopvisorDto.limit = findProjectsDto.limit
+    findProjectsTopvisorDto.offset = findProjectsDto.offset
+    findProjectsTopvisorDto.search_string = findProjectsDto.search_string
+    findProjectsTopvisorDto.orders = findProjectsDto.orders
+
+    const topvisorProjects = await this.topvisorService.findProjects(findProjectsTopvisorDto)
 
     // console.log(yandexProjects)
     // console.log(topvisorProjects)
@@ -30,7 +39,7 @@ export class GeneralService {
 
     const unifiedProjects = [];
 
-  
+
     topvisorProjects.forEach(topvisorProjects => {
 
       yandexProjects.forEach(yandexProjects => {

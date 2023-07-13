@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { TopvisorService } from './topvisor.service';
 import { FindProjectsDto } from 'src/general/dto/find-projects.dto';
 import { PositionsTopvisorDto } from './dto/positions-topvisor.dto';
+import { FindProjectsTopvisorDto } from './dto/find-projects-topvisor.dto';
 
 @Controller('topvisor')
 export class TopvisorController {
@@ -10,7 +11,7 @@ export class TopvisorController {
 
   // получить список проектов
   @Get('projects')
-  findProjects(@Query() findProjectsDto: FindProjectsDto) {
+  findProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
     return this.topvisorService.findProjects(findProjectsDto);
   }
 

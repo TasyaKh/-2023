@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { axiosTopvisorInstance } from 'src/axios-instance';
 import { FindProjectsDto } from 'src/general/dto/find-projects.dto';
 import { PositionsTopvisorDto } from './dto/positions-topvisor.dto';
+import { FindProjectsTopvisorDto } from './dto/find-projects-topvisor.dto';
 
 @Injectable()
 export class TopvisorService {
@@ -23,7 +24,7 @@ export class TopvisorService {
   //   return res
   // }
 
-  async findProjects(findProjectsDto: FindProjectsDto) {
+  async findProjects(findProjectsDto: FindProjectsTopvisorDto) {
 
     let res = null
 
@@ -57,7 +58,8 @@ export class TopvisorService {
     const params = {
       ...positionsTopvisorDto,
       show_headers: 1,
-      type_range: 2,
+      show_exists_dates:1
+      // type_range: 2,
      
     }
 
