@@ -54,15 +54,15 @@ export class YandexController {
   }
 
 
-  
+
   // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
   @Get('dashboards/browsers')
   async findDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
-    
+
     const dsh = await this.yandexService.findDashboards(dshbYDto, "browsers");
 
     return dsh
- 
+
   }
 
 
@@ -72,12 +72,13 @@ export class YandexController {
 
   // remote api-------------------------------------------------------------
   // получить список проектов
+
   @Get('fetch/projects')
   async fetchProjects(@Query() findProjectsDto: FindProjectsDto) {
 
     const projects = await this.yandexService.fetchProjects(findProjectsDto);
 
-    await this.yandexService.saveProjectsDatabase(projects)
+    // await this.yandexService.saveProjectsDatabase(projects.counters)
     return projects
   }
 
@@ -153,7 +154,7 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    const dsh =  await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
     await this.yandexService.saveDashboardsByTime(dsh, "search-engine");
 
     return dsh
@@ -170,7 +171,7 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    
+
     const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
     await this.yandexService.saveDashboardsByTime(dsh, "browsers");
 

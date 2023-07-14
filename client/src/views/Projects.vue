@@ -281,8 +281,11 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                         </tr>
 
                     </tbody>
-                    <div v-else>
+                    <div v-else-if="loading">
                         <Loading />
+                    </div>
+                    <div v-else>
+                       проектов нет
                     </div>
 
 

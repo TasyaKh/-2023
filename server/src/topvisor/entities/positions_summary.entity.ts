@@ -12,13 +12,13 @@ export class TPositionsSummary {
     @Column()
     id_project: number
     
-    @Column({type:"simple-array"})
+    @Column({type:"simple-array", nullable:true})
     avgs:number[]
 
-    @Column()
+    @Column({nullable:true})
     avg_dynamic:number
 
-    @Column()
+    @Column({nullable:true})
     visibility_dynamic:number
 
     @OneToOne(() => TDynamics)

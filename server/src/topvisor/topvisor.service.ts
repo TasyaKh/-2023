@@ -102,15 +102,19 @@ export class TopvisorService {
   //  save projects в базу данных
   async saveProjectsDatabase(projects: any) {
 
-    for (let project in projects.result) {
-      let p = projects.result[project]
+    for (let project in projects) {
+      let p = projects[project]
 
+      let savedDynamic = null
 
       // сохранить динамику
-      const savedDynamic = await this.tDynamicsRepository.save({
-        ...p.positions_summary.dynamics,
-        id_project: p.id
-      })
+      if (p.positions_summary && p.positions_summary.dynamics) {
+        savedDynamic = await this.tDynamicsRepository.save({
+          ...p.positions_summary.dynamics,
+          id_project: p.id
+        })
+      }
+
 
 
 
@@ -173,9 +177,42 @@ export class TopvisorService {
       "LOWER(topvisor_projects.name) like :search_string or LOWER(topvisor_projects.site) like :search_string",
       { search_string: `%${findProjectsDto.search_string}%` }) : q
 
+    // find project by id
     query = findProjectsDto.project_id ? query.andWhere("topvisor_projects.id = :id", { id: findProjectsDto.project_id }) : query
 
+    // order by
+    for (let order in findProjectsDto.orders) {
+      
+      // sort by
+      switch(findProjectsDto.orders[order].name){
+        case "date":
+          query = query.orderBy("topvisor_projects.date", findProjectsDto.orders[order].direction == "ASC"?"ASC":"DESC") 
+        break
+        case "name":
+          query = query.orderBy("topvisor_projects.name", findProjectsDto.orders[order].direction == "ASC"?"ASC":"DESC") 
+        break
+      }
+
+    }
+
     return query
+  }
+
+
+
+
+  // other------------------------------------------------------
+
+  async getTopvisorLastProject() {
+
+    let query = this.topvisorProjectRepository
+      .createQueryBuilder("topvisor_projects")
+      .orderBy("topvisor_projects.date", "DESC")
+      .take(1);
+
+    const newestProject = await query.getOne();
+    return newestProject;
+
   }
 
 }

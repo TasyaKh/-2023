@@ -21,4 +21,7 @@ export class TopvisorProject {
     })
     @JoinColumn([{ name: "ps_id" }])
     positions_summary: TPositionsSummary
+
+    @Column({ default: new Date() })
+    date_last_update: Date
 }

@@ -14,5 +14,8 @@ export class YandexProject {
     site: string
 
     @Column()
-    create_time:Date
+    create_time: Date
+
+    @Column({ default: new Date() })
+    date_last_update: Date
 }

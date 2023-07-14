@@ -1,3 +1,2 @@
-server/.env
 server/testApi.http
 server/src/sample.config.ts

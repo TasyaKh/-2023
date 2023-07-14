@@ -9,16 +9,16 @@ export class TDynamics {
     @Column()
     id_project: number
     
-    @Column()
+    @Column({nullable:true})
     all: number
 
-    @Column()
+    @Column({nullable:true})
     up: number
 
-    @Column()
+    @Column({nullable:true})
     stay: number
 
-    @Column()
+    @Column({nullable:true})
     down: number
 
 }

@@ -7,6 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { YData } from './entities/data.entity';
 import { YMetric } from './entities/metrics.entity';
+import { browsersDashboard, deviceDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard } from './dashboards';
+import { Cron } from '@nestjs/schedule';
+
 
 @Injectable()
 export class YandexService {
@@ -23,6 +26,9 @@ export class YandexService {
 
   ) { }
 
+
+
+  // api----------------------------------------------------------------------
   async fetchProjects(findProjectsDto: FindProjectsDto) {
 
     let res = null
@@ -42,7 +48,7 @@ export class YandexService {
     return res
   }
 
-  // найти дашборды
+  // найти дашборды 
   async fetchDashboards(findDashboardsYandexDto: FindDashboardsYandexDto) {
 
     console.log(findDashboardsYandexDto)
@@ -83,21 +89,90 @@ export class YandexService {
     return res
   }
 
+
+
+
+
+
+
+
   // database------------------------------------------------------------------------------
   //  save projects
-  async saveProjectsDatabase(projects: any) {
-    // console.log(projects.counters[0])
+  async saveProjectsDatabase(projects: any,
+    dateStartDateDashboard: Date, dateEndDateDashboard: Date) {
 
-    for (let project in projects.counters) {
-      this.yandexProjectRepository.save([projects.counters[project]])
-
+     
+    for (let project in projects) {
+     
+      console.log(projects[project])
+      await this.yandexProjectRepository.save({
+        ...projects[project],
+        id: projects[project].id
+      })
+      console.log("af")
+      // сохранить данные графиков
+      this.fetchAndSaveGraphics(projects[project].id, dateStartDateDashboard,
+        dateEndDateDashboard)
     }
   }
+
+
+  // вытащить данные из сервера по ид проекта и на основе промежутков времени
+  async fetchAndSaveGraphics(project_id: number,
+    dateStartDateDashboard: Date, dateEndDateDashboard: Date) {
+
+
+    // device
+    const deviceD = await this.fetchDashboards(
+      deviceDashboard(project_id,
+        dateStartDateDashboard, dateEndDateDashboard))
+
+    // save dashboards
+    await this.saveDashboardsByTime(deviceD, "device")
+
+
+    // sourceTrafficD
+    const sourceTrafficD = await this.fetchDashboards(
+      sourceTrafficDashboard(project_id,
+        dateStartDateDashboard, dateEndDateDashboard))
+
+    // save dashboards
+    await this.saveDashboardsByTime(sourceTrafficD, "source-traffic")
+
+
+    // search-phrase
+    const searchPhraseD = await this.fetchDashboards(
+      searchPhraseDashboard(project_id,
+        dateStartDateDashboard, dateEndDateDashboard))
+
+    // save dashboards
+    await this.saveDashboardsByTime(searchPhraseD, "search-phrase")
+
+
+
+    // search-engine
+    const searchEngineD = await this.fetchDashboards(
+      searchEngineDashboard(project_id,
+        dateStartDateDashboard, dateEndDateDashboard))
+
+    // save dashboards
+    await this.saveDashboardsByTime(searchEngineD, "search-engine")
+
+
+    // browsers
+    const browsersD = await this.fetchDashboards(
+      browsersDashboard(project_id,
+        dateStartDateDashboard, dateEndDateDashboard))
+
+    // save dashboards
+    await this.saveDashboardsByTime(browsersD, "browsers")
+  }
+
 
   // найти проекты
   async findProjects(findProjectsDto: FindProjectsDto) {
 
-   
+
     let query = this.yandexProjectRepository
       .createQueryBuilder("yandex_project")
 
@@ -155,28 +230,28 @@ export class YandexService {
 
 
   //  save projects
-  async saveDashboardsByTime(dashboards: any, type_dimention: string) {
+  async saveDashboardsByTime(dashboard: any, type_dimention: string) {
 
-    const dates = dashboards.time_intervals
+    const dates = dashboard.time_intervals
 
 
-    for (let i in dashboards.data) {
+    for (let i in dashboard.data) {
 
       const savedData = await this.yDataRepository.save({
-        name: dashboards.data[i].dimensions[0].name,
-        project_id: dashboards.query.ids[0],
+        name: dashboard.data[i].dimensions[0].name,
+        project_id: dashboard.query.ids[0],
         type_dimention: type_dimention,
-        favicon:dashboards.data[i].dimensions[0].favicon
+        favicon: dashboard.data[i].dimensions[0].favicon
       })
 
       // console.log(dashboards.data)
 
-      for (let io in dashboards.data[i].metrics[0]) {
+      for (let io in dashboard.data[i].metrics[0]) {
 
         await this.yMetricRepository.save({
-          metric: dashboards.data[i].metrics[0][io],
+          metric: dashboard.data[i].metrics[0][io],
           date: dates[io][0],
-          project_id: dashboards.query.ids[0],
+          project_id: dashboard.query.ids[0],
           data: savedData
         })
 
@@ -184,8 +259,23 @@ export class YandexService {
 
 
     }
+  }
 
 
+  // other------------------------------------------------------
+
+  async getYandexLastProject() {
+
+    let query = this.yandexProjectRepository
+      .createQueryBuilder("yandex_project")
+      .orderBy("yandex_project.create_time", "DESC")
+      .take(1);
+
+    const newestProject = await query.getOne();
+    return newestProject;
 
   }
+
+
+
 }

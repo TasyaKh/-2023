@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TOPVISOR_API_URL, YANDEX_API_URL } from "./config";
+import { TOPVISOR_API_URL, YANDEX_API_URL } from "./sample.config";
 
 export const axiosTopvisorInstance = axios.create({
     baseURL: TOPVISOR_API_URL.baseUrl,
