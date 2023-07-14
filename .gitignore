@@ -1,4 +1,4 @@
 server/.env
 server/testApi.http
 server/src/sample.config.ts
-server/package-lock.json
+package-lock.json
