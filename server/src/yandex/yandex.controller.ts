@@ -17,6 +17,59 @@ export class YandexController {
     return projects
   }
 
+  // 4) визиты получить данные посещений девайсов
+  @Get('dashboards/device')
+  async findDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboards(dshbYDto, "device");
+
+    return dsh
+  }
+
+  // 3)  источники трафика
+  @Get('dashboards/source-traffic')
+  async findDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboards(dshbYDto, "source-traffic");
+
+    return dsh
+  }
+
+  // 5) визиты доля брендового и небрендового траффика
+  @Get('dashboards/search-phrase')
+  async findDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboards(dshbYDto, "search-phrase");
+
+    return dsh
+  }
+
+  // 6) посещаемость из поисковых систем
+  @Get('dashboards/search-engine')
+  async findDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboardsBytime(dshbYDto, "search-engine");
+
+    return dsh
+  }
+
+
+  
+  // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
+  @Get('dashboards/browsers')
+  async findDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
+    
+    const dsh = await this.yandexService.findDashboards(dshbYDto, "browsers");
+
+    return dsh
+ 
+  }
+
+
+
+
+
+
   // remote api-------------------------------------------------------------
   // получить список проектов
   @Get('fetch/projects')
@@ -29,52 +82,66 @@ export class YandexController {
   }
 
   // 3)  источники трафика
-  @Get('dashboards/source-traffic')
-  findDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
+  @Get('dashboards/fetch/source-traffic')
+  async fetchDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:lastSignTrafficSource")
-    dshbYDto.group = "all"
+    dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
 
 
-    return this.yandexService.findDashboards(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+
+    await this.yandexService.saveDashboardsByTime(dsh, "source-traffic");
+
+    return dsh
   }
 
   // 4) визиты получить данные посещений девайсов
-  @Get('dashboards/device')
-  findDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
+  @Get('dashboards/fetch/device')
+  async fetchDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:deviceCategory")
     dshbYDto.filters.push("ym:s:deviceCategory!n")
-    dshbYDto.group = "all"
+    dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
 
-    return this.yandexService.findDashboards(dshbYDto);
+
+    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+
+    await this.yandexService.saveDashboardsByTime(dsh, "device");
+
+    return dsh
   }
 
 
   // 5) визиты доля брендового и небрендового траффика
-  @Get('dashboards/search-phrase')
-  findDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
+  @Get('dashboards/fetch/search-phrase')
+  async fetchDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase")
     dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot")
 
     dshbYDto.filters.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase!n")
-    dshbYDto.group = "all"
+    dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    return this.yandexService.findDashboards(dshbYDto);
+
+    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+
+    await this.yandexService.saveDashboardsByTime(dsh, "search-phrase");
+
+    return dsh
   }
 
 
   // 6) посещаемость из поисковых систем
-  @Get('dashboards/search-engine')
-  findDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
+  @Get('dashboards/fetch/search-engine')
+  async fetchDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot")
@@ -86,21 +153,28 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    return this.yandexService.findDashboardsByTime(dshbYDto);
+    const dsh =  await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    await this.yandexService.saveDashboardsByTime(dsh, "search-engine");
+
+    return dsh
   }
 
   // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
-  @Get('dashboards/browsers')
-  findDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
+  @Get('dashboards/fetch/browsers')
+  async fetchDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:lastSignSearchEngine")
     dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
-    dshbYDto.group = "Week"
+    dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    return this.yandexService.findDashboards(dshbYDto);
+    
+    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    await this.yandexService.saveDashboardsByTime(dsh, "browsers");
+
+    return dsh
   }
 
 

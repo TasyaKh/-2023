@@ -16,7 +16,9 @@ export class TopvisorProject {
     @Column()
     date: Date
     
-    @OneToOne(() => TPositionsSummary)
+    @OneToOne(() => TPositionsSummary,  {
+        cascade: true,
+    })
     @JoinColumn([{ name: "ps_id" }])
     positions_summary: TPositionsSummary
 }

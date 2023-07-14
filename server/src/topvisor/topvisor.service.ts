@@ -4,7 +4,7 @@ import { FindProjectsDto } from 'src/general/dto/find-projects.dto';
 import { PositionsTopvisorDto } from './dto/positions-topvisor.dto';
 import { FindProjectsTopvisorDto } from './dto/find-projects-topvisor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { TopvisorProject } from './entities/topvisor-project.entity';
 import { TTops } from './entities/tops.entity';
 import { TDynamics } from './entities/dynamics.entity';
@@ -136,11 +136,6 @@ export class TopvisorService {
       // сохранить топы
       for (let top in p.positions_summary.tops) {
 
-        console.log({
-          ...p.positions_summary.tops[top],
-          id_project: p.id,
-          positions_summary: savedProject
-        })
         await
           this.tTopsRepository.save({
             ...p.positions_summary.tops[top],
@@ -156,7 +151,7 @@ export class TopvisorService {
   }
 
   // найти проекты 
-  async findProjects(findProjectsDto: FindProjectsDto) {
+  async findProjects(findProjectsTopvisorDto: FindProjectsTopvisorDto) {
 
     let query = this.topvisorProjectRepository
       .createQueryBuilder("topvisor_projects")
@@ -164,12 +159,23 @@ export class TopvisorService {
       .leftJoinAndSelect("ps.dynamics", "dynamics")
       .leftJoinAndSelect("ps.tops", "tops")
 
-    query = findProjectsDto.search_string ? query.andWhere(
-      "LOWER(topvisor_projects.name) like :search_string or LOWER(topvisor_projects.site) like :search_string",
-      { search_string: `%${findProjectsDto.search_string}%` }) : query
+
+    query = this.filterProjects(findProjectsTopvisorDto, query)
 
     return await query.getMany()
 
+  }
+
+  filterProjects(findProjectsDto: FindProjectsTopvisorDto, q: SelectQueryBuilder<TopvisorProject>) {
+
+    console.log(findProjectsDto)
+    let query = findProjectsDto.search_string ? q.andWhere(
+      "LOWER(topvisor_projects.name) like :search_string or LOWER(topvisor_projects.site) like :search_string",
+      { search_string: `%${findProjectsDto.search_string}%` }) : q
+
+    query = findProjectsDto.project_id ? query.andWhere("topvisor_projects.id = :id", { id: findProjectsDto.project_id }) : query
+
+    return query
   }
 
 }

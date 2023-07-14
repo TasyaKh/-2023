@@ -22,10 +22,13 @@ const topvisorId = Number(route.params.topvisor_id);
 
 // filters-----------------------------------------------------------------  
 //8_6400_000 - one day, 
-const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
-// today
-const date2 = ref(new Date())
+// const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
+// // today
+// const date2 = ref(new Date())
 
+const date1 = ref(new Date("2023-06-14"))
+// today
+const date2 = ref(new Date("2023-07-14"))
 
 const yandexlStore = useYandexStore();
 
@@ -51,7 +54,7 @@ async function fetchGraphics() {
     searchEngineData.value = await yandexlStore
         .visitsFromSearchSystems(yandexId, date1.value, date2.value)
 
-    // 5) доля брендового и небрендового трафика
+    // // 5) доля брендового и небрендового трафика
     segmentTrafficData.value = await yandexlStore
         .segmentTraffic(yandexId, date1.value, date2.value)
 
@@ -73,6 +76,7 @@ async function fetchGraphics() {
 
 
     <div class="container">
+        {{ date1.toLocaleString() }} - {{ date2.toLocaleString() }}
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
@@ -85,8 +89,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'"
-                                :name="'Устройства'" :data="dataDeviceCategory.data" />
+                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'"
+                                :name="'Устройства'" :data="dataDeviceCategory" />
                             <Loading v-else />
 
                         </div>
@@ -100,8 +104,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <Totals v-if="visitsBrowsers && visitsBrowsers.data" title="Поисковые системы"
-                                :data="visitsBrowsers.data" />
+                            <Totals v-if="visitsBrowsers" title="Поисковые системы"
+                                :data="visitsBrowsers" />
                             <Loading v-else />
 
                         </div>
@@ -115,8 +119,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="sourceTraffic && sourceTraffic.data" :subtext="'визиты'" :name="'Источники трафика'"
-                                :data="sourceTraffic.data" />
+                            <EPie v-if="sourceTraffic" :subtext="'визиты'" :name="'Источники трафика'"
+                                :data="sourceTraffic" />
                             <Loading v-else />
                         </div>
                     </div>
@@ -131,8 +135,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
-                                :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
+                            <EPie v-if="segmentTrafficData" :subtext="'визиты'"
+                                :name="'Сегментация трафика'" :data="segmentTrafficData" />
                             <Loading v-else />
                         </div>
                     </div>
@@ -145,8 +149,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
-                                :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
+                            <EStackedArea v-if="searchEngineData" :title="'Поисковые системы'"
+                                :data="searchEngineData" :time_intervals="searchEngineData.time_intervals" />
                             <Loading v-else />
                         </div>
                     </div>

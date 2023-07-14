@@ -13,6 +13,7 @@ export class TopvisorController {
   // получить список проектов
   @Get('projects')
   findProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
+    
     return this.topvisorService.findProjects(findProjectsDto);
   }
 

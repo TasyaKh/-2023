@@ -9,11 +9,13 @@ import { TopvisorProject } from 'src/topvisor/entities/topvisor-project.entity';
 import { TDynamics } from 'src/topvisor/entities/dynamics.entity';
 import { TPositionsSummary } from 'src/topvisor/entities/positions_summary.entity';
 import { TTops } from 'src/topvisor/entities/tops.entity';
+import { YData } from 'src/yandex/entities/data.entity';
+import { YMetric } from 'src/yandex/entities/metrics.entity';
 
 @Module({
   controllers: [GeneralController],
   providers: [GeneralService, YandexService, TopvisorService],
-  imports: [TypeOrmModule.forFeature([YandexProject, TopvisorProject, TDynamics, TTops, TPositionsSummary])],
+  imports: [TypeOrmModule.forFeature([YandexProject, TopvisorProject, TDynamics, TTops, TPositionsSummary, YMetric, YData])],
 
 
 })

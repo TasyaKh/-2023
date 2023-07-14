@@ -14,16 +14,16 @@ const props = defineProps<{
             <div class="row my-1">
                 <!-- icon -->
                 <div class="col-auto">
-                    <img :src="`https://favicon.yandex.net/favicon/${item.dimensions[0].favicon}?size=16`" alt="">
+                    <img :src="`https://favicon.yandex.net/favicon/${item.y_data_favicon}?size=16`" alt="">
                 </div>
                 <!-- name -->
                 <div class="col text-start">
-                    {{ item.dimensions[0].name }}</div>
+                    {{ item.y_data_name }}</div>
 
             </div>
         </div>
         <!-- value -->
-        <div class="col-auto">{{ item.metrics[0] }}</div>
+        <div class="col-auto">{{ item.sum }}</div>
     </div>
 </template>
 

@@ -30,54 +30,6 @@ watch(() => props.data, async () => {
     renderChart()
 })
 
-
-async function initData() {
-    const salfdy = await getSeriesAndLegendFromDataYandex(props.data)
-    dataLegend.value = salfdy.dataLegend
-    series.value = salfdy.series
-
-    dateX.value = await getXFromTimeIntervals(props.time_intervals)
-}
-
-
-async function getSeriesAndLegendFromDataYandex(data: any) {
-    let series = []
-    let legend = []
-
-    for (let i = 0; i < data.length; i++) {
-        // series
-        series.push(
-            {
-                name: data[i].dimensions[0].name,
-                type: 'line',
-                stack: 'Total',
-                areaStyle: {},
-                emphasis: {
-                    focus: 'series'
-                },
-                data: data[i].metrics[0]
-            },
-        )
-
-        // legend
-        legend.push(data[i].dimensions[0].name)
-    }
-
-    return { series: series, dataLegend: legend }
-}
-
-// 
-async function getXFromTimeIntervals(time_intervals: any) {
-    let dateX = []
-    for (let i = 0; i < time_intervals.length; i++) {
-        dateX.push(time_intervals[i][0])
-    }
-
-    return dateX
-}
-
-
-
 const props = defineProps<{
     data: any,
     // ex [[ "2023-07-03","2023-07-03"],]
@@ -85,11 +37,58 @@ const props = defineProps<{
     title: string
 }>()
 
-// const props = {
-//     data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-//     dataX: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
 
-// }
+async function initData() {
+    const salfdy = await getSeriesAndLegend(props.data)
+    dataLegend.value = salfdy.dataLegend
+    series.value = salfdy.series
+
+    dateX.value = await getXFromTimeIntervals(props.data[0].metrics)
+}
+
+
+async function getSeriesAndLegend(data: any) {
+    let series = []
+    let legend = []
+
+    for (let i = 0; i < data.length; i++) {
+
+        let metrics = []
+        for (let io = 0; io < data[i].metrics.length; io++) {
+            metrics.push(data[i].metrics[io].metric)
+
+        }
+
+        // series
+        series.push(
+            {
+                name: data[i].name,
+                type: 'line',
+                stack: 'Total',
+                areaStyle: {},
+                emphasis: {
+                    focus: 'series'
+                },
+                data: metrics
+            },
+        )
+
+        // legend
+        legend.push(data[i].name)
+    }
+
+    return { series: series, dataLegend: legend }
+}
+
+// 
+async function getXFromTimeIntervals(metrics: any) {
+    let dateX = []
+    for (let i = 0; i < metrics.length; i++) {
+        dateX.push(metrics[i].date)
+    }
+
+    return dateX
+}
 
 const chartContainer = ref()
 
@@ -169,6 +168,7 @@ function renderChart() {
     ---
     {{ series }} -->
     <!-- <div class="charts-wrapper"> -->
+   
     <div ref="chartContainer" class="chart "></div>
     <!-- </div> -->
 </template>

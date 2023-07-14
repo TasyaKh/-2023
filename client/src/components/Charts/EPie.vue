@@ -28,30 +28,43 @@ const props = defineProps<{
   subtext: string
 }>()
 
-const data = ref([{
+const dt = ref([{
   value: -1,
   name: "string"
 }])
 
 onBeforeMount(async () => {
-  data.value = await yandexDataToPie(props.data)
+  dt.value = await dataToPie(props.data)
 })
 
-
-async function yandexDataToPie(data: any) {
-
+async function dataToPie(dt: any) {
   let d = []
 
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < dt.length; i++) {
 
     d.push({
-      value: data[i].metrics[0],
-      name: data[i].dimensions[0].name,
+      value: dt[i].sum,
+      name: dt[i].y_data_name,
     })
   }
 
   return d
 }
+
+// async function yandexDataToPie(data: any) {
+
+//   let d = []
+
+//   for (let i = 0; i < data.length; i++) {
+
+//     d.push({
+//       value: data[i].metrics[0],
+//       name: data[i].dimensions[0].name,
+//     })
+//   }
+
+//   return d
+// }
 
 
 // const props = {
@@ -89,7 +102,7 @@ const options = computed(() => {
         // name: 'Access From',
         type: 'pie',
         radius: '50%',
-        data: data.value,
+        data: dt.value,
         label: {
           show: true,
           formatter(param) {
@@ -113,7 +126,9 @@ const options = computed(() => {
 </script>
 
 <template>
+
   <div class="charts-wrapper">
+    <!-- dd  {{ data }} -->
     <v-chart class="chart " :option="options" />
   </div>
 </template>

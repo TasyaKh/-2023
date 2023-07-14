@@ -6,7 +6,7 @@ export class FindProjectsTopvisorDto {
     @IsOptional()
     @IsNumber()
     @Type(() => Number)
-    id: number
+    project_id: number
 
     @IsOptional()
     @IsNumber()
