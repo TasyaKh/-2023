@@ -89,7 +89,6 @@ export class GeneralService {
       newYProjects = yPtojects.counters
     }
 
-
     const tPtojects = await this.topvisorService.fetchProjects(new FindProjectsTopvisorDto())
 
     // topvisor если последний проект есть
@@ -106,11 +105,37 @@ export class GeneralService {
         }
       }
 
-    }else {
+    } else {
       newTProjects = tPtojects.result
     }
 
+
     this.yandexService.saveProjectsDatabase(newYProjects, date1D, date2D)
     this.topvisorService.saveProjectsDatabase(newTProjects)
+  }
+
+  async clearProjectsYandex() {
+   await this.yandexService.clearProjects()
+  }
+
+  async clearProjectsTopvisor() {
+    await this.topvisorService.clearProjects()
+   }
+ 
+
+  // updateProjects
+  async updateYDashboards() {
+    const yProjects = await this.yandexService.findProjects(new FindProjectsDto())
+    //  one day
+    const date1 = new Date(new Date().getTime() - 8_6400_000 * 1)
+    const date2 = new Date()
+
+    // пройтись по вем проектам в бд
+    for (let i in yProjects) {
+      const id = yProjects[i].id
+
+      // обновить даные для нудных
+      const dashboards = await this.yandexService.fetchAndSaveGraphics(id, date1, date2)
+    }
   }
 }

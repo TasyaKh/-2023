@@ -154,6 +154,16 @@ export class TopvisorService {
     }
   }
 
+  async clearProjects() {
+    await this.topvisorProjectRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+
   // найти проекты 
   async findProjects(findProjectsTopvisorDto: FindProjectsTopvisorDto) {
 
@@ -182,15 +192,15 @@ export class TopvisorService {
 
     // order by
     for (let order in findProjectsDto.orders) {
-      
+
       // sort by
-      switch(findProjectsDto.orders[order].name){
+      switch (findProjectsDto.orders[order].name) {
         case "date":
-          query = query.orderBy("topvisor_projects.date", findProjectsDto.orders[order].direction == "ASC"?"ASC":"DESC") 
-        break
+          query = query.orderBy("topvisor_projects.date", findProjectsDto.orders[order].direction == "ASC" ? "ASC" : "DESC")
+          break
         case "name":
-          query = query.orderBy("topvisor_projects.name", findProjectsDto.orders[order].direction == "ASC"?"ASC":"DESC") 
-        break
+          query = query.orderBy("topvisor_projects.name", findProjectsDto.orders[order].direction == "ASC" ? "ASC" : "DESC")
+          break
       }
 
     }

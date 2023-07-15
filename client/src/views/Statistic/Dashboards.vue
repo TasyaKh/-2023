@@ -22,13 +22,10 @@ const topvisorId = Number(route.params.topvisor_id);
 
 // filters-----------------------------------------------------------------  
 //8_6400_000 - one day, 
-// const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
-// // today
-// const date2 = ref(new Date())
-
-const date1 = ref(new Date("2023-06-14"))
+const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
 // today
-const date2 = ref(new Date("2023-07-14"))
+const date2 = ref(new Date())
+
 
 const yandexlStore = useYandexStore();
 

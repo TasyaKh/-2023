@@ -10,6 +10,10 @@ export const date2D = new Date()
 export const deviceDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
     const dshbYDto = new FindDashboardsYandexDto()
 
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
+
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:deviceCategory")
     dshbYDto.filters.push("ym:s:deviceCategory!n")
@@ -22,6 +26,10 @@ export const deviceDashboard = (ids:number, date1:Date = date1D, date2:Date = da
 export const sourceTrafficDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
     const dshbYDto = new FindDashboardsYandexDto()
 
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
+
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:lastSignTrafficSource")
     dshbYDto.group = "day"
@@ -32,6 +40,10 @@ export const sourceTrafficDashboard = (ids:number, date1:Date = date1D, date2:Da
 
 export const searchPhraseDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
     const dshbYDto = new FindDashboardsYandexDto()
+
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase")
@@ -48,6 +60,10 @@ export const searchPhraseDashboard = (ids:number, date1:Date = date1D, date2:Dat
 
 export const searchEngineDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
     const dshbYDto = new FindDashboardsYandexDto()
+
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
 
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot")
@@ -66,12 +82,34 @@ export const searchEngineDashboard = (ids:number, date1:Date = date1D, date2:Dat
 export const browsersDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
     const dshbYDto = new FindDashboardsYandexDto()
 
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
+
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.dimensions.push("ym:s:lastSignSearchEngine")
     dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
+
+    return dshbYDto
+}
+
+// goal-dimension конверсии
+export const goalDimensionDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
+    const dshbYDto = new FindDashboardsYandexDto()
+
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
+    
+    dshbYDto.metrics.push("ym:s:goalDimensionInternalReaches")
+    dshbYDto.metrics.push("ym:s:sumVisits")
+    dshbYDto.dimensions.push("ym:s:goalDimension")
+    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
+    dshbYDto.group = "day"
+    dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
 
     return dshbYDto
 }

@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { useTopvisorStore } from '@/stores/topvisor-dashboards';
+import { useGeneralStore } from '@/stores/general';
+import Loading from '@/components/Loading.vue';
+import { useRouter } from 'vue-router';
+
 import { onBeforeMount, ref } from 'vue';
 
-// const selectedItem = ref(1)
-const selectedProject = ref(1)
+const router = useRouter()
+
+const selectedProject = ref(0)
 
 const topvisorStore = useTopvisorStore()
+const generalStore = useGeneralStore()
+
+
+const loading = ref(false)
 
 const props = defineProps<{
     yandexId: number,
@@ -15,28 +24,51 @@ const props = defineProps<{
     // handleEventSelectedItem: Function
 }>()
 
-onBeforeMount(async () => {
-   await getProject()
-})
-
 const projectTopvisor = ref()
 const projects = ref()
 
+onBeforeMount(async () => {
+    await getProject()
+})
+
+
+
 async function getProject() {
-    projectTopvisor.value = await topvisorStore.getProjects(props.topvisorId)
-    projects.value = [{yandexProject:null, topvisorProject:projectTopvisor.value}]
-    selectedProject.value = projectTopvisor.value.result[0].id
+    const p = await topvisorStore.getProjects(props.topvisorId)
+
+    projectTopvisor.value = p[0]
+
+    projects.value = [{ yandexProject: null, topvisorProject: projectTopvisor.value }]
+    selectedProject.value = projectTopvisor.value.id
 }
 
+async function fetchProjects() {
+    loading.value = true
+    const p = await generalStore.getProjects()
+    projects.value = p
+    loading.value = false
+
+
+}
+
+function changeProject() {
+    const tId = projects.value[selectedProject.value].topvisorProject.id
+    const yId = projects.value[selectedProject.value].yandexProject.id
+
+    router.push({
+        name: router.currentRoute.value.name ?? "Dashboards",
+        params: {
+            yandex_id: tId,
+            topvisor_id: yId
+        }
+    });
+}
 
 </script>
 
 <template>
-
-    
     <nav class="navbar bg-white fixed-top">
         <div class="container-fluid">
-
             <div class="row">
 
                 <!-- menu button -->
@@ -48,17 +80,22 @@ async function getProject() {
                 </div>
 
 
+
                 <!-- search projects -->
                 <div class="col">
-                    <select class="form-select" aria-label="project" v-model="selectedProject">
-                        <option v-for="project in projects" :value="project.topvisorProject.result[0].id" :selected="selectedProject == project.topvisorProject.result[0].id">
-                            {{project.topvisorProject.result[0].name  }}
+                    <select class="form-select" aria-label="project" v-model="selectedProject" @click="fetchProjects()"
+                        @change="changeProject()">
+                        <option v-for="project, i in projects" :value="i" :selected="selectedProject == i">
+                            #{{ i + 1 }} {{ project.topvisorProject.name }}
                         </option>
+                        <!-- <option v-if="loading">
+                            <Loading />
+                        </option> -->
                     </select>
                 </div>
 
+              
             </div>
-
 
 
             <!-- выезжающее меню -->
@@ -76,7 +113,7 @@ async function getProject() {
                                 <a class="nav-link active" aria-current="page"
                                     :href="`/site-positions/${yandexId}/${topvisorId}`">Позиции сайта</a>
                             </div>
-
+                          
                         </li>
                         <!-- Сводка -->
                         <li class="nav-item row">
@@ -105,7 +142,7 @@ async function getProject() {
                                 <img src="./icons/percent.svg" alt="">
                             </div>
                             <div class="col">
-                                <a class="nav-link active" aria-current="page" href="#">Конверсии</a>
+                                <a class="nav-link active" aria-current="page"   :href="`/goal-dimensions/${yandexId}/${topvisorId}`">Конверсии</a>
                             </div>
 
                         </li>

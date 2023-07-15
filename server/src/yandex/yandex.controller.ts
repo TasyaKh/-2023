@@ -65,6 +65,15 @@ export class YandexController {
 
   }
 
+  // конверсии
+  @Get('dashboards/goal-dimension')
+  async findDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboardsBytime(dshbYDto, "goal-dimension");
+
+    return dsh
+  }
+
 
 
 
@@ -92,7 +101,7 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
 
 
-    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
 
     await this.yandexService.saveDashboardsByTime(dsh, "source-traffic");
 
@@ -110,7 +119,7 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
 
 
-    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
 
     await this.yandexService.saveDashboardsByTime(dsh, "device");
 
@@ -132,7 +141,7 @@ export class YandexController {
     dshbYDto.limit = 10
 
 
-    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
 
     await this.yandexService.saveDashboardsByTime(dsh, "search-phrase");
 
@@ -154,7 +163,7 @@ export class YandexController {
     dshbYDto.sort.push("-ym:s:visits")
     dshbYDto.limit = 10
 
-    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
     await this.yandexService.saveDashboardsByTime(dsh, "search-engine");
 
     return dsh
@@ -172,13 +181,31 @@ export class YandexController {
     dshbYDto.limit = 10
 
 
-    const dsh = await this.yandexService.fetchDashboardsDevice(dshbYDto);
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
     await this.yandexService.saveDashboardsByTime(dsh, "browsers");
 
     return dsh
   }
 
 
+  // конверсии
+  @Get('dashboards/fetch/goal-dimension')
+  async fetchDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    dshbYDto.metrics.push("ym:s:goalDimensionInternalReaches")
+    dshbYDto.metrics.push("ym:s:sumVisits")
+    dshbYDto.dimensions.push("ym:s:goalDimension")
+    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
+    dshbYDto.group = "day"
+    dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
+    // dshbYDto.limit = 10
+
+
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
+    await this.yandexService.saveDashboardsByTime(dsh, "goal-dimension");
+
+    return dsh
+  }
 
 
 }

@@ -24,13 +24,13 @@ export const useTopvisorStore = defineStore('topvisor', () => {
 
     const res = await axios.get('/api/topvisor/projects', {
       params: {
-        id: id,
+        project_id: id,
         show_searchers_and_regions: show_searchers_and_regions
       }
     })
 
     const data = res.data
-
+    
     return data
   }
 

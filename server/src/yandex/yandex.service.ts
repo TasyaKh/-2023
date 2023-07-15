@@ -7,8 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { YData } from './entities/data.entity';
 import { YMetric } from './entities/metrics.entity';
-import { browsersDashboard, deviceDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard } from './dashboards';
-import { Cron } from '@nestjs/schedule';
+import { browsersDashboard, deviceDashboard, goalDimensionDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard } from './dashboards';
+import { relative } from 'path';
 
 
 @Injectable()
@@ -26,7 +26,10 @@ export class YandexService {
 
   ) { }
 
-
+  // constants
+  requestLimit = 30
+  delay = 1000
+  requestsCount = 0
 
   // api----------------------------------------------------------------------
   async fetchProjects(findProjectsDto: FindProjectsDto) {
@@ -51,40 +54,70 @@ export class YandexService {
   // найти дашборды 
   async fetchDashboards(findDashboardsYandexDto: FindDashboardsYandexDto) {
 
-    console.log(findDashboardsYandexDto)
+    await this.checkDelay()
+
+    const date1 = findDashboardsYandexDto.date1.toISOString().split('T')[0]
+    const date2 = findDashboardsYandexDto.date2.toISOString().split('T')[0]
+    // console.log(findDashboardsYandexDto)
     let res = null
 
     const params = {
-      ...findDashboardsYandexDto
+      ...findDashboardsYandexDto,
+      date1: date1,
+      date2: date2
     }
 
+    //  console.log( findDashboardsYandexDto)
     await axiosYandexInstance.get("/stat/v1/data", { params: params }).then((response) => {
       res = response.data
+    }).catch((err) => {
+      console.log("err", err.response)
     })
 
-    if (res.errors) {
-      throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    }
+
+    // if (res.errors) {
+    //   throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
+    // }
 
     return res
   }
 
+  private async checkDelay() {
+    this.requestsCount++
+
+    if (this.requestsCount >= 30) {
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, this.delay)
+      })
+
+      this.requestsCount = 0
+    }
+
+  }
+
   // найти дашборды, временной диапазон
-  async fetchDashboardsDevice(findDashboardsYandexDto: FindDashboardsYandexDto) {
+  async fetchDashboardsByTime(findDashboardsYandexDto: FindDashboardsYandexDto) {
 
     let res = null
 
+    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+
     const params = {
-      ...findDashboardsYandexDto
+      ...findDashboardsYandexDto,
+      date1: date1,
+      date2: date2
     }
+
 
     await axiosYandexInstance.get("/stat/v1/data/bytime", { params: params }).then((response) => {
       res = response.data
+
+    }).catch((err) => {
+      console.log(err)
     })
 
-    if (res.errors) {
-      throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    }
 
     return res
   }
@@ -101,15 +134,12 @@ export class YandexService {
   async saveProjectsDatabase(projects: any,
     dateStartDateDashboard: Date, dateEndDateDashboard: Date) {
 
-     
     for (let project in projects) {
-     
-      console.log(projects[project])
+
       await this.yandexProjectRepository.save({
         ...projects[project],
         id: projects[project].id
       })
-      console.log("af")
       // сохранить данные графиков
       this.fetchAndSaveGraphics(projects[project].id, dateStartDateDashboard,
         dateEndDateDashboard)
@@ -121,51 +151,44 @@ export class YandexService {
   async fetchAndSaveGraphics(project_id: number,
     dateStartDateDashboard: Date, dateEndDateDashboard: Date) {
 
+    // console.log(project_id, dateStartDateDashboard, dateEndDateDashboard)
 
     // device
-    const deviceD = await this.fetchDashboards(
-      deviceDashboard(project_id,
-        dateStartDateDashboard, dateEndDateDashboard))
-
-    // save dashboards
-    await this.saveDashboardsByTime(deviceD, "device")
-
+    this.fetchAndSaveGraphic(deviceDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "device")
 
     // sourceTrafficD
-    const sourceTrafficD = await this.fetchDashboards(
-      sourceTrafficDashboard(project_id,
-        dateStartDateDashboard, dateEndDateDashboard))
+    this.fetchAndSaveGraphic(sourceTrafficDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "source-traffic")
 
-    // save dashboards
-    await this.saveDashboardsByTime(sourceTrafficD, "source-traffic")
-
-
-    // search-phrase
-    const searchPhraseD = await this.fetchDashboards(
-      searchPhraseDashboard(project_id,
-        dateStartDateDashboard, dateEndDateDashboard))
-
-    // save dashboards
-    await this.saveDashboardsByTime(searchPhraseD, "search-phrase")
-
-
+    // search-phrase    
+    this.fetchAndSaveGraphic(searchPhraseDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "search-phrase")
 
     // search-engine
-    const searchEngineD = await this.fetchDashboards(
-      searchEngineDashboard(project_id,
-        dateStartDateDashboard, dateEndDateDashboard))
-
-    // save dashboards
-    await this.saveDashboardsByTime(searchEngineD, "search-engine")
+    this.fetchAndSaveGraphic(searchEngineDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "search-engine")
 
 
     // browsers
-    const browsersD = await this.fetchDashboards(
-      browsersDashboard(project_id,
-        dateStartDateDashboard, dateEndDateDashboard))
+    this.fetchAndSaveGraphic(browsersDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "browsers")
+
+      
+    // конверсии
+    this.fetchAndSaveGraphic(goalDimensionDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "goal-dimension")
+
+
+  }
+
+
+  private async fetchAndSaveGraphic(findDashboardsYandexDto: FindDashboardsYandexDto, dimension_type: string) {
+    const deviceD = await this.fetchDashboardsByTime(findDashboardsYandexDto)
 
     // save dashboards
-    await this.saveDashboardsByTime(browsersD, "browsers")
+    if (deviceD)
+      this.saveDashboardsByTime(deviceD, dimension_type)
   }
 
 
@@ -190,10 +213,11 @@ export class YandexService {
     let query = this.yDataRepository
       .createQueryBuilder("y_data")
       .leftJoin("y_data.metrics", "metrics")
+      .leftJoin("y_data.project", "project")
       .addSelect("SUM(metrics.metric)", "sum")
       .groupBy('y_data.id')
       .orderBy("sum", "DESC")
-      .where("y_data.project_id = :project_id and y_data.type_dimention = :type_dimention",
+      .where("project.id = :project_id and y_data.type_dimention = :type_dimention",
         {
           project_id: findDashboardsYandexDto.ids,
           type_dimention: type_dimention
@@ -214,7 +238,8 @@ export class YandexService {
     let query = this.yDataRepository
       .createQueryBuilder("y_data")
       .leftJoinAndSelect("y_data.metrics", "metrics")
-      .where("y_data.project_id = :project_id and y_data.type_dimention = :type_dimention",
+      .leftJoin("y_data.project", "project")
+      .where("project.id = :project_id and y_data.type_dimention = :type_dimention",
         {
           project_id: findDashboardsYandexDto.ids,
           type_dimention: type_dimention
@@ -233,33 +258,78 @@ export class YandexService {
   async saveDashboardsByTime(dashboard: any, type_dimention: string) {
 
     const dates = dashboard.time_intervals
+    const prId: number = dashboard.query.ids[0]
 
 
+    // console.log(dashboard)
     for (let i in dashboard.data) {
 
-      const savedData = await this.yDataRepository.save({
-        name: dashboard.data[i].dimensions[0].name,
-        project_id: dashboard.query.ids[0],
-        type_dimention: type_dimention,
-        favicon: dashboard.data[i].dimensions[0].favicon
-      })
+      // проверить если данный тип сохраняемых данных существует для проекта
+      let yData = await this.getExistData(prId, type_dimention, dashboard.data[i].dimensions[0].name)
 
-      // console.log(dashboards.data)
+      // Find the YandexProjectEntity object based on the ID
+      const project = await this.yandexProjectRepository.findOne({ where: { id: prId } });
 
-      for (let io in dashboard.data[i].metrics[0]) {
-
-        await this.yMetricRepository.save({
-          metric: dashboard.data[i].metrics[0][io],
-          date: dates[io][0],
-          project_id: dashboard.query.ids[0],
-          data: savedData
+      // если данный тип данных был первый раз найден
+      if (yData == null) {
+        yData = await this.yDataRepository.save({
+          name: dashboard.data[i].dimensions[0].name,
+          project: project,
+          type_dimention: type_dimention,
+          favicon: dashboard.data[i].dimensions[0].favicon
         })
-
       }
 
+      for (let io = 0; io < dashboard.data[i].metrics.length; io++) {
+        const metric = dashboard.data[i].metrics[io]
 
+        for (let k = 0; k < metric.length; k++) {
+
+          // console.log(dates[k][0])
+
+          let res = await this.yMetricRepository.save({
+            metric: metric[k],
+            date: dates[k][0],
+            project_id: prId,
+            data: yData,
+            index: io
+          })
+
+        }
+      }
     }
   }
+
+  // получить сущетсвующие данные (например 3425353, device, ПК)
+  async getExistData(project_id: number, type_dimention: string, name: string) {
+
+    let query = this.yDataRepository
+      .createQueryBuilder("y_data")
+      .leftJoinAndSelect("y_data.project", "project")
+      .where("project.id = :project_id and  y_data.type_dimention = :type_dimention and y_data.name = :name", {
+        project_id: project_id,
+        type_dimention: type_dimention,
+        name: name
+      })
+
+
+    return query.getOne()
+  }
+
+  // удалить все проекты
+  async clearProjects() {
+
+
+    await this.yandexProjectRepository.createQueryBuilder()
+    .delete()
+    .execute()
+    .catch((err)=>{
+      console.log(err)
+    })
+
+
+  }
+
 
 
   // other------------------------------------------------------
