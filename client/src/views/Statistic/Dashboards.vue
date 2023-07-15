@@ -12,6 +12,8 @@ import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
 import TimeButton from '@/components/TimeButton.vue';
 
+
+
 const route = useRoute()
 
 // fetch ids from route
@@ -67,9 +69,8 @@ async function fetchGraphics() {
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
     <div class="container">
-
-        <div class="time-container">
-            <div class="btn-group" type="checkbox" id = "time-buttonControl">
+        <!-- <div class="time-container">
+            <div class="btn-group" type="checkbox" id="time-buttonControl">
                 <label class="btn" for="time-buttonControl">Click</label>
                 <TimeButton name="Сегодня" />
                 <TimeButton name="Сегодня" />
@@ -83,8 +84,31 @@ async function fetchGraphics() {
         </div>
         <p></p>
 
+        <span
+            class="radio-button radio-button_size_s radio-button_theme_normal radio-button_view_classic i-bem radio-button_js_inited"
+            data-bem="{&quot;radio-button&quot;:{&quot;live&quot;:false}}"><label
+                class="radio-button__radio radio-button__radio_side_left" for="uniq16893775684661"><input
+                    class="radio-button__control" value="today" autocomplete="off" id="uniq16893775684661" type="radio"
+                    name="period"><span class="radio-button__text">Сегодня</span></label><label
+                class="radio-button__radio radio-button__radio_checked_yes" for="uniq16893775684662"><input
+                    class="radio-button__control" value="yesterday" autocomplete="off" id="uniq16893775684662" type="radio"
+                    name="period"><span class="radio-button__text">Вчера</span></label><label class="radio-button__radio"
+                for="uniq16893775684663"><input class="radio-button__control" value="week" autocomplete="off"
+                    id="uniq16893775684663" type="radio" name="period"><span
+                    class="radio-button__text">Неделя</span></label><label class="radio-button__radio"
+                for="uniq16893775684664"><input class="radio-button__control" value="month" autocomplete="off"
+                    id="uniq16893775684664" type="radio" name="period"><span
+                    class="radio-button__text">Месяц</span></label><label class="radio-button__radio"
+                for="uniq16893775684665"><input class="radio-button__control" value="quarter" autocomplete="off"
+                    id="uniq16893775684665" type="radio" name="period"><span
+                    class="radio-button__text">Квартал</span></label><label
+                class="radio-button__radio radio-button__radio_side_right" for="uniq16893775684666"><input
+                    class="radio-button__control" value="year" autocomplete="off" id="uniq16893775684666" type="radio"
+                    name="period"><span class="radio-button__text">Год</span></label></span> -->
+
         <!--это убрать нужно будет, но просто для сравнения (код ниже взят из плагина фигмы)-->
-        <div style="width: 480px; height: 37px; background: white; border-radius: 13px; overflow: hidden; border: 0.50px rgba(61, 61, 61, 0.10) solid; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+        <!-- <div
+            style="width: 480px; height: 37px; background: white; border-radius: 13px; overflow: hidden; border: 0.50px rgba(61, 61, 61, 0.10) solid; justify-content: flex-start; align-items: flex-start; display: inline-flex">
             <div
                 style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
                 <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
@@ -115,8 +139,25 @@ async function fetchGraphics() {
                 <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
                     Год</div>
             </div>
-        </div>
+        </div> -->
         <!--убрать до сюда-->
+
+        <div class="button-group">
+            <TimeButton name="Сегодня"/>
+            <TimeButton name="Вчера"/>
+            <TimeButton name="Неделя"/>
+            <TimeButton name="Месяц"/>
+            <TimeButton name="Квартал"/>
+            <TimeButton name="Год"/>
+        </div>
+
+        
+            <Calendar></Calendar>
+       
+        
+        
+
+        
 
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
@@ -178,7 +219,6 @@ async function fetchGraphics() {
 
 }
 
-
 // copied from Statistic
 .block-content,
 .block-content-full {
@@ -186,7 +226,8 @@ async function fetchGraphics() {
     border-radius: 20px;
     padding: 20px;
     margin: 30px auto 30px auto;
-    width: fit-content;
+    // width: 50%;
+    flex-wrap: wrap;
     background: white;
 
 }
@@ -199,6 +240,12 @@ async function fetchGraphics() {
 .container {
     margin-top: 5rem;
 }
+
+.button-group
+{
+    display: inline-flex;
+    border: 0.50px rgba(61, 61, 61, 0.10) solid;
+    border-radius: 13px;
+    overflow: hidden;
+}
 </style>
-
-
