@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { YData } from './entities/data.entity';
 import { YMetric } from './entities/metrics.entity';
 import { browsersDashboard, deviceDashboard, goalDimensionDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard, visitsDashboard } from './dashboards';
-import { relative } from 'path';
 import { YQuery } from './entities/query.entity';
 
 
@@ -30,11 +29,12 @@ export class YandexService {
   ) { }
 
   // constants
-  requestLimit = 10
-  delay = 1000
-  requestsCount = 0
+  // requestLimit = 10
+  // delay = 1000
+  // requestsCount = 0
 
   // api----------------------------------------------------------------------
+  // получить проекты
   async fetchProjects(findProjectsDto: FindProjectsDto) {
 
     let res = null
@@ -57,7 +57,7 @@ export class YandexService {
   // найти дашборды 
   async fetchDashboards(findDashboardsYandexDto: FindDashboardsYandexDto) {
 
-    await this.checkDelay()
+    // await this.checkDelay()
 
     const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
     const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
@@ -86,19 +86,19 @@ export class YandexService {
     return res
   }
 
-  private async checkDelay() {
-    this.requestsCount++
+  // private async checkDelay() {
+  //   this.requestsCount++
 
-    if (this.requestsCount >= 30) {
+  //   if (this.requestsCount >= 30) {
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, this.delay)
-      })
+  //     await new Promise((resolve) => {
+  //       setTimeout(resolve, this.delay)
+  //     })
 
-      this.requestsCount = 0
-    }
+  //     this.requestsCount = 0
+  //   }
 
-  }
+  // }
 
   // найти дашборды, временной диапазон
   async fetchDashboardsByTime(findDashboardsYandexDto: FindDashboardsYandexDto) {

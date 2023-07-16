@@ -1,50 +1,53 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsArray, IsDate, IsDateString, IsNumber, IsOptional, } from "class-validator";
 
 export class FindDashboardsYandexDto {
 
-    // ids=12418261&metrics=ym:s:visits
-    //&dimensions=ym:s:gender&sort=-ym:s:visits&date1=2023-06-07
-    // &date2=2023-07-07
-    //&filters=ym:s:gender!n&group=all&lang=ru
-
+    @ApiProperty({ description: "сортировка", required: false })
     @IsOptional()
-    sort:string[] = []
+    sort: string[] = []
 
+    @ApiProperty({ required: false })
     @IsOptional()
     @IsNumber()
-    @Type(()=>Number)
-    limit:number
+    @Type(() => Number)
+    limit: number
 
+    @ApiProperty({ description: "язык", required: false })
     @IsOptional()
-    lang:string = "ru"
+    lang: string = "ru"
 
+    @ApiProperty({ description: "фильтры", required: false })
     @IsOptional()
-    filters:string[] = []
+    filters: string[] = []
 
+    @ApiProperty({ description: "группировка", required: false })
     @IsOptional()
-    group:string
+    group: string
 
-    // ex ym:s:visits
+    @ApiProperty({ description: "метрики", required: false })
     @IsOptional()
     @IsArray()
     metrics: string[] = []
 
-    // ex ym:s:gender
+    @ApiProperty({ required: false })
     @IsOptional()
     @IsArray()
-    dimensions:string[] = []
+    dimensions: string[] = []
 
-    // ид проектов
+    @ApiProperty({description:"ид проектов",required:true})
     @IsNumber()
-    @Type(()=>Number)
+    @Type(() => Number)
     ids: number
 
+    @ApiProperty({description:"дата начала",required:true})
     @IsDate()
-    @Type(()=>Date)
+    @Type(() => Date)
     date1: Date
 
+    @ApiProperty({description:"дата конца",required:true})
     @IsDate()
-    @Type(()=>Date)
+    @Type(() => Date)
     date2: Date
 }

@@ -12,7 +12,7 @@ const router = useRouter();
 
 const generalStore = useGeneralStore();
 
-const projects = ref()
+const projects = ref()//проекты
 
 const loading = ref(false) //проекты грузятся
 
@@ -42,6 +42,7 @@ async function handleEventChangeStateFilterDate(state: number) {
     setOrder(state, "date")
 }
 
+// задать стортировку
 async function setOrder(state: number, name: string) {
 
     let sortBy = []
@@ -62,6 +63,7 @@ async function setOrder(state: number, name: string) {
     await getProjects()
 }
 
+// получить проекты
 async function getProjects() {
     setLoading(true)
     const data = await generalStore.getProjects(search_string.value, ordersTopvisor.value)
@@ -75,25 +77,28 @@ function setLoading(load: boolean) {
     loading.value = load
 }
 
-
+// при поиске
 async function handleEventStartSearch(text: string) {
 
     search_string.value = text
     await getProjects()
 }
 
+// получить логотип фавикон
 function getLogo(siteURL: string) {
 
     const url = `https://favicon.yandex.net/favicon/${siteURL}?size=16`
     return url
 }
 
+// проверить позитион саммари
 function isPositionsSummary(project: any) {
     //  && project.topvisorProject.positions_summary.length > 0
     return project.topvisorProject.positions_summary && project.topvisorProject.positions_summary.dynamics
         && project.topvisorProject.positions_summary.avgs
 }
 
+// перейти на страницу со статистикой
 function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: number) {
     router.push({
         name: 'Dashboards', params: {
