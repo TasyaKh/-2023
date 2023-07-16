@@ -9,6 +9,12 @@ import { TopvisorProject } from './entities/topvisor-project.entity';
 import { TTops } from './entities/tops.entity';
 import { TDynamics } from './entities/dynamics.entity';
 import { TPositionsSummary } from './entities/positions_summary.entity';
+import { TResult } from './entities/result.entity';
+import { TSearcher } from './entities/searchers.entity';
+import { TRegion } from './entities/regions.entity';
+import { THeader } from './entities/headers.entity';
+import { TKeywords } from './entities/keywords.entity';
+import { TPositionsData } from './entities/positions-data.entity';
 
 @Injectable()
 export class TopvisorService {
@@ -26,23 +32,48 @@ export class TopvisorService {
     @InjectRepository(TPositionsSummary)
     private readonly tPositionsSummaryRepository: Repository<TPositionsSummary>,
 
+
+
+    // save in my db
+    @InjectRepository(TResult)
+    private readonly tResultRepository: Repository<TResult>,
+
+
+    @InjectRepository(TSearcher)
+    private readonly tSearcherRepository: Repository<TSearcher>,
+
+
+    @InjectRepository(TPositionsData)
+    private readonly tPositionsDataRepository: Repository<TPositionsData>,
+
+
+    @InjectRepository(TRegion)
+    private readonly tRegionRepository: Repository<TRegion>,
+
+    @InjectRepository(THeader)
+    private readonly tHeaderRepository: Repository<THeader>,
+
+    @InjectRepository(TKeywords)
+    private readonly tKeywordsRepository: Repository<TKeywords>,
+
   ) { }
 
 
   // remote api-------------------------------------------------------------
 
+  // получить проекты
   async fetchProjects(findProjectsDto: FindProjectsTopvisorDto) {
 
     let res = null
 
+    // параметры
     const params = {
       ...findProjectsDto,
       include_positions_summary_params: {
         show_dynamics: 0,
         show_tops: 1
-      },
+      },//показать хедеры
       show_searchers_and_regions: 1,
-      // fields: ["id", "name", "site", "date"]
     }
 
     await axiosTopvisorInstance.get("/v2/json/get/projects_2/projects", { data: params }).then((response) => {
@@ -57,12 +88,12 @@ export class TopvisorService {
   }
 
 
-
+  // проверить позиции
   async checkPositions(positionsTopvisorDto: PositionsTopvisorDto) {
 
     const date1 = positionsTopvisorDto.date1.toISOString().substring(0, 10)
     const date2 = positionsTopvisorDto.date2.toISOString().substring(0, 10)
-   
+
     let res = null
 
     const params = {
@@ -71,23 +102,8 @@ export class TopvisorService {
       show_exists_dates: 1,
       date1: date1,
       date2: date2,
-      // type_range: 2,
-
     }
 
-
-    //       show_exists_dates:1,
-    //  show_headers: 1,
-    // show_top_by_depth: 10,
-    // show_visitors: 1,
-    // positions_fields: ["position", "relevant_url", "snippet_ext", "visitors"]
-    // , orders: [],
-    // group_folder_id_depth: 1,
-    // filter_by_dynamic: [],
-    // filter_by_positions: [],
-    // filters: [],
-
-    // fields: ["name", "positionStatus:88", "volume:63:0:1", "volume:63:0:2", "volume:63:0:3", "volume:63:0:5"]
 
     await axiosTopvisorInstance.get("/v2/json/get/positions_2/history", { data: params })
       .then((response) => {
@@ -104,6 +120,7 @@ export class TopvisorService {
 
 
   // database --------------------------------------------------------------------
+
   //  save projects в базу данных
   async saveProjectsDatabase(projects: any) {
 
@@ -129,8 +146,7 @@ export class TopvisorService {
       }
 
 
-
-
+      // сохранить пощиции
       const savedPosSummary = await this.tPositionsSummaryRepository.save(
         {
           ...p.positions_summary,
@@ -160,14 +176,129 @@ export class TopvisorService {
             id_project: p.id,
             positions_summary: savedPosSummary
           })
-
-
       }
 
 
     }
   }
 
+
+
+
+
+  //  save positions в базу данных in result
+  async savePositionDatabase(position: any) {
+
+    // задать проект для поиска в списке
+    let ftp = new FindProjectsTopvisorDto()
+    ftp.project_id = position.headers.projects[0].id
+
+    // find project
+    const project: TopvisorProject = (await this.findProjects(ftp))[0]
+    
+    if(project == null){
+      throw new HttpException('проекта не существует в базе данных', HttpStatus.BAD_REQUEST)
+    }
+
+    // результат
+    const result = await this.tResultRepository.save(
+      {
+        project: project
+      }
+    )
+
+    // ключевые фразы
+    let keywords = position.keywords
+    //  save keywords, can be async
+    this.saveKeywords(keywords, result)
+
+
+    // хедер
+    const header = await this.tHeaderRepository.save(
+      {
+        result: result,
+        dates: position.headers.dates
+      }
+    )
+
+    // save searchers
+    this.saveSearchers(header, position.headers.projects[0])
+
+  }
+
+
+
+  // save searchers
+  async saveSearchers(header: THeader, project: any) {
+
+    // пройти по проекту
+    for (const i in project.searchers) {
+      const srch = project.searchers[i]
+
+
+      // console.log(project)
+      // save searcher
+      const searcher = await this.tSearcherRepository.save(
+        {
+          name: srch.name,
+          header: header
+        }
+      )
+
+      // go throught regions
+      for (const io in srch.regions) {
+        const rg = srch.regions[io]
+        // save region
+        const region = await this.tRegionRepository.save(
+          {
+            name: rg.name,
+            index: rg.index,
+            lang: rg.lang,
+            device_name: rg.device_name,
+            searcher: searcher
+          }
+        )
+      }
+
+
+    }
+
+
+  }
+
+  // сохранить коючевые слова
+  async saveKeywords(keywords: any, result: TResult) {
+
+    for (let i in keywords) {
+      let key = keywords[i]
+
+      // сохранить ключевое слово
+      const keyword = await this.tKeywordsRepository.save(
+        {
+          result: result,
+          name: key.name
+        }
+      )
+
+      let positionsData = key.positionsData
+
+      // пройти по позицям ключевых словам
+      for (const dpr in positionsData) {
+        // сохранить позицию
+        const positionData = await this.tPositionsDataRepository.save(
+          {
+            dpr: dpr,
+            position: positionsData[dpr].position,
+            keyword: keyword
+          }
+        )
+      }
+      //  console.log(p)
+    }
+  }
+
+
+  // удалить все проекты
   async clearProjects() {
     await this.topvisorProjectRepository.createQueryBuilder()
       .delete()
@@ -194,6 +325,7 @@ export class TopvisorService {
 
   }
 
+  // фильтровать проекты
   filterProjects(findProjectsDto: FindProjectsTopvisorDto, q: SelectQueryBuilder<TopvisorProject>) {
 
     // console.log(findProjectsDto)

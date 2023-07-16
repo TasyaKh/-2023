@@ -13,12 +13,22 @@ import { YData } from 'src/yandex/entities/data.entity';
 import { YMetric } from 'src/yandex/entities/metrics.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { YQuery } from 'src/yandex/entities/query.entity';
+import { THeader } from 'src/topvisor/entities/headers.entity';
+import { TKeywords } from 'src/topvisor/entities/keywords.entity';
+import { TPositionsData } from 'src/topvisor/entities/positions-data.entity';
+import { TRegion } from 'src/topvisor/entities/regions.entity';
+import { TResult } from 'src/topvisor/entities/result.entity';
+import { TSearcher } from 'src/topvisor/entities/searchers.entity';
 
 @Module({
   controllers: [GeneralController],
   providers: [GeneralService, YandexService, TopvisorService],
-  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([YandexProject, TopvisorProject, TDynamics, TTops, TPositionsSummary, YMetric, YData, YQuery])],
+  imports: [ScheduleModule.forRoot(),
+  TypeOrmModule.forFeature([
+    TopvisorProject, TDynamics, TTops, TPositionsSummary,
+    YandexProject, YMetric, YData, YQuery,
+    TRegion, TResult, TPositionsData, THeader, TSearcher, TKeywords])],
 
 
 })
-export class GeneralModule {}
+export class GeneralModule { }

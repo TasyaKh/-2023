@@ -6,15 +6,18 @@ import { TResult } from "./result.entity";
 @Entity('t_keywords')
 export class TKeywords{
 
-    @ApiProperty({description:"имя"})
+    @ApiProperty()
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany((type) => TPositionsData, (pd) => pd.keyword)
+    @ApiProperty({description:"имя"})
+    name: string
+
+    @OneToMany((type) => TPositionsData, (pd) => pd.keyword, { cascade: true })
     @JoinColumn([{ name: "positions_data_id" }])
     positions_data: TPositionsData[]
 
-    @ManyToOne((type) => TResult, (res) => res.id)
+    @ManyToOne((type) => TResult, (res) => res.id, { onDelete: 'CASCADE'})
     @JoinColumn([{ name: "result_id" }])
     result: TResult
 }

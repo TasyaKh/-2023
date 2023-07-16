@@ -23,13 +23,13 @@ export class TopvisorController {
 
   // remote api-------------------------------------------------------------
   @ApiOperation({ summary: "api получить список проектов с удаленного апи" })
-  @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
+  @ApiResponse({ status: HttpStatus.OK, description: "Успешно" })
   @Get('fetch/projects')
   async fetchProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
     let projects = await this.topvisorService.fetchProjects(findProjectsDto);
     // save projects in database
-    // this.topvisorService.saveProjectsDatabase(projects.result)
-    
+    this.topvisorService.saveProjectsDatabase(projects.result)
+
 
     return projects
   }
@@ -37,9 +37,13 @@ export class TopvisorController {
 
   // получить список позиций
   @ApiOperation({ summary: "api получить список позиций с удаленного апи" })
-  @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
+  @ApiResponse({ status: HttpStatus.OK, description: "Успешно" })
   @Get('fetch/positions')
-  checkPositions(@Query() positionsTopvisorDto: PositionsTopvisorDto) {
-    return this.topvisorService.checkPositions(positionsTopvisorDto);
+  async checkPositions(@Query() positionsTopvisorDto: PositionsTopvisorDto) {
+   
+    const position = await this.topvisorService.checkPositions(positionsTopvisorDto);
+    this.topvisorService.savePositionDatabase(position.result)
+   
+    return position
   }
 }

@@ -11,9 +11,9 @@ export class TPositionsData {
     dpr:string
 
     @Column()
-    position:number
+    position:string
 
-    @ManyToOne((type) => TKeywords, (keyword) => keyword.id)
+    @ManyToOne((type) => TKeywords, (keyword) => keyword.id,  { onDelete: 'CASCADE'})
     @JoinColumn([{ name: "keyword_id" }])
     keyword: TKeywords
 }
