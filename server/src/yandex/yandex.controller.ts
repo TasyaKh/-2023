@@ -206,11 +206,11 @@ export class YandexController {
     dshbYDto.dimensions.push("ym:s:goalDimension")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
-    // dshbYDto.limit = 10
+    dshbYDto.limit = 100
 
 
     const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
-    // await this.yandexService.saveDashboardsByTime(dsh, "goal-dimension");
+    await this.yandexService.saveDashboardsByTime(dsh, "goal-dimension");
 
     return dsh
   }
@@ -223,10 +223,11 @@ export class YandexController {
     dshbYDto.metrics.push("ym:s:visits")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
+    dshbYDto.limit = 100
 
 
     const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
-    await this.yandexService.saveDashboardsByTime(dsh, "visits");
+    // await this.yandexService.saveDashboardsByTime(dsh, "visits");
 
     return dsh
   }

@@ -105,11 +105,11 @@ export class YandexService {
 
     let res = null
 
-    let date1 = findDashboardsYandexDto.date1
-    let date2 = findDashboardsYandexDto.date2
+    // let date1 = findDashboardsYandexDto.date1
+    // let date2 = findDashboardsYandexDto.date2
 
-    // const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
-    // const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
    
     const params = {
       ...findDashboardsYandexDto,
@@ -195,11 +195,12 @@ export class YandexService {
 
 
   private async fetchAndSaveGraphic(findDashboardsYandexDto: FindDashboardsYandexDto, dimension_type: string) {
-    const deviceD = await this.fetchDashboardsByTime(findDashboardsYandexDto)
+    const dsb = await this.fetchDashboardsByTime(findDashboardsYandexDto)
 
+    // console.log(dsb.data[0])
     // save dashboards
-    if (deviceD)
-      this.saveDashboardsByTime(deviceD, dimension_type)
+    if (dsb)
+      this.saveDashboardsByTime(dsb, dimension_type)
   }
 
 
@@ -276,9 +277,9 @@ export class YandexService {
     const prId: number = dashboard.query.ids[0]
 
 
-    // console.log(dashboard)
+   
     for (let i in dashboard.data) {
-
+      // console.log(dashboard.data[i])
       let yQuery = await this.getExistQuery(prId, type_dimention)
 
       // Find the YandexProjectEntity object based on the ID
@@ -293,6 +294,7 @@ export class YandexService {
         })
       }
 
+     
       // проверить если данный тип сохраняемых данных существует для проекта
       let name = dashboard.data[i].dimensions[0] ? dashboard.data[i].dimensions[0].name : ""
       let yData = await this.getExistData(name, yQuery.id)
@@ -308,12 +310,15 @@ export class YandexService {
         })
       }
 
+      // console.log(dashboard.data[i].metrics)
+      // console.log(dashboard.data[i].metrics.length)
       for (let io = 0; io < dashboard.data[i].metrics.length; io++) {
         const metric = dashboard.data[i].metrics[io]
 
         for (let k = 0; k < metric.length; k++) {
 
-          // console.log(dates[k][0])
+          // console.log(name)
+         
 
           let res = await this.yMetricRepository.save({
             metric: metric[k],

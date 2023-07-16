@@ -21,6 +21,7 @@ const dateX = ref()
 const dataLegend = ref()
 const series = ref()
 
+const goalsVisitsSum = ref()
 // onBeforeMount(async () => {
 //     await initData()
 // })
@@ -57,34 +58,41 @@ async function getSeriesAndLegend(data: any) {
     let metrics1 = []
     let metrics2 = []
 
+    // alert(props.visits[0].metrics.length)
+    // for (let io = 0; io < props.visits[0].metrics.length; io++) {
+    //     // if (data.metrics[io].index == 0)
+    //     metrics1.push(props.visits[0].metrics[io].metric)
+    // }
+
+
+
+    let goalsVisitsSm = 0
     let indConversion = 0
     for (let io = 0; io < data.metrics.length; io++) {
 
-        if (data.metrics[io].index == 0)
-            metrics1.push(data.metrics[io].metric)
 
-            // конверсии
+        // конверсии
         if (data.metrics[io].index == 1 && props.visits[0].metrics[indConversion]) {
-    
+
             const goalVisit = props.data.metrics[io].metric
-          
+            goalsVisitsSm += goalVisit
+
             const visit = props.visits[0].metrics[indConversion].metric
-           
+
             const conversion = (goalVisit / visit * 100).toFixed(2)
 
             // console.log('conversion')
             // console.log(conversion)
-
+            metrics1.push(goalVisit)
             metrics2.push(conversion)
             indConversion++
         }
-
-
-
-
     }
 
-    // series
+    // сумма целевых визитов
+    goalsVisitsSum.value = goalsVisitsSm
+
+    // // series
     series.push(
         {
             name: props.headers[0],
@@ -158,17 +166,20 @@ function renderChart() {
         },
         tooltip: {
             trigger: 'axis',
-            // axisPointer: {
-            //     type: 'cross',
-            //     label: {
-            //         backgroundColor: '#6a7985'
-            //     }
-            // }
         },
-        // legend: {
-        //     data: dataLegend.value,
-        //     bottom: 0
-        // },
+        // Add the sum as a label
+        graphic: [{
+            type: 'text',
+            left: 'right',
+            top: 40,
+            style: {
+                text: `Целевые визиты: ${goalsVisitsSum.value}`,
+                textAlign: 'center',
+                fill: '#000',
+                fontSize: 14,
+            },
+        }],
+
         toolbox: {
             show: true,
             feature: {
@@ -181,13 +192,6 @@ function renderChart() {
                 saveAsImage: {}
             }
         },
-        // grid: {
-        //     left: '3%',
-        //     right: '4%',
-        //     bottom: '15%',
-        //     top: '10%',
-        //     containLabel: true
-        // },
         xAxis: [
             {
                 type: 'category',
@@ -213,29 +217,12 @@ function renderChart() {
 </script>
 
 <template>
-    <!-- per
-    {{ props.time_intervals }}
-    ------------
-    dateX
-    {{ dateX }}
-    dataLegend
-    ---
-    {{ dataLegend }}
-    ---
-    {{ series }} -->
-    <!-- <div class="charts-wrapper"> -->
+    <!-- {{ data }} -->
 
     <div ref="chartContainer" class="chart "></div>
-    <!-- </div> -->
 </template>
 
 <style scoped>
-/* .charts-wrapper {
-    width: 100%;
-    min-width: 400px;
-    min-height: 400px;
-} */
-
 .chart {
     min-width: 400px;
     min-height: 400px;

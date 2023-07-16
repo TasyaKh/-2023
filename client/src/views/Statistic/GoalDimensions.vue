@@ -64,7 +64,7 @@ async function fetchGraphics() {
                         <!-- {{ dashboard }} -->
                         <div class="row d-flex justify-content-center text-center">
                             <EStackedAreaGoals :title="dashboard.name" :data="dashboard"
-                                :headers="['Достижения цели', 'Конверсии']" :date1="date1" :date2="date2"
+                                :headers="['Целевые визиты', 'Конверсии']" :date1="date1" :date2="date2"
                                 :visits="visits.data" />
                             <!-- <Loading v-else /> -->
 

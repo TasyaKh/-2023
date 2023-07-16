@@ -107,9 +107,10 @@ export const goalDimensionDashboard = (ids:number, date1:Date = date1D, date2:Da
     dshbYDto.metrics.push("ym:s:goalDimensionInternalReaches")
     dshbYDto.metrics.push("ym:s:sumVisits")
     dshbYDto.dimensions.push("ym:s:goalDimension")
-    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
+    dshbYDto.limit = 100
+
 
     return dshbYDto
 }
