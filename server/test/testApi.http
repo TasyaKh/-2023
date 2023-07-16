@@ -1,7 +1,15 @@
-# get all users from specific team
+# yandex get all users from specific team
 GET http://localhost:3000/api/yandex/dashboards/goal-dimension?date1=2023-06-16&date2=2023-06-16&ids=12418261
 
 
+
+
+
+
+
+# topvisor
+###
+GET http://localhost:3000/api/topvisor/fetch/positions/?project_id=7784199&regions_indexes=152&regions_indexes=88&date1=2023-06-12&date2=2023-07-12
 
 
 # general

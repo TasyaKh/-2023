@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { TPositionData } from "./position_data.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { TKeywords } from "./keywords.entity";
 
 @Entity('t_positions_data')
 export class TPositionsData {
@@ -7,7 +7,13 @@ export class TPositionsData {
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany((type) => TPositionData, (pd) => pd.positions_data)
-    @JoinColumn([{ name: "pd_id" }])
-    position_data: TPositionData[]
+    @Column()
+    dpr:string
+
+    @Column()
+    position:number
+
+    @ManyToOne((type) => TKeywords, (keyword) => keyword.id)
+    @JoinColumn([{ name: "keyword_id" }])
+    keyword: TKeywords
 }

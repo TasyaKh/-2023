@@ -1,13 +1,20 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { TPositionData } from "./position_data.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from "@nestjs/swagger";
+import { TPositionsData } from "./positions-data.entity";
+import { TResult } from "./result.entity";
 
 @Entity('t_keywords')
 export class TKeywords{
 
+    @ApiProperty({description:"имя"})
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany((type) => TPositionData, (pd) => pd.positions_data)
-    @JoinColumn([{ name: "pd_id" }])
-    position_data: TPositionData[]
+    @OneToMany((type) => TPositionsData, (pd) => pd.keyword)
+    @JoinColumn([{ name: "positions_data_id" }])
+    positions_data: TPositionsData[]
+
+    @ManyToOne((type) => TResult, (res) => res.id)
+    @JoinColumn([{ name: "result_id" }])
+    result: TResult
 }

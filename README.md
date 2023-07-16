@@ -94,3 +94,8 @@ export const YANDEX_API_URL = {
 
 ```
 
+# Документация
+
+api сервера задокументированы в swagger, зайти http://localhost:3000/documentation на запущенном сервере
+
+
