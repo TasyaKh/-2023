@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+// ГРАФИК С НЕСКОЛЬКИМИ ЛИНИЯМИ ДЛЯ ЯНДЕКС
+
 import { use } from "echarts/core";
 import { LineChart } from "echarts/charts";
 import * as echarts from 'echarts';
@@ -16,13 +18,10 @@ use([
     TooltipComponent,
 ]);
 
-const dateX = ref()
-const dataLegend = ref()
-const series = ref()
+const dateX = ref()     //данные по оси икс
+const dataLegend = ref()//данные для легенды
+const series = ref()    //сами данные для отображения
 
-// onBeforeMount(async () => {
-//     await initData()
-// })
 
 watch(() => props.data, async () => {
     await initData()
@@ -40,26 +39,27 @@ const props = defineProps<{
     // headers: string
 }>()
 
-
+// инициализировать даные
 async function initData() {
     const salfdy = await getSeriesAndLegend(props.data)
     dataLegend.value = salfdy.dataLegend
     series.value = salfdy.series
 
+    // данные по оси икс
     dateX.value = await getXFromTimeIntervals(props.data[0].metrics)
 }
 
-
+// получить даные и легенду
 async function getSeriesAndLegend(data: any) {
     let series = []
     let legend = []
 
     for (let i = 0; i < data.length; i++) {
 
+        // проходимся по данным
         let metrics = []
         for (let io = 0; io < data[i].metrics.length; io++) {
             metrics.push(data[i].metrics[io].metric)
-
         }
 
         // series
@@ -83,7 +83,7 @@ async function getSeriesAndLegend(data: any) {
     return { series: series, dataLegend: legend }
 }
 
-// 
+// получить ось икс
 async function getXFromTimeIntervals(metrics: any) {
     let dateX = []
     for (let i = 0; i < metrics.length; i++) {
@@ -93,15 +93,15 @@ async function getXFromTimeIntervals(metrics: any) {
     return dateX
 }
 
+// контейнер для графика
 const chartContainer = ref()
 
 
-
-
+// отрисовтаь график
 function renderChart() {
     const chart = echarts.init(chartContainer.value);
 
-    // computed 
+    // настройки для графика 
     const options = {
         title: {
             text: props.title

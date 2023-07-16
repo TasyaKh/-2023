@@ -1,47 +1,43 @@
 <script setup lang="ts">
+
 import { useTopvisorStore } from '@/stores/topvisor-dashboards';
 import { useGeneralStore } from '@/stores/general';
-import Loading from '@/components/Loading.vue';
 import { useRouter } from 'vue-router';
 
 import { onBeforeMount, ref } from 'vue';
 
 const router = useRouter()
 
-const selectedProject = ref(0)
+const selectedProject = ref(0)          //выбранный проект
 
 const topvisorStore = useTopvisorStore()
 const generalStore = useGeneralStore()
 
 
-const loading = ref(false)
+const loading = ref(false)  //загрузка
 
 const props = defineProps<{
-    yandexId: number,
-    topvisorId: number,
-    // date1: Date,
-    // date2: Date,
-    // handleEventSelectedItem: Function
+    yandexId: number,//яндекс ид
+    topvisorId: number,//топвизор ид
 }>()
 
-const projectTopvisor = ref()
-const projects = ref()
+const projectTopvisor = ref()//проект топвизора
+const projects = ref()//проект
 
 onBeforeMount(async () => {
     await getProject()
 })
 
 
-
+// получить текущий проект, нам нужно его имя
 async function getProject() {
     const p = await topvisorStore.getProjects(props.topvisorId)
 
     projectTopvisor.value = p[0]
-
     projects.value = [{ yandexProject: null, topvisorProject: projectTopvisor.value }]
-//     selectedProject.value = projectTopvisor.value.id
 }
 
+// получить список проектов
 async function fetchProjects() {
     loading.value = true
     const p = await generalStore.getProjects()
@@ -51,10 +47,12 @@ async function fetchProjects() {
 
 }
 
+// изменить проект
 function changeProject() {
     const tId = projects.value[selectedProject.value].topvisorProject.id
     const yId = projects.value[selectedProject.value].yandexProject.id
 
+    // обновить страницу
     router.push({
         name: router.currentRoute.value.name ?? "Dashboards",
         params: {
@@ -88,9 +86,6 @@ function changeProject() {
                         <option v-for="project, i in projects" :value="i" :selected="selectedProject == i">
                             #{{ i + 1 }} {{ project.topvisorProject.name }}
                         </option>
-                        <!-- <option v-if="loading">
-                            <Loading />
-                        </option> -->
                     </select>
                 </div>
 

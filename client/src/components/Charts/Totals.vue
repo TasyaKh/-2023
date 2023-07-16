@@ -1,8 +1,10 @@
 <script setup lang="ts">
 
+// ДАННЫЕ С КАРТИНКАМИ ДЛЯ ЯНДЕКСА
+
 const props = defineProps<{
-    data: any,
-    title: string,
+    data: any,      //данные
+    title: string,//название графика
 }>()
 
 </script>
@@ -28,11 +30,11 @@ const props = defineProps<{
 </template>
 
 <style scoped lang="scss">
-.totals{
+.totals {
     font-size: 14px;
 }
 
-.title{
+.title {
     font-weight: bold;
 }
 </style>

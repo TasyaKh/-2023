@@ -164,12 +164,10 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
 
                     <tbody v-if="projects">
 
+                        <!-- проекты -->
                         <tr v-for="project in projects" :key="project.topvisorProject.id"
                             @click="navigateToPageStatistic(project.yandexProject.id, project.topvisorProject.id)">
 
-                            <!-- <router-link class=" "
-                                :to="`/statistic/${project.yandexProject.id}/${project.topvisorProject.id}`">
- -->
 
                             <td class="project">
 
@@ -268,7 +266,6 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                             </td>
 
 
-
                             <!-- топ 10 гугл -->
                             <td v-if="isPositionsSummary(project)">{{
                                 project.topvisorProject.positions_summary.tops[0]["1_10"] }}</td>
@@ -285,7 +282,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                         <Loading />
                     </div>
                     <div v-else>
-                       проектов нет
+                        проектов нет
                     </div>
 
 

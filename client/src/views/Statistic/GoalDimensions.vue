@@ -8,6 +8,8 @@ import EStackedAreaGoals from '@/components/Charts/EStackedAreaGoals.vue';
 
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
+import TimeRanges from '@/components/TimeRanges.vue';
+import Loading from '@/components/Loading.vue';
 
 const route = useRoute()
 
@@ -25,14 +27,18 @@ const yandexlStore = useYandexStore();
 
 // data for graphics ---------------------------------------------------------------
 
-const goalDimensions = ref()
-const visits = ref()
+const goalDimensions = ref()//целевые визиты
+const visits = ref()        //все визиты
+
+const loading = ref(false)//загрузка
 
 onBeforeMount(async () => {
     await fetchGraphics()
 })
 
+// получить графики
 async function fetchGraphics() {
+    loading.value = true
     // конверсии
     goalDimensions.value = await yandexlStore
         .goalDmension(yandexId, date1.value, date2.value)
@@ -40,6 +46,15 @@ async function fetchGraphics() {
     // визиты
     visits.value = await yandexlStore
         .visits(yandexId, date1.value, date2.value)
+
+    loading.value = false
+}
+
+function handleTimeChanged(startDate: Date, endDate: Date) {
+    date1.value = startDate
+    date2.value = endDate
+
+    fetchGraphics()
 }
 
 </script>
@@ -50,6 +65,8 @@ async function fetchGraphics() {
 
     <div class="container">
         {{ date1.toLocaleString() }} - {{ date2.toLocaleString() }}
+        <TimeRanges :handleTimeChanged="handleTimeChanged" />
+
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
@@ -69,8 +86,11 @@ async function fetchGraphics() {
                             <!-- <Loading v-else /> -->
 
                         </div>
+
                     </div>
+
                 </div>
+                <Loading v-else-if="loading" />
 
             </div>
         </div>

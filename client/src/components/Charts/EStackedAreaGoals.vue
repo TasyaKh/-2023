@@ -1,6 +1,8 @@
 
 <script setup lang="ts">
 
+// ГРАФИК С НЕСКОЛЬКИМИ ЛИНИЯМИ ДЛЯ ЯНДЕКС ЦЕЛЕЙ
+
 import { use } from "echarts/core";
 import { LineChart } from "echarts/charts";
 import * as echarts from 'echarts';
@@ -17,30 +19,32 @@ use([
     TooltipComponent,
 ]);
 
-const dateX = ref()
-const dataLegend = ref()
-const series = ref()
+const dateX = ref()     //данные по оси икс
+const dataLegend = ref()//легенда
+const series = ref()    ///данные 
 
-const goalsVisitsSum = ref()
-// onBeforeMount(async () => {
-//     await initData()
-// })
+const goalsVisitsSum = ref()//визиты
 
-watch(() => props.data, async () => {
+watch(() => props.visits, async () => {
+    await initData()
+    renderChart()
+})
+
+onMounted(async () => {
     await initData()
     renderChart()
 })
 
 const props = defineProps<{
-    data: any,
-    title: string,
-    headers: string[],
-    date1: Date,
-    date2: Date,
-    visits: any
+    data: any,          //данные
+    title: string,      //имя графика
+    headers: string[],  //заголовки для линий данных на графике
+    date1: Date,        //дата старт
+    date2: Date,        //дата окончания
+    visits: any         //визиты (нужны для конверсий)
 }>()
 
-
+// инит данные
 async function initData() {
     const salfdy = await getSeriesAndLegend(props.data)
     dataLegend.value = salfdy.dataLegend
@@ -49,7 +53,7 @@ async function initData() {
     dateX.value = getXFromTimeIntervals(props.date1, props.date2)
 }
 
-
+// получить легенду и данные
 async function getSeriesAndLegend(data: any) {
     let series = []
     let legend = []
@@ -58,35 +62,26 @@ async function getSeriesAndLegend(data: any) {
     let metrics1 = []
     let metrics2 = []
 
-    // alert(props.visits[0].metrics.length)
-    // for (let io = 0; io < props.visits[0].metrics.length; io++) {
-    //     // if (data.metrics[io].index == 0)
-    //     metrics1.push(props.visits[0].metrics[io].metric)
-    // }
-
-
-
     let goalsVisitsSm = 0
-    let indConversion = 0
+
     for (let io = 0; io < data.metrics.length; io++) {
 
+        const goalVisit = props.data.metrics[io].metric
+        goalsVisitsSm += goalVisit
 
-        // конверсии
-        if (data.metrics[io].index == 1 && props.visits[0].metrics[indConversion]) {
+        let conversion = "-"
 
-            const goalVisit = props.data.metrics[io].metric
-            goalsVisitsSm += goalVisit
+        if (props.visits[0].metrics[io] && props.visits[0].metrics[io].metric) {
+            const visit = props.visits[0].metrics[io].metric
 
-            const visit = props.visits[0].metrics[indConversion].metric
+            conversion = (goalVisit / visit * 100).toFixed(2)
 
-            const conversion = (goalVisit / visit * 100).toFixed(2)
-
-            // console.log('conversion')
-            // console.log(conversion)
-            metrics1.push(goalVisit)
-            metrics2.push(conversion)
-            indConversion++
         }
+
+        // console.log('conversion')
+        // console.log(conversion)
+        metrics1.push(goalVisit)
+        metrics2.push(conversion)
     }
 
     // сумма целевых визитов
@@ -134,6 +129,7 @@ async function getSeriesAndLegend(data: any) {
     return { series: series, dataLegend: legend }
 }
 
+// получить ось икс из интервалов
 function getXFromTimeIntervals(startDate: Date, endDate: Date) {
     const dateRange = [];
     const currentDate = new Date(startDate);
@@ -148,12 +144,6 @@ function getXFromTimeIntervals(startDate: Date, endDate: Date) {
 
 
 const chartContainer = ref()
-
-
-onMounted(async () => {
-    await initData()
-    renderChart()
-})
 
 
 function renderChart() {

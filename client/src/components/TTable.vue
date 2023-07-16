@@ -7,15 +7,20 @@ const props = defineProps<{
 
 }>()
 
-const amountOfColumns = ref()
-const dates = ref()
-const projects = ref()
-const keywords = ref()
+const amountOfColumns = ref()    //число колонок
+const dates = ref()              //даты
+const projects = ref()           //проекты
+const keywords = ref()           //ключевые слова
 
 onBeforeMount(() => {
     initData()
 })
 
+watch(() => props.data, () => {
+    initData()
+})
+
+// инициализировать данные
 function initData() {
     dates.value = props.data.result.headers.dates
     amountOfColumns.value = dates.value.length + 1
@@ -23,6 +28,8 @@ function initData() {
     keywords.value = props.data.result.keywords;
 
 }
+
+// получить данные
 function getPosition(date: any, project_id: any, searcherRegion_index: any, keyword: any) {
 
     let qualifiers = `${date}:${project_id}:${searcherRegion_index}`;
@@ -35,14 +42,9 @@ function getPosition(date: any, project_id: any, searcherRegion_index: any, keyw
 </script>
 
 <template>
-    <!-- {{ data.result.headers.projects }} -->
-    <!-- data{{ data }} -->
     <table class="table-positions  p-0 m-0" cellspacing="0">
         <thead>
-
-            <!-- dates -->
             <tr>
-                <!-- <th class="">icon</th> -->
                 <th class="">Ключевое слово</th>
 
                 <th v-for="date in dates">
@@ -128,7 +130,7 @@ function getPosition(date: any, project_id: any, searcherRegion_index: any, keyw
             text-align: start;
         }
 
-        .project{
+        .project {
             background-color: #eaecff;
         }
     }

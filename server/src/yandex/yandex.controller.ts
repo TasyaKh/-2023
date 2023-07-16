@@ -201,12 +201,10 @@ export class YandexController {
   @Get('dashboards/fetch/goal-dimension')
   async fetchDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
 
-    dshbYDto.metrics.push("ym:s:goalDimensionInternalReaches")
     dshbYDto.metrics.push("ym:s:sumVisits")
     dshbYDto.dimensions.push("ym:s:goalDimension")
     dshbYDto.group = "day"
-    dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
-    dshbYDto.limit = 100
+    
 
 
     const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);

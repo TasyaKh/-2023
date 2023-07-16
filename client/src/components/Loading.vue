@@ -1,4 +1,5 @@
 <template>
+    <!-- кнопка загрузки -->
     <button class="btn btn-loading" type="button" disabled>
         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
         Загрузка...

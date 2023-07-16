@@ -10,9 +10,9 @@ import EStackedArea from '@/components/Charts/EStackedArea.vue';
 
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
-import TimeButton from '@/components/TimeButton.vue';
 import Totals from '@/components/Charts/Totals.vue';
 import Loading from '@/components/Loading.vue';
+import TimeRanges from '@/components/TimeRanges.vue';
 
 const route = useRoute()
 
@@ -52,7 +52,7 @@ async function fetchGraphics() {
     searchEngineData.value = await yandexlStore
         .visitsFromSearchSystems(yandexId, date1.value, date2.value)
 
-    // // 5) доля брендового и небрендового трафика
+    // 5) доля брендового и небрендового трафика
     segmentTrafficData.value = await yandexlStore
         .segmentTraffic(yandexId, date1.value, date2.value)
 
@@ -67,6 +67,14 @@ async function fetchGraphics() {
 
 }
 
+// при изменени времени
+function handleTimeChanged(startDate: Date, endDate: Date) {
+    date1.value = startDate
+    date2.value = endDate
+
+    fetchGraphics()
+}
+
 </script>
 
 <template>
@@ -75,7 +83,10 @@ async function fetchGraphics() {
 
     <div class="container">
         {{ date1.toLocaleString() }} - {{ date2.toLocaleString() }}
-        <!-- {{ preparedData.deviceCategory }} -->
+
+        <TimeRanges :handleTimeChanged="handleTimeChanged" />
+
+
         <div class="chart-container">
             <!-- statistic -->
 
@@ -146,7 +157,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'" :data="searchEngineData.data" />
+                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
+                                :data="searchEngineData.data" />
                             <Loading v-else />
                         </div>
                     </div>

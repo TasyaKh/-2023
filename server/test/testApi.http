@@ -1,0 +1,9 @@
+# get all users from specific team
+GET http://localhost:3000/api/yandex/dashboards/goal-dimension?date1=2023-06-16&date2=2023-06-16&ids=12418261
+
+
+
+
+# general
+###
+GET http://localhost:3000/api/general/update-db
