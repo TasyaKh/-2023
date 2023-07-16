@@ -43,34 +43,40 @@ const errResponseMsg = ref("")
 const sitePositionsData = ref()
 
 onBeforeMount(async () => {
+
     await getData()
 })
 
 
 async function getData() {
     loading.value = true
+
     await getRegionIndexes()
     await fetchSitePositions()
+
     loading.value = false
 
 }
 
 // получить позиции
 async function fetchSitePositions() {
+
     // const region_indexes = browsers[selectedBrowser.value].regions_indexes
     sitePositionsData.value = await topvisorStore.getSitePositions(topvisorId, date1.value, date2.value, region_indexes.value).catch((err) => {
         if (err.response) {
             errResponseMsg.value = err.response.data.message[0]
         }
+
     })
 }
 
 async function getRegionIndexes() {
     const projectTopvisor = await topvisorStore.getProjects(topvisorId, 1)
-    const regionIndexes = []
-    for (let i in projectTopvisor.result[0].searchers) {
-        regionIndexes.push(projectTopvisor.result[0].searchers[i].regions[0].index)
-    }
+    let regionIndexes = []
+    // for (let i in projectTopvisor) {
+    regionIndexes = projectTopvisor.regions
+    // }
+
     region_indexes.value = regionIndexes
 }
 
@@ -88,6 +94,7 @@ async function getRegionIndexes() {
 
         {{ date1.toLocaleDateString() }} - {{ date2.toLocaleDateString() }}
 
+        <!-- {{ sitePositionsData }} -->
         <div class="row-cols-auto">
             <TTable v-if="sitePositionsData" :data="sitePositionsData" />
             <Loading v-else-if="loading" />

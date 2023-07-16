@@ -17,6 +17,15 @@ export class YandexController {
     return projects
   }
 
+  // визиты
+  @Get('dashboards/visits')
+  async findDashboardsVisits(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    const dsh = await this.yandexService.findDashboardsBytime(dshbYDto, "visits");
+
+    return dsh
+  }
+
   // 4) визиты получить данные посещений девайсов
   @Get('dashboards/device')
   async findDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -195,17 +204,31 @@ export class YandexController {
     dshbYDto.metrics.push("ym:s:goalDimensionInternalReaches")
     dshbYDto.metrics.push("ym:s:sumVisits")
     dshbYDto.dimensions.push("ym:s:goalDimension")
-    dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:goalDimensionInternalReaches")
     // dshbYDto.limit = 10
 
 
     const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
-    await this.yandexService.saveDashboardsByTime(dsh, "goal-dimension");
+    // await this.yandexService.saveDashboardsByTime(dsh, "goal-dimension");
 
     return dsh
   }
 
+
+  // visits
+  @Get('dashboards/fetch/visits')
+  async fetchDashboardsVisits(@Query() dshbYDto: FindDashboardsYandexDto) {
+
+    dshbYDto.metrics.push("ym:s:visits")
+    dshbYDto.group = "day"
+    dshbYDto.sort.push("-ym:s:visits")
+
+
+    const dsh = await this.yandexService.fetchDashboardsByTime(dshbYDto);
+    await this.yandexService.saveDashboardsByTime(dsh, "visits");
+
+    return dsh
+  }
 
 }

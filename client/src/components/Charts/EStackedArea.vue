@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 
 import { use } from "echarts/core";
@@ -30,11 +29,15 @@ watch(() => props.data, async () => {
     renderChart()
 })
 
+onMounted(async () => {
+    await initData()
+    renderChart()
+})
+
 const props = defineProps<{
     data: any,
-    // ex [[ "2023-07-03","2023-07-03"],]
-    time_intervals: any,
-    title: string
+    title: string,
+    // headers: string
 }>()
 
 
@@ -93,10 +96,6 @@ async function getXFromTimeIntervals(metrics: any) {
 const chartContainer = ref()
 
 
-onMounted(async () => {
-    await initData()
-    renderChart()
-})
 
 
 function renderChart() {
@@ -121,7 +120,14 @@ function renderChart() {
             bottom: 0
         },
         toolbox: {
+            show: true,
             feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: { readOnly: false },
+                magicType: { type: ['line', 'bar'] },
+                restore: {},
                 saveAsImage: {}
             }
         },
@@ -168,7 +174,7 @@ function renderChart() {
     ---
     {{ series }} -->
     <!-- <div class="charts-wrapper"> -->
-   
+
     <div ref="chartContainer" class="chart "></div>
     <!-- </div> -->
 </template>

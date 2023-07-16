@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsDateString, IsNumber, IsOptional } from "class-validator";
+import { IsArray, IsDate, IsDateString, IsNumber, IsOptional } from "class-validator";
 
 export class PositionsTopvisorDto {
 
@@ -21,10 +21,12 @@ export class PositionsTopvisorDto {
 
     // Крайние даты периода
     //(date1 и date2 являются обязательным, если dates не указан)
-    @IsDateString()
+    @IsDate()
+    @Type(()=>Date)
     date1: Date
 
-    @IsDateString()
+    @IsDate()
+    @Type(()=>Date)
     date2:Date
 
     // @IsOptional()

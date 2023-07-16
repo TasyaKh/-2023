@@ -4,13 +4,10 @@ import { onBeforeMount, ref } from 'vue';
 import { useYandexStore } from '@/stores/yandex-dashboards';
 
 // graphics
-import EPie from '@/components/Charts/EPie.vue';
-import EStackedArea from '@/components/Charts/EStackedArea.vue';
+import EStackedAreaGoals from '@/components/Charts/EStackedAreaGoals.vue';
 
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
-import Totals from '@/components/Charts/Totals.vue';
-import Loading from '@/components/Loading.vue';
 
 const route = useRoute()
 
@@ -29,6 +26,7 @@ const yandexlStore = useYandexStore();
 // data for graphics ---------------------------------------------------------------
 
 const goalDimensions = ref()
+const visits = ref()
 
 onBeforeMount(async () => {
     await fetchGraphics()
@@ -38,6 +36,10 @@ async function fetchGraphics() {
     // конверсии
     goalDimensions.value = await yandexlStore
         .goalDmension(yandexId, date1.value, date2.value)
+
+    // визиты
+    visits.value = await yandexlStore
+        .visits(yandexId, date1.value, date2.value)
 }
 
 </script>
@@ -52,14 +54,19 @@ async function fetchGraphics() {
         <div class="chart-container">
             <!-- statistic -->
 
+
             <div class="row">
                 <!-- 6 устройства -->
-                <div class="col">
+                <div class="col-12" v-if="visits && visits.data" v-for="dashboard in goalDimensions.data">
 
-                    <div class="block-content">
+                    <div class="block-content-full">
 
+                        <!-- {{ dashboard }} -->
                         <div class="row d-flex justify-content-center text-center">
-                            goalDimensions  {{ goalDimensions }}
+                            <EStackedAreaGoals :title="dashboard.name" :data="dashboard"
+                                :headers="['Достижения цели', 'Конверсии']" :date1="date1" :date2="date2"
+                                :visits="visits.data" />
+                            <!-- <Loading v-else /> -->
 
                         </div>
                     </div>

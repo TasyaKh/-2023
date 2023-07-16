@@ -69,6 +69,7 @@ export class GeneralService {
     let newTProjects = []
 
 
+ 
     const yPtojects = await this.yandexService.fetchProjects(new FindProjectsDto())
 
     // yandex если последний проект есть

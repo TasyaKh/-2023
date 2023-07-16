@@ -113,3 +113,22 @@ export const goalDimensionDashboard = (ids:number, date1:Date = date1D, date2:Da
 
     return dshbYDto
 }
+
+// visits
+export const visitsDashboard = (ids:number, date1:Date = date1D, date2:Date = date2D) => {
+    const dshbYDto = new FindDashboardsYandexDto()
+
+    dshbYDto.ids = ids
+    dshbYDto.date1 = date1
+    dshbYDto.date2 = date2
+    
+    dshbYDto.metrics.push("ym:s:visits")
+    dshbYDto.group = "day"
+    dshbYDto.sort.push("-ym:s:visits")
+
+    return dshbYDto
+}
+
+// https://api-metrika.yandex.net/stat/v1/data
+// /bytime?metrics=ym:s:visits&ids=12418261&date1=2023-06-17
+// &date2=2023-07-16&group=day&sort=-ym:s:visits

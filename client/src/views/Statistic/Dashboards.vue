@@ -38,6 +38,7 @@ const dataDeviceCategory = ref()
 const visitsBrowsers = ref()
 
 onBeforeMount(async () => {
+
     await fetchGraphics()
 })
 
@@ -86,8 +87,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'"
-                                :name="'Устройства'" :data="dataDeviceCategory" />
+                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'" :name="'Устройства'"
+                                :data="dataDeviceCategory" />
                             <Loading v-else />
 
                         </div>
@@ -101,8 +102,7 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <Totals v-if="visitsBrowsers" title="Поисковые системы"
-                                :data="visitsBrowsers" />
+                            <Totals v-if="visitsBrowsers" title="Поисковые системы" :data="visitsBrowsers" />
                             <Loading v-else />
 
                         </div>
@@ -132,8 +132,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="segmentTrafficData" :subtext="'визиты'"
-                                :name="'Сегментация трафика'" :data="segmentTrafficData" />
+                            <EPie v-if="segmentTrafficData" :subtext="'визиты'" :name="'Сегментация трафика'"
+                                :data="segmentTrafficData" />
                             <Loading v-else />
                         </div>
                     </div>
@@ -146,8 +146,7 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EStackedArea v-if="searchEngineData" :title="'Поисковые системы'"
-                                :data="searchEngineData" :time_intervals="searchEngineData.time_intervals" />
+                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'" :data="searchEngineData.data" />
                             <Loading v-else />
                         </div>
                     </div>

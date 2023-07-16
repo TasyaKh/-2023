@@ -4,6 +4,12 @@ import { defineStore } from 'pinia'
 
 export const useYandexStore = defineStore('yandex', () => {
 
+    // visits
+    function visits(ids: number, date1: Date, date2: Date) {
+        return getDahshboards(ids, date1, date2, 'visits')
+    }
+
+
     // конверсии
     function goalDmension(ids: number, date1: Date, date2: Date) {
         return getDahshboards(ids, date1, date2, 'goal-dimension')
@@ -57,6 +63,7 @@ export const useYandexStore = defineStore('yandex', () => {
         visitsFromSearchSystems,
         segmentTraffic,
         sourceTraffic,
-        goalDmension
+        goalDmension,
+        visits
     }
 })

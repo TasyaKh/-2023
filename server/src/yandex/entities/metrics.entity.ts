@@ -9,17 +9,15 @@ export class YMetric {
     id: number
 
     @Column()
-    project_id:number
-
-    @Column()
     metric:number
 
     @Column()
     date:Date
 
     // типо массив
-    @Column()
+    @Column({default:0})
     index:number
+
 
     @ManyToOne((type)=>YData, (data)=>data.id,  {
         onDelete: 'CASCADE',

@@ -7,8 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { YData } from './entities/data.entity';
 import { YMetric } from './entities/metrics.entity';
-import { browsersDashboard, deviceDashboard, goalDimensionDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard } from './dashboards';
+import { browsersDashboard, deviceDashboard, goalDimensionDashboard, searchEngineDashboard, searchPhraseDashboard, sourceTrafficDashboard, visitsDashboard } from './dashboards';
 import { relative } from 'path';
+import { YQuery } from './entities/query.entity';
 
 
 @Injectable()
@@ -24,10 +25,12 @@ export class YandexService {
     @InjectRepository(YMetric)
     private readonly yMetricRepository: Repository<YMetric>,
 
+    @InjectRepository(YQuery)
+    private readonly yQueryRepository: Repository<YQuery>,
   ) { }
 
   // constants
-  requestLimit = 30
+  requestLimit = 10
   delay = 1000
   requestsCount = 0
 
@@ -56,8 +59,9 @@ export class YandexService {
 
     await this.checkDelay()
 
-    const date1 = findDashboardsYandexDto.date1.toISOString().split('T')[0]
-    const date2 = findDashboardsYandexDto.date2.toISOString().split('T')[0]
+    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+   
     // console.log(findDashboardsYandexDto)
     let res = null
 
@@ -101,9 +105,12 @@ export class YandexService {
 
     let res = null
 
-    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
-    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+    let date1 = findDashboardsYandexDto.date1
+    let date2 = findDashboardsYandexDto.date2
 
+    // const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
+    // const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+   
     const params = {
       ...findDashboardsYandexDto,
       date1: date1,
@@ -154,30 +161,34 @@ export class YandexService {
     // console.log(project_id, dateStartDateDashboard, dateEndDateDashboard)
 
     // device
-    this.fetchAndSaveGraphic(deviceDashboard(project_id,
+    await this.fetchAndSaveGraphic(deviceDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "device")
 
     // sourceTrafficD
-    this.fetchAndSaveGraphic(sourceTrafficDashboard(project_id,
+    await this.fetchAndSaveGraphic(sourceTrafficDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "source-traffic")
 
     // search-phrase    
-    this.fetchAndSaveGraphic(searchPhraseDashboard(project_id,
+    await this.fetchAndSaveGraphic(searchPhraseDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "search-phrase")
 
     // search-engine
-    this.fetchAndSaveGraphic(searchEngineDashboard(project_id,
+    await this.fetchAndSaveGraphic(searchEngineDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "search-engine")
 
 
     // browsers
-    this.fetchAndSaveGraphic(browsersDashboard(project_id,
+    await this.fetchAndSaveGraphic(browsersDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "browsers")
 
-      
+
     // конверсии
-    this.fetchAndSaveGraphic(goalDimensionDashboard(project_id,
+    await this.fetchAndSaveGraphic(goalDimensionDashboard(project_id,
       dateStartDateDashboard, dateEndDateDashboard), "goal-dimension")
+
+    // визиты
+    await this.fetchAndSaveGraphic(visitsDashboard(project_id,
+      dateStartDateDashboard, dateEndDateDashboard), "visits")
 
 
   }
@@ -212,12 +223,15 @@ export class YandexService {
 
     let query = this.yDataRepository
       .createQueryBuilder("y_data")
+
+      .leftJoin("y_data.query", "y_query")
+      .leftJoin("y_query.project", "project")
       .leftJoin("y_data.metrics", "metrics")
-      .leftJoin("y_data.project", "project")
+
       .addSelect("SUM(metrics.metric)", "sum")
       .groupBy('y_data.id')
       .orderBy("sum", "DESC")
-      .where("project.id = :project_id and y_data.type_dimention = :type_dimention",
+      .where("project.id = :project_id and y_query.type_dimention = :type_dimention",
         {
           project_id: findDashboardsYandexDto.ids,
           type_dimention: type_dimention
@@ -235,11 +249,12 @@ export class YandexService {
   // найти дашборды по промежуткам времени
   async findDashboardsBytime(findDashboardsYandexDto: FindDashboardsYandexDto, type_dimention: string) {
 
-    let query = this.yDataRepository
-      .createQueryBuilder("y_data")
+    let query = this.yQueryRepository
+      .createQueryBuilder("y_query")
+      .leftJoinAndSelect("y_query.data", "y_data")
       .leftJoinAndSelect("y_data.metrics", "metrics")
-      .leftJoin("y_data.project", "project")
-      .where("project.id = :project_id and y_data.type_dimention = :type_dimention",
+      .leftJoin("y_query.project", "project")
+      .where("project.id = :project_id and y_query.type_dimention = :type_dimention",
         {
           project_id: findDashboardsYandexDto.ids,
           type_dimention: type_dimention
@@ -250,7 +265,7 @@ export class YandexService {
           endDate: findDashboardsYandexDto.date2
         })
 
-    return await query.getMany()
+    return await query.getOne()
   }
 
 
@@ -264,19 +279,32 @@ export class YandexService {
     // console.log(dashboard)
     for (let i in dashboard.data) {
 
-      // проверить если данный тип сохраняемых данных существует для проекта
-      let yData = await this.getExistData(prId, type_dimention, dashboard.data[i].dimensions[0].name)
+      let yQuery = await this.getExistQuery(prId, type_dimention)
 
       // Find the YandexProjectEntity object based on the ID
       const project = await this.yandexProjectRepository.findOne({ where: { id: prId } });
 
       // если данный тип данных был первый раз найден
+      if (yQuery == null) {
+        yQuery = await this.yQueryRepository.save({
+          totals: dashboard.totals,
+          type_dimention: type_dimention,
+          project: project
+        })
+      }
+
+      // проверить если данный тип сохраняемых данных существует для проекта
+      let name = dashboard.data[i].dimensions[0] ? dashboard.data[i].dimensions[0].name : ""
+      let yData = await this.getExistData(name, yQuery.id)
+
+      let favicon = dashboard.data[i].dimensions[0] ? dashboard.data[i].dimensions[0].favicon : ""
+      // если данный тип данных был первый раз найден
       if (yData == null) {
         yData = await this.yDataRepository.save({
-          name: dashboard.data[i].dimensions[0].name,
-          project: project,
+          name: name,
           type_dimention: type_dimention,
-          favicon: dashboard.data[i].dimensions[0].favicon
+          favicon: favicon,
+          query: yQuery
         })
       }
 
@@ -290,7 +318,6 @@ export class YandexService {
           let res = await this.yMetricRepository.save({
             metric: metric[k],
             date: dates[k][0],
-            project_id: prId,
             data: yData,
             index: io
           })
@@ -300,18 +327,30 @@ export class YandexService {
     }
   }
 
+  async getExistQuery(project_id: number, type_dimention: string) {
+
+    let query = this.yQueryRepository
+      .createQueryBuilder("y_query")
+      .leftJoinAndSelect("y_query.project", "project")
+      .where("project.id = :project_id and  y_query.type_dimention = :type_dimention", {
+        project_id: project_id,
+        type_dimention: type_dimention,
+      })
+
+    return query.getOne()
+  }
+
+
   // получить сущетсвующие данные (например 3425353, device, ПК)
-  async getExistData(project_id: number, type_dimention: string, name: string) {
+  async getExistData(name: string, queryId: number) {
 
     let query = this.yDataRepository
       .createQueryBuilder("y_data")
-      .leftJoinAndSelect("y_data.project", "project")
-      .where("project.id = :project_id and  y_data.type_dimention = :type_dimention and y_data.name = :name", {
-        project_id: project_id,
-        type_dimention: type_dimention,
-        name: name
+      .leftJoinAndSelect("y_data.query", "query")
+      .where("y_data.name = :name and query.id = :query_id", {
+        name: name,
+        query_id: queryId
       })
-
 
     return query.getOne()
   }
@@ -321,11 +360,11 @@ export class YandexService {
 
 
     await this.yandexProjectRepository.createQueryBuilder()
-    .delete()
-    .execute()
-    .catch((err)=>{
-      console.log(err)
-    })
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
 
 
   }

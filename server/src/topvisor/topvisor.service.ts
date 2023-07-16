@@ -41,7 +41,8 @@ export class TopvisorService {
         show_dynamics: 0,
         show_tops: 1
       },
-      fields: ["id", "name", "site", "date"]
+      show_searchers_and_regions: 1,
+      // fields: ["id", "name", "site", "date"]
     }
 
     await axiosTopvisorInstance.get("/v2/json/get/projects_2/projects", { data: params }).then((response) => {
@@ -59,13 +60,17 @@ export class TopvisorService {
 
   async checkPositions(positionsTopvisorDto: PositionsTopvisorDto) {
 
-    // console.log(positionsTopvisorDto)
+    const date1 = positionsTopvisorDto.date1.toISOString().substring(0, 10)
+    const date2 = positionsTopvisorDto.date2.toISOString().substring(0, 10)
+   
     let res = null
 
     const params = {
       ...positionsTopvisorDto,
       show_headers: 1,
-      show_exists_dates: 1
+      show_exists_dates: 1,
+      date1: date1,
+      date2: date2,
       // type_range: 2,
 
     }
@@ -107,6 +112,14 @@ export class TopvisorService {
 
       let savedDynamic = null
 
+      let regions = []
+
+      for (let searcher in projects[project].searchers) {
+        // console.log(projects[project].searchers[searcher].regions[0].index)
+        regions.push(projects[project].searchers[searcher].regions[0].index)
+
+      }
+
       // сохранить динамику
       if (p.positions_summary && p.positions_summary.dynamics) {
         savedDynamic = await this.tDynamicsRepository.save({
@@ -132,7 +145,8 @@ export class TopvisorService {
       const savedProject = await this.topvisorProjectRepository.save(
         {
           ...p,
-          positions_summary: savedPosSummary
+          positions_summary: savedPosSummary,
+          regions: regions
         }
       )
 
@@ -182,7 +196,7 @@ export class TopvisorService {
 
   filterProjects(findProjectsDto: FindProjectsTopvisorDto, q: SelectQueryBuilder<TopvisorProject>) {
 
-    console.log(findProjectsDto)
+    // console.log(findProjectsDto)
     let query = findProjectsDto.search_string ? q.andWhere(
       "LOWER(topvisor_projects.name) like :search_string or LOWER(topvisor_projects.site) like :search_string",
       { search_string: `%${findProjectsDto.search_string}%` }) : q

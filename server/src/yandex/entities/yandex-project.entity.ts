@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { YData } from "./data.entity";
+import { YQuery } from "./query.entity";
 
 
 @Entity('yandex_project')
@@ -20,9 +21,9 @@ export class YandexProject {
     @Column({ default: new Date() })
     date_last_update: Date
 
-    @OneToMany((type) => YData, (data) => data.project, {
-       cascade:true,
+    @OneToMany((type) => YQuery, (y) => y.project, {
+        cascade: true,
     })
-    @JoinColumn([{ name: "yandex" }])
-    yandex: YandexProject
+    @JoinColumn([{ name: "query_id" }])
+    query: YQuery[]
 }

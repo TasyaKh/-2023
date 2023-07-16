@@ -39,7 +39,7 @@ async function getProject() {
     projectTopvisor.value = p[0]
 
     projects.value = [{ yandexProject: null, topvisorProject: projectTopvisor.value }]
-    selectedProject.value = projectTopvisor.value.id
+//     selectedProject.value = projectTopvisor.value.id
 }
 
 async function fetchProjects() {
@@ -58,8 +58,8 @@ function changeProject() {
     router.push({
         name: router.currentRoute.value.name ?? "Dashboards",
         params: {
-            yandex_id: tId,
-            topvisor_id: yId
+            yandex_id: yId,
+            topvisor_id: tId
         }
     });
 }
@@ -94,7 +94,7 @@ function changeProject() {
                     </select>
                 </div>
 
-              
+
             </div>
 
 
@@ -113,7 +113,7 @@ function changeProject() {
                                 <a class="nav-link active" aria-current="page"
                                     :href="`/site-positions/${yandexId}/${topvisorId}`">Позиции сайта</a>
                             </div>
-                          
+
                         </li>
                         <!-- Сводка -->
                         <li class="nav-item row">
@@ -142,7 +142,8 @@ function changeProject() {
                                 <img src="./icons/percent.svg" alt="">
                             </div>
                             <div class="col">
-                                <a class="nav-link active" aria-current="page"   :href="`/goal-dimensions/${yandexId}/${topvisorId}`">Конверсии</a>
+                                <a class="nav-link active" aria-current="page"
+                                    :href="`/goal-dimensions/${yandexId}/${topvisorId}`">Конверсии</a>
                             </div>
 
                         </li>

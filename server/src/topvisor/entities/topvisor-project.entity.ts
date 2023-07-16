@@ -15,12 +15,17 @@ export class TopvisorProject {
 
     @Column()
     date: Date
+
+    @Column("simple-array", {default:[]})
+    regions: number[]
     
     @OneToOne(() => TPositionsSummary,  {
         cascade: true,
     })
     @JoinColumn([{ name: "ps_id" }])
     positions_summary: TPositionsSummary
+
+
 
     @Column({ default: new Date() })
     date_last_update: Date

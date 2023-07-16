@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsDateString, IsNumber, IsOptional, } from "class-validator";
+import { IsArray, IsDate, IsDateString, IsNumber, IsOptional, } from "class-validator";
 
 export class FindDashboardsYandexDto {
 
@@ -40,9 +40,11 @@ export class FindDashboardsYandexDto {
     @Type(()=>Number)
     ids: number
 
-    @IsDateString()
+    @IsDate()
+    @Type(()=>Date)
     date1: Date
 
-    @IsDateString()
+    @IsDate()
+    @Type(()=>Date)
     date2: Date
 }

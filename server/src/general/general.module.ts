@@ -12,11 +12,12 @@ import { TTops } from 'src/topvisor/entities/tops.entity';
 import { YData } from 'src/yandex/entities/data.entity';
 import { YMetric } from 'src/yandex/entities/metrics.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { YQuery } from 'src/yandex/entities/query.entity';
 
 @Module({
   controllers: [GeneralController],
   providers: [GeneralService, YandexService, TopvisorService],
-  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([YandexProject, TopvisorProject, TDynamics, TTops, TPositionsSummary, YMetric, YData])],
+  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([YandexProject, TopvisorProject, TDynamics, TTops, TPositionsSummary, YMetric, YData, YQuery])],
 
 
 })
