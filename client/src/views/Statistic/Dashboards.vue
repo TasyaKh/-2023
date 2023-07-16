@@ -11,6 +11,11 @@ import EStackedArea from '@/components/Charts/EStackedArea.vue';
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
 import TimeButton from '@/components/TimeButton.vue';
+import CalendarButton from '@/components/CalendarButton.vue';
+/* eslint-disable */
+// @ts-ignore - это нужно чтобы подавить ошибку в строке ниже (ругается на тип any у v-calendar)
+import Calendar from '@/components/Calendar.vue';
+/* eslint-enable */
 
 const route = useRoute()
 
@@ -61,62 +66,51 @@ async function fetchGraphics() {
 
 }
 
+// для v-calendar
+const attrs = ref([
+    {
+        highlight: true,
+        dates: new Date(),
+    },
+]);
+
 </script>
 
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
     <div class="container">
+        <div class="button-group">
+            <TimeButton name="Сегодня" />
+            <TimeButton name="Вчера" />
+            <TimeButton name="Неделя" />
+            <TimeButton name="Месяц" />
+            <TimeButton name="Квартал" />
+            <TimeButton name="Год" />
+        </div>
 
-        <div class="time-container">
-            <div class="btn-group" type="checkbox" id = "time-buttonControl">
-                <label class="btn" for="time-buttonControl">Click</label>
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-                <TimeButton name="Сегодня" />
-            </div>
+        <!-- узнать выбранное значение из v-calendar 
+            https://stackoverflow.com/questions/53896155/how-to-know-selected-value-of-v-calendar-vue-js -->
+        <CalendarButton name="16.07.2023"></CalendarButton>
+
+        <Calendar color="purple" :attributes="attrs" />
+
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Dropdown button
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="book-dropdown">
+                <li><a href="#" class="dropdown-item">
+                        <Calendar></Calendar>
+                    </a></li>
+            </ul>
         </div>
         <p></p>
 
-        <!--это убрать нужно будет, но просто для сравнения (код ниже взят из плагина фигмы)-->
-        <div style="width: 480px; height: 37px; background: white; border-radius: 13px; overflow: hidden; border: 0.50px rgba(61, 61, 61, 0.10) solid; justify-content: flex-start; align-items: flex-start; display: inline-flex">
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Сегодня</div>
-            </div>
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Вчера</div>
-            </div>
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Неделя</div>
-            </div>
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Месяц</div>
-            </div>
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Квартал</div>
-            </div>
-            <div
-                style="width: 80px; height: 37px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; border: 0.25px rgba(61, 61, 61, 0.10) solid; justify-content: center; align-items: center; gap: 10px; display: flex">
-                <div style="color: #352958; font-size: 14px; font-family: Panton; font-weight: 400; word-wrap: break-word">
-                    Год</div>
-            </div>
-        </div>
-        <!--убрать до сюда-->
+
+
+
 
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
@@ -178,7 +172,6 @@ async function fetchGraphics() {
 
 }
 
-
 // copied from Statistic
 .block-content,
 .block-content-full {
@@ -186,7 +179,8 @@ async function fetchGraphics() {
     border-radius: 20px;
     padding: 20px;
     margin: 30px auto 30px auto;
-    width: fit-content;
+    // width: 50%;
+    flex-wrap: wrap;
     background: white;
 
 }
@@ -199,6 +193,11 @@ async function fetchGraphics() {
 .container {
     margin-top: 5rem;
 }
+
+.button-group {
+    display: inline-flex;
+    border: 0.50px rgba(61, 61, 61, 0.10) solid;
+    border-radius: 13px;
+    overflow: hidden;
+}
 </style>
-
-
