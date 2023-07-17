@@ -3,11 +3,13 @@
 
 import { ref, watch } from 'vue';
 
-const state = ref(0)
+const state = ref(0)    //фильтр имеет несколько состояний (0,1,2)
 
 const props = defineProps<{
+    // при изменении состояния пережать обработку выше
     handleEventChangeState: Function,
-    state:number
+    // если нужно задать какое то состояние
+    state: number
 }>()
 
 // state changed

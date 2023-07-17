@@ -3,6 +3,8 @@ import Search from '@/components/Search.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useGeneralStore } from '@/stores/general';
 import FilterButton from '@/components/FilterButton.vue';
+import Loading from '@/components/Loading.vue';
+
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -10,7 +12,7 @@ const router = useRouter();
 
 const generalStore = useGeneralStore();
 
-const projects = ref()
+const projects = ref()//проекты
 
 const loading = ref(false) //проекты грузятся
 
@@ -40,6 +42,7 @@ async function handleEventChangeStateFilterDate(state: number) {
     setOrder(state, "date")
 }
 
+// задать стортировку
 async function setOrder(state: number, name: string) {
 
     let sortBy = []
@@ -60,6 +63,7 @@ async function setOrder(state: number, name: string) {
     await getProjects()
 }
 
+// получить проекты
 async function getProjects() {
     setLoading(true)
     const data = await generalStore.getProjects(search_string.value, ordersTopvisor.value)
@@ -73,25 +77,28 @@ function setLoading(load: boolean) {
     loading.value = load
 }
 
-
+// при поиске
 async function handleEventStartSearch(text: string) {
 
     search_string.value = text
     await getProjects()
 }
 
+// получить логотип фавикон
 function getLogo(siteURL: string) {
 
     const url = `https://favicon.yandex.net/favicon/${siteURL}?size=16`
     return url
 }
 
+// проверить позитион саммари
 function isPositionsSummary(project: any) {
     //  && project.topvisorProject.positions_summary.length > 0
     return project.topvisorProject.positions_summary && project.topvisorProject.positions_summary.dynamics
         && project.topvisorProject.positions_summary.avgs
 }
 
+// перейти на страницу со статистикой
 function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: number) {
     router.push({
         name: 'Dashboards', params: {
@@ -160,14 +167,12 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                     </thead>
 
 
-                    <tbody v-if="!loading">
+                    <tbody v-if="projects">
 
+                        <!-- проекты -->
                         <tr v-for="project in projects" :key="project.topvisorProject.id"
                             @click="navigateToPageStatistic(project.yandexProject.id, project.topvisorProject.id)">
 
-                            <!-- <router-link class=" "
-                                :to="`/statistic/${project.yandexProject.id}/${project.topvisorProject.id}`">
- -->
 
                             <td class="project">
 
@@ -266,7 +271,6 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                             </td>
 
 
-
                             <!-- топ 10 гугл -->
                             <td v-if="isPositionsSummary(project)">{{
                                 project.topvisorProject.positions_summary.tops[0]["1_10"] }}</td>
@@ -279,7 +283,14 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                         </tr>
 
                     </tbody>
-                    <div v-else>Загрузка ...</div>
+                    <div v-else-if="loading">
+                        <Loading />
+                    </div>
+                    <div v-else>
+                        проектов нет
+                    </div>
+
+
 
                 </table>
             </div>
@@ -311,7 +322,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
 
         tbody {
             text-align: center;
-            background-color: var(--tc-c-white) ;
+            background-color: var(--tc-c-white);
             cursor: pointer;
 
             td {
@@ -327,7 +338,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         }
 
         thead {
-            background-color: #E5E8FF ;
+            background-color: #E5E8FF;
 
             th {
                 padding: 20px;

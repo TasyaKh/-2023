@@ -1,5 +1,6 @@
-
 <script setup lang="ts">
+
+// ГРАФИК С НЕСКОЛЬКИМИ ЛИНИЯМИ ДЛЯ ЯНДЕКС
 
 import { use } from "echarts/core";
 import { LineChart } from "echarts/charts";
@@ -17,93 +18,91 @@ use([
     TooltipComponent,
 ]);
 
-const dateX = ref()
-const dataLegend = ref()
-const series = ref()
+const dateX = ref()     //данные по оси икс
+const dataLegend = ref()//данные для легенды
+const series = ref()    //сами данные для отображения
 
-// onBeforeMount(async () => {
-//     await initData()
-// })
 
 watch(() => props.data, async () => {
     await initData()
     renderChart()
 })
 
+onMounted(async () => {
+    await initData()
+    renderChart()
+})
 
+const props = defineProps<{
+    data: any,
+    title: string,
+    // headers: string
+}>()
+
+// инициализировать даные
 async function initData() {
-    const salfdy = await getSeriesAndLegendFromDataYandex(props.data)
+    const salfdy = await getSeriesAndLegend(props.data)
     dataLegend.value = salfdy.dataLegend
     series.value = salfdy.series
 
-    dateX.value = await getXFromTimeIntervals(props.time_intervals)
+    // данные по оси икс
+    dateX.value = await getXFromTimeIntervals(props.data[0].metrics)
 }
 
-
-async function getSeriesAndLegendFromDataYandex(data: any) {
+// получить даные и легенду
+async function getSeriesAndLegend(data: any) {
     let series = []
     let legend = []
 
     for (let i = 0; i < data.length; i++) {
+
+        // проходимся по данным
+        let metrics = []
+        for (let io = 0; io < data[i].metrics.length; io++) {
+            metrics.push(data[i].metrics[io].metric)
+        }
+
         // series
         series.push(
             {
-                name: data[i].dimensions[0].name,
+                name: data[i].name,
                 type: 'line',
                 stack: 'Total',
                 areaStyle: {},
                 emphasis: {
                     focus: 'series'
                 },
-                data: data[i].metrics[0]
+                data: metrics
             },
         )
 
         // legend
-        legend.push(data[i].dimensions[0].name)
+        legend.push(data[i].name)
     }
 
     return { series: series, dataLegend: legend }
 }
 
-// 
-async function getXFromTimeIntervals(time_intervals: any) {
+// получить ось икс
+async function getXFromTimeIntervals(metrics: any) {
     let dateX = []
-    for (let i = 0; i < time_intervals.length; i++) {
-        dateX.push(time_intervals[i][0])
+    for (let i = 0; i < metrics.length; i++) {
+        let date = new Date(metrics[i].date).toLocaleDateString()
+        dateX.push(date)
     }
 
     return dateX
 }
 
-
-
-const props = defineProps<{
-    data: any,
-    // ex [[ "2023-07-03","2023-07-03"],]
-    time_intervals: any,
-    title: string
-}>()
-
-// const props = {
-//     data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-//     dataX: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-
-// }
-
+// контейнер для графика
 const chartContainer = ref()
 
 
-onMounted(async () => {
-    await initData()
-    renderChart()
-})
-
-
+// отрисовтаь график
 function renderChart() {
     const chart = echarts.init(chartContainer.value);
 
-    // computed 
+    // настройки для графика 
     const options = {
         title: {
             text: props.title
@@ -122,7 +121,14 @@ function renderChart() {
             bottom: 0
         },
         toolbox: {
+            show: true,
             feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: { readOnly: false },
+                magicType: { type: ['line', 'bar'] },
+                restore: {},
                 saveAsImage: {}
             }
         },
@@ -169,6 +175,7 @@ function renderChart() {
     ---
     {{ series }} -->
     <!-- <div class="charts-wrapper"> -->
+
     <div ref="chartContainer" class="chart "></div>
     <!-- </div> -->
 </template>

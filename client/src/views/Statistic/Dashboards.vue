@@ -1,21 +1,15 @@
 <script setup lang="ts">
+
 import { onBeforeMount, ref } from 'vue';
 import { useYandexStore } from '@/stores/yandex-dashboards';
-import { useTopvisorStore } from '@/stores/topvisor-dashboards';
-
-import { useChartConverterStore } from '@/stores/chart_converter';
 
 // graphics
 import EPie from '@/components/Charts/EPie.vue';
 import EStackedArea from '@/components/Charts/EStackedArea.vue';
+
+
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
-import TodayYesterdayWeekButton from '@/components/TodayYesterdayWeekButton.vue';
-import CalendarButton from '@/components/CalendarButton.vue';
-/* eslint-disable */
-// @ts-ignore - это нужно чтобы подавить ошибку в строке ниже (ругается на тип any у v-calendar)
-import Calendar from '@/components/Calendar.vue';
-/* eslint-enable */
 
 const route = useRoute()
 
@@ -31,26 +25,25 @@ const date2 = ref(new Date())
 
 
 const yandexlStore = useYandexStore();
-const topvisorStore = useTopvisorStore();
 
-const chartConverterStore = useChartConverterStore();
+// data for graphics ---------------------------------------------------------------
 
-// const dataDeviceCategory = ref()
-// const graphics = ref(
-//     [deviceCategory = null]
-// )
-
-// data ---------------------------------------------------------------
-
+const sourceTraffic = ref()
 const searchEngineData = ref()
 const segmentTrafficData = ref()
 const dataDeviceCategory = ref()
+const visitsBrowsers = ref()
 
 onBeforeMount(async () => {
+
     await fetchGraphics()
 })
 
 async function fetchGraphics() {
+
+    // 3)источники трафика
+    sourceTraffic.value = await yandexlStore
+        .sourceTraffic(yandexId, date1.value, date2.value)
 
     // 4) посещаемость из поисковых систем
     searchEngineData.value = await yandexlStore
@@ -64,6 +57,19 @@ async function fetchGraphics() {
     dataDeviceCategory.value = await yandexlStore
         .getDeviceCategory(yandexId, date1.value, date2.value)
 
+    // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
+    visitsBrowsers.value = await yandexlStore
+        .visitsBrowsers(yandexId, date1.value, date2.value)
+
+
+}
+
+// при изменени времени
+function handleTimeChanged(startDate: Date, endDate: Date) {
+    date1.value = startDate
+    date2.value = endDate
+
+    fetchGraphics()
 }
 
 // для v-calendar
@@ -78,29 +84,8 @@ const attrs = ref([
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
+
     <div class="container">
-
-        <!-- контейнер для кнопок, связанных с указанием дат -->
-        <div class="container-for-date-element">
-            <ul>
-                <!-- группа кнопок -->
-                <div class="button-group">
-                    <TodayYesterdayWeekButton name="Сегодня" />
-                    <TodayYesterdayWeekButton name="Вчера" />
-                    <TodayYesterdayWeekButton name="Неделя" />
-                    <TodayYesterdayWeekButton name="Месяц" />
-                    <TodayYesterdayWeekButton name="Квартал" />
-                    <TodayYesterdayWeekButton name="Год" />
-                </div>
-            </ul>
-            <!-- (для Таси) статья как узнать выбранное значение из v-calendar (чтобы оно синхронизировалось с датой в кнопке, которая выше календаря)
-            https://stackoverflow.com/questions/53896155/how-to-know-selected-value-of-v-calendar-vue-js -->
-            <ul>
-                <!-- кнопка для указания дат с помощью календаря -->
-                <CalendarButton></CalendarButton>
-            </ul>
-        </div>
-
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
@@ -113,12 +98,43 @@ const attrs = ref([
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="dataDeviceCategory && dataDeviceCategory.data" :subtext="'визиты'"
-                                :name="'Устройства'" :data="dataDeviceCategory.data" />
+                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'" :name="'Устройства'"
+                                :data="dataDeviceCategory" />
+                            <Loading v-else />
 
                         </div>
                     </div>
                 </div>
+
+                <!-- 7  Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)-->
+                <div class="col">
+
+                    <div class="block-content">
+
+                        <div class="row d-flex justify-content-center text-center">
+
+                            <Totals v-if="visitsBrowsers" title="Поисковые системы" :data="visitsBrowsers" />
+                            <Loading v-else />
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--  3)  источники трафика -->
+                <div class="col-12">
+
+                    <div class="block-content-full">
+
+                        <div class="row d-flex justify-content-center text-center">
+
+                            <EPie v-if="sourceTraffic" :subtext="'визиты'" :name="'Источники трафика'"
+                                :data="sourceTraffic" />
+                            <Loading v-else />
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <!--  5) доля брендового и небрендового трафика -->
                 <div class="col-12">
@@ -127,9 +143,9 @@ const attrs = ref([
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="segmentTrafficData && segmentTrafficData.data" :subtext="'визиты'"
-                                :name="'Сегментация трафика'" :data="segmentTrafficData.data" />
-
+                            <EPie v-if="segmentTrafficData" :subtext="'визиты'" :name="'Сегментация трафика'"
+                                :data="segmentTrafficData" />
+                            <Loading v-else />
                         </div>
                     </div>
                 </div>
@@ -142,9 +158,8 @@ const attrs = ref([
                         <div class="row d-flex justify-content-center text-center">
 
                             <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
-                                :data="searchEngineData.data" :time_intervals="searchEngineData.time_intervals" />
-
-                            <!-- <EStackedArea /> -->
+                                :data="searchEngineData.data" />
+                            <Loading v-else />
                         </div>
                     </div>
                 </div>
@@ -173,6 +188,7 @@ const attrs = ref([
     background: white;
 
 }
+
 
 .block-content-full {
     width: auto;

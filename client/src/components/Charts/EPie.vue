@@ -1,5 +1,6 @@
-
 <script setup lang="ts">
+
+// КРУГОВАЯ ДИАГРАММА ДЛЯ ЯНДЕКС
 
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
@@ -10,7 +11,7 @@ import {
   LegendComponent,
   TitleComponent,
 } from "echarts/components";
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
 
 use([
   CanvasRenderer,
@@ -21,51 +22,43 @@ use([
   LegendComponent,
 ]);
 
+watch(() => props.data, async () => {
+  // конвертировать данные из бд в график
+  dt.value = await dataToPie(props.data)
+})
 
 const props = defineProps<{
-  data: any,
-  name: string,
-  subtext: string
+  data: any,//данные
+  name: string,//имя графика
+  subtext: string//подимя
 }>()
 
-const data = ref([{
+// данные для вывода в график
+const dt = ref([{
   value: -1,
   name: "string"
 }])
 
 onBeforeMount(async () => {
-  data.value = await yandexDataToPie(props.data)
+  dt.value = await dataToPie(props.data)
 })
 
-
-async function yandexDataToPie(data: any) {
-
+// конвертировать данные в график
+async function dataToPie(dt: any) {
   let d = []
 
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < dt.length; i++) {
 
     d.push({
-      value: data[i].metrics[0],
-      name: data[i].dimensions[0].name,
+      value: dt[i].sum,
+      name: dt[i].y_data_name,
     })
   }
 
   return d
 }
 
-
-// const props = {
-//   data: [{
-//     value: 1,
-//     name: "string"
-//   }, {
-//     value: 2,
-//     name: "string2"
-//   }],
-//   name: "no name"
-// }
-
-// computed 
+// опции для графика 
 const options = computed(() => {
   return {
     title: {
@@ -89,9 +82,10 @@ const options = computed(() => {
         // name: 'Access From',
         type: 'pie',
         radius: '50%',
-        data: data.value,
+        data: dt.value,
         label: {
           show: true,
+          // @ts-ignore
           formatter(param) {
             // correct the percentage
             return param.percent + '%';

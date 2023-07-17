@@ -1,33 +1,75 @@
 <script setup lang="ts">
+
+import { useTopvisorStore } from '@/stores/topvisor-dashboards';
+import { useGeneralStore } from '@/stores/general';
+import { useRouter } from 'vue-router';
+
 import { onBeforeMount, ref } from 'vue';
 
+const router = useRouter()
 
-// const selectedItem = ref(1)
-const selectedProject = ref(1)
+const selectedProject = ref(0)          //выбранный проект
+
+const topvisorStore = useTopvisorStore()
+const generalStore = useGeneralStore()
+
+
+const loading = ref(false)  //загрузка
 
 const props = defineProps<{
-    yandexId: number,
-    topvisorId: number,
-    // date1: Date,
-    // date2: Date,
-    // handleEventSelectedItem: Function
+    yandexId: number,//яндекс ид
+    topvisorId: number,//топвизор ид
 }>()
 
-// function setSelectedItem(item: number) {
-//     selectedItem.value = item
-//     props.handleEventSelectedItem(item)
-// }
+const projectTopvisor = ref()//проект топвизора
+const projects = ref()//проект
+
+onBeforeMount(async () => {
+    await getProject()
+})
 
 
+// получить текущий проект, нам нужно его имя
+async function getProject() {
+    const p = await topvisorStore.getProjects(props.topvisorId)
+
+    projectTopvisor.value = p[0]
+    projects.value = [{ yandexProject: null, topvisorProject: projectTopvisor.value }]
+}
+
+// получить список проектов
+async function fetchProjects() {
+    loading.value = true
+    const p = await generalStore.getProjects()
+    projects.value = p
+    loading.value = false
+
+
+}
+
+// изменить проект
+function changeProject() {
+    const tId = projects.value[selectedProject.value].topvisorProject.id
+    const yId = projects.value[selectedProject.value].yandexProject.id
+
+    // обновить страницу
+    router.push({
+        name: router.currentRoute.value.name ?? "Dashboards",
+        params: {
+            yandex_id: yId,
+            topvisor_id: tId
+        }
+    });
+}
 
 </script>
 
 <template>
     <nav class="navbar bg-white fixed-top">
         <div class="container-fluid">
-
             <div class="row">
-                <!-- mtnu button -->
+
+                <!-- menu button -->
                 <div class="col-auto">
                     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -36,18 +78,22 @@ const props = defineProps<{
                 </div>
 
 
-                <!-- projects -->
+
+                <!-- search projects -->
                 <div class="col">
-                    <select class="form-select" aria-label="project" v-model="selectedProject">
-                        <option value="1" :selected="selectedProject==1">Проект</option>
+                    <select class="form-select" aria-label="project" v-model="selectedProject" @click="fetchProjects()"
+                        @change="changeProject()">
+                        <option v-for="project, i in projects" :value="i" :selected="selectedProject == i">
+                            #{{ i + 1 }} {{ project.topvisorProject.name }}
+                        </option>
                     </select>
                 </div>
+
 
             </div>
 
 
-
-
+            <!-- выезжающее меню -->
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
 
@@ -91,7 +137,8 @@ const props = defineProps<{
                                 <img src="./icons/percent.svg" alt="">
                             </div>
                             <div class="col">
-                                <a class="nav-link active" aria-current="page" href="#">Конверсии</a>
+                                <a class="nav-link active" aria-current="page"
+                                    :href="`/goal-dimensions/${yandexId}/${topvisorId}`">Конверсии</a>
                             </div>
 
                         </li>
@@ -122,6 +169,4 @@ const props = defineProps<{
 .offcanvas {
     max-width: 230px;
 }
-
-
 </style>

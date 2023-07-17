@@ -53,6 +53,16 @@ npm run dev
 ```
 cd .\server\
 ```
+написать в терминале
+
+```
+npm i -g @nestjs/cli
+```
+
+```
+npm i
+```
+
 запустить сервер 
 
 ```
@@ -83,4 +93,9 @@ export const YANDEX_API_URL = {
 };
 
 ```
+
+# Документация
+
+api сервера задокументированы в swagger, зайти http://localhost:3000/documentation на запущенном сервере
+
 
