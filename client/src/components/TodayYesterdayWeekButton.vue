@@ -16,9 +16,8 @@ const props = defineProps<{ name: string }>()
     padding: 8px 20px;
     outline: none;
     cursor: pointer;
-    border-right: 1px solid #00ff22;
     background: white; 
-    border: 0.25px rgba(61, 61, 61, 0.10) solid;
+    border: 0.1px rgba(61, 61, 61, 0.10) solid;
 
     color: #352958; 
     font-size: 14px; 

@@ -10,7 +10,7 @@ import EPie from '@/components/Charts/EPie.vue';
 import EStackedArea from '@/components/Charts/EStackedArea.vue';
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
-import TimeButton from '@/components/TimeButton.vue';
+import TodayYesterdayWeekButton from '@/components/TodayYesterdayWeekButton.vue';
 import CalendarButton from '@/components/CalendarButton.vue';
 /* eslint-disable */
 // @ts-ignore - это нужно чтобы подавить ошибку в строке ниже (ругается на тип any у v-calendar)
@@ -73,44 +73,33 @@ const attrs = ref([
         dates: new Date(),
     },
 ]);
-
 </script>
 
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
 
     <div class="container">
-        <div class="button-group">
-            <TimeButton name="Сегодня" />
-            <TimeButton name="Вчера" />
-            <TimeButton name="Неделя" />
-            <TimeButton name="Месяц" />
-            <TimeButton name="Квартал" />
-            <TimeButton name="Год" />
-        </div>
 
-        <!-- узнать выбранное значение из v-calendar 
+        <!-- контейнер для кнопок, связанных с указанием дат -->
+        <div class="container-for-date-element">
+            <ul>
+                <!-- группа кнопок -->
+                <div class="button-group">
+                    <TodayYesterdayWeekButton name="Сегодня" />
+                    <TodayYesterdayWeekButton name="Вчера" />
+                    <TodayYesterdayWeekButton name="Неделя" />
+                    <TodayYesterdayWeekButton name="Месяц" />
+                    <TodayYesterdayWeekButton name="Квартал" />
+                    <TodayYesterdayWeekButton name="Год" />
+                </div>
+            </ul>
+            <!-- (для Таси) статья как узнать выбранное значение из v-calendar (чтобы оно синхронизировалось с датой в кнопке, которая выше календаря)
             https://stackoverflow.com/questions/53896155/how-to-know-selected-value-of-v-calendar-vue-js -->
-        <CalendarButton name="16.07.2023"></CalendarButton>
-
-        <Calendar color="purple" :attributes="attrs" />
-
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Dropdown button
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="book-dropdown">
-                <li><a href="#" class="dropdown-item">
-                        <Calendar></Calendar>
-                    </a></li>
+            <ul>
+                <!-- кнопка для указания дат с помощью календаря -->
+                <CalendarButton></CalendarButton>
             </ul>
         </div>
-        <p></p>
-
-
-
-
 
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
@@ -196,8 +185,15 @@ const attrs = ref([
 
 .button-group {
     display: inline-flex;
-    border: 0.50px rgba(61, 61, 61, 0.10) solid;
+    border: 0.1px rgba(61, 61, 61, 0.10) solid;
     border-radius: 13px;
     overflow: hidden;
+}
+
+// контейнер для кнопок, связанных с указанием дат
+.container-for-date-element {
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: auto;
 }
 </style>
