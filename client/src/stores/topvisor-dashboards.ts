@@ -8,8 +8,8 @@ export const useTopvisorStore = defineStore('topvisor', () => {
     const res = await axios.get('/api/topvisor/positions/', {
       params: {
         project_id: project_id,
-        date1: date1.toISOString().substring(0, 10),
-        date2: date2.toISOString().substring(0, 10),
+        date1: date1,
+        date2: date2,
         regions_indexes: regions_indexes
       }
     })

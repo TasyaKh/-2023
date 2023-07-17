@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { TPositionsSummary } from "./positions_summary.entity";
 
 @Entity('t_dynamics')
 export class TDynamics {
@@ -28,4 +29,6 @@ export class TDynamics {
     @Column({nullable:true})
     down: number
 
+    @OneToOne(() => TPositionsSummary, { onDelete: "CASCADE" })
+    ps: TPositionsSummary
 }

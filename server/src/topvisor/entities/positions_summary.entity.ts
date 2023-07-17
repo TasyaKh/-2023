@@ -27,7 +27,7 @@ export class TPositionsSummary {
     @Column({ nullable: true })
     visibility_dynamic: number
 
-    @ApiProperty({ description: "динамика" })
+    // @ApiProperty({ description: "динамика" })
     @OneToOne(() => TDynamics, { cascade: true })
     @JoinColumn([{ name: "dynamics_id" }])
     dynamics: TDynamics
@@ -36,7 +36,7 @@ export class TPositionsSummary {
     @JoinColumn([{ name: "tops_id" }])
     tops: TTops[]
 
-    @OneToOne(() => TopvisorProject, { cascade: true })
-    @JoinColumn([{ name: "project_id" }])
+    @OneToOne(() => TopvisorProject, tp=>tp.positions_summary, { onDelete: "CASCADE" })
+    // @JoinColumn([{ name: "project_id" }])
     project: TopvisorProject
 }

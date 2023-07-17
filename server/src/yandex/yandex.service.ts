@@ -59,8 +59,8 @@ export class YandexService {
 
     // await this.checkDelay()
 
-    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
-    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+    const date1 = findDashboardsYandexDto.date1 //.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2 //.toISOString().substring(0, 10)
    
     // console.log(findDashboardsYandexDto)
     let res = null
@@ -108,8 +108,8 @@ export class YandexService {
     // let date1 = findDashboardsYandexDto.date1
     // let date2 = findDashboardsYandexDto.date2
 
-    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
-    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
+    const date1 = findDashboardsYandexDto.date1 //.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2 //.toISOString().substring(0, 10)
    
     const params = {
       ...findDashboardsYandexDto,
@@ -253,7 +253,8 @@ export class YandexService {
     // let date1 = new Date("2023-06-15T00:00:00.000Z")
     // let date2 = new Date("2023-06-15T23:59:00.000Z")
 
-    console.log(findDashboardsYandexDto)
+    // console.log(findDashboardsYandexDto)
+
     let query = this.yQueryRepository
       .createQueryBuilder("y_query")
       .leftJoinAndSelect("y_query.data", "y_data")

@@ -20,7 +20,7 @@ export class GeneralController {
   @ApiOperation({ summary: "Очистить проекты" })
   async updateDB() {
     //  очистить проекты
-   
+    this.updateEveryday()
     this.updateEveryweek()
 
   }
@@ -31,7 +31,7 @@ export class GeneralController {
   // CHECK and update EVERYDAY  
   @Cron('0 0 * * *') // Cron expression for running at 00:00 every day
   @ApiOperation({ summary: "Обновление яндекс проектов каждый день" })
-  @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
+  @ApiResponse({ status: HttpStatus.OK, description: "Успешно" })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "UNAUTHORIZED" })
   async updateEveryday() {
@@ -42,11 +42,11 @@ export class GeneralController {
     await this.generalService.ckeckYandexProjects()
   }
 
-  
+
   // CHECK and update EVERYWEEK
   @Cron('0 0 * * 0') // This cron expression runs the job every Sunday at midnight
   @ApiOperation({ summary: "Обновление топвизор проектов каждую неделю" })
-  @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
+  @ApiResponse({ status: HttpStatus.OK, description: "Успешно" })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   async updateEveryweek() {
     // обновить дашборы яндекса

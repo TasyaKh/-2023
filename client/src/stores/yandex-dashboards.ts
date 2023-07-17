@@ -42,12 +42,13 @@ export const useYandexStore = defineStore('yandex', () => {
     }
 
     async function getDahshboards(ids: number, date1: Date, date2: Date, typeDashboard: string) {
-
+        // console.log("date1, date2")
+        // console.log(date1.toISOString(), date2.getTime())
         const res = await axios.get('/api/yandex/dashboards/' + typeDashboard, {
             params: {
                 ids: ids,
-                date1: date1.toISOString().substring(0, 10),
-                date2: date2.toISOString().substring(0, 10)
+                date1: date1.toDateString(),
+                date2: date2.toDateString()
             }
         })
 

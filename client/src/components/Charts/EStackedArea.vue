@@ -87,7 +87,8 @@ async function getSeriesAndLegend(data: any) {
 async function getXFromTimeIntervals(metrics: any) {
     let dateX = []
     for (let i = 0; i < metrics.length; i++) {
-        dateX.push(metrics[i].date)
+        let date = new Date(metrics[i].date).toLocaleDateString()
+        dateX.push(date)
     }
 
     return dateX

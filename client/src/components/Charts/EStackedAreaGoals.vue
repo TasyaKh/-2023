@@ -135,7 +135,7 @@ function getXFromTimeIntervals(startDate: Date, endDate: Date) {
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-        dateRange.push((new Date(currentDate)).toISOString().substring(0, 10));
+        dateRange.push((new Date(currentDate)).toLocaleDateString());
         currentDate.setDate(currentDate.getDate() + 1);
     }
 

@@ -97,7 +97,6 @@ export class YandexController {
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно", type:[YQuery]})
   @Get('dashboards/goal-dimension')
   async findDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
-
     const dsh = await this.yandexService.findDashboardsBytime(dshbYDto, "goal-dimension");
 
     return dsh
