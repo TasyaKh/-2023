@@ -1,5 +1,14 @@
 # Яндекс метрика и топвизор 2023
 
+## Технологии
+
+![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+
 бэкенд - **nest.js**, документация https://nestjs.com
 
 фронтенд - **vue.js** (3-я версия), документация https://vuejs.org
@@ -93,6 +102,30 @@ export const YANDEX_API_URL = {
 };
 
 ```
+
+
+# БД
+
+1. скачать pgAdmin 4, создать бд, далее зайти в
+```
+cd .\server\
+```
+2. создать или обновить файл .env, который имеет след. вид.
+```
+DB_NAME={имя бд}
+DB_USER={пользователь}
+DB_PASSWORD={пароль}
+DB_HOST=localhost
+DB_PORT=5432
+```
+3. далее, запустить сервер и написать в браузере, например, след путь
+```
+GET http://localhost:3000/api/general/update-db
+```
+это необходимо, чтобы обновить бд, стянуть проекты и данные для дашбордов для старта
+
+**Заметка:**
+> для взаимодейтсвия с бд на серверной части используется typeorm https://typeorm.io
 
 # Документация
 
