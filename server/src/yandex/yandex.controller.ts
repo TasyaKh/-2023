@@ -13,7 +13,7 @@ export class YandexController {
 
   // database------------------------------------------------------------------------------
   // получить список проектов
-  @ApiOperation({ description: "получить список проектов" })
+  @ApiOperation({ summary: "получить список проектов" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно", type:[YandexProject]})
   @Get('projects')
   async findProjects(@Query() findProjectsDto: FindProjectsDto) {
@@ -24,7 +24,7 @@ export class YandexController {
   }
 
   // визиты
-  @ApiOperation({ description: "получить данные с визитами" })
+  @ApiOperation({ summary: "получить данные с визитами" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно", type:[ YQuery]})
   @Get('dashboards/visits')
   async findDashboardsVisits(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -35,7 +35,7 @@ export class YandexController {
   }
 
   // 4) визиты получить данные посещений девайсов
-  @ApiOperation({ description: "получить данные об устройствах" })
+  @ApiOperation({ summary: "получить данные об устройствах" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
   @Get('dashboards/device')
   async findDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -46,7 +46,7 @@ export class YandexController {
   }
 
   // 3)  источники трафика
-  @ApiOperation({ description: "получить данные  источники трафика" })
+  @ApiOperation({ summary: "получить данные  источники трафика" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
   @Get('dashboards/source-traffic')
   async findDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -57,7 +57,7 @@ export class YandexController {
   }
 
   // 5) визиты доля брендового и небрендового траффика
-  @ApiOperation({ description: "получить данные  визиты доля брендового и небрендового траффика" })
+  @ApiOperation({ summary: "получить данные  визиты доля брендового и небрендового траффика" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
   @Get('dashboards/search-phrase')
   async findDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -68,7 +68,7 @@ export class YandexController {
   }
 
   // 6) посещаемость из поисковых систем
-  @ApiOperation({ description: "посещаемость из поисковых систем" })
+  @ApiOperation({ summary: "посещаемость из поисковых систем" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно", type:[YQuery]})
   @Get('dashboards/search-engine')
   async findDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -81,7 +81,7 @@ export class YandexController {
 
 
   // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
-  @ApiOperation({ description: "Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)" })
+  @ApiOperation({ summary: "Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
   @Get('dashboards/browsers')
   async findDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -93,7 +93,7 @@ export class YandexController {
   }
 
   // конверсии
-  @ApiOperation({ description: "конверсии" })
+  @ApiOperation({ summary: "конверсии" })
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно", type:[YQuery]})
   @Get('dashboards/goal-dimension')
   async findDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
@@ -110,7 +110,7 @@ export class YandexController {
   // remote api-------------------------------------------------------------
   // получить список проектов
 
-  @ApiOperation({ description: "api получить проекты с удаленного апи" })
+  @ApiOperation({ summary: "api получить проекты с удаленного апи" })
   @Get('fetch/projects')
   async fetchProjects(@Query() findProjectsDto: FindProjectsDto) {
 
@@ -121,7 +121,7 @@ export class YandexController {
   }
 
   // 3)  источники трафика
-  @ApiOperation({ description: "api получить источники трафика с удаленного апи" })
+  @ApiOperation({ summary: "api получить источники трафика с удаленного апи" })
   @Get('dashboards/fetch/source-traffic')
   async fetchDashboardsSourceTraffic(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -139,7 +139,7 @@ export class YandexController {
   }
 
   // 4) визиты получить данные посещений девайсов
-  @ApiOperation({ description: "api получить данные посещений девайсов с удаленного апи" })
+  @ApiOperation({ summary: "api получить данные посещений девайсов с удаленного апи" })
   @Get('dashboards/fetch/device')
   async fetchDashboardsDevice(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -159,7 +159,7 @@ export class YandexController {
 
 
   // 5) визиты доля брендового и небрендового траффика
-  @ApiOperation({ description: "api получить данные доля брендового и небрендового траффика с удаленного апи" })
+  @ApiOperation({ summary: "api получить данные доля брендового и небрендового траффика с удаленного апи" })
   @Get('dashboards/fetch/search-phrase')
   async fetchDashboardsSearchPhrace(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -182,7 +182,7 @@ export class YandexController {
 
 
   // 6) посещаемость из поисковых систем
-  @ApiOperation({ description: "api получить данные посещаемость из поисковых систем с удаленного апи" })
+  @ApiOperation({ summary: "api получить данные посещаемость из поисковых систем с удаленного апи" })
   @Get('dashboards/fetch/search-engine')
   async fetchDashboardsSearchEngine(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -203,7 +203,7 @@ export class YandexController {
   }
 
   // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
-  @ApiOperation({ description: "api получить данные поисковые системы информация о поисковых системах, которые привели посетителей на сайт) с удаленного апи" })
+  @ApiOperation({ summary: "api получить данные поисковые системы информация о поисковых системах, которые привели посетителей на сайт) с удаленного апи" })
   @Get('dashboards/fetch/browsers')
   async fetchDashboardsBrowsers(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -223,7 +223,7 @@ export class YandexController {
 
 
   // конверсии
-  @ApiOperation({ description: "api получить конверсии с удаленного апи" })
+  @ApiOperation({ summary: "api получить конверсии с удаленного апи" })
   @Get('dashboards/fetch/goal-dimension')
   async fetchDashboardsGoalDimension(@Query() dshbYDto: FindDashboardsYandexDto) {
 
@@ -241,7 +241,7 @@ export class YandexController {
 
 
   // visits
-  @ApiOperation({ description: "api получить визиты с удаленного апи" })
+  @ApiOperation({ summary: "api получить визиты с удаленного апи" })
   @Get('dashboards/fetch/visits')
   async fetchDashboardsVisits(@Query() dshbYDto: FindDashboardsYandexDto) {
 

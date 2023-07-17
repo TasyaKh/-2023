@@ -22,7 +22,6 @@ export class GeneralController {
     //  очистить проекты
     this.updateEveryday()
     this.updateEveryweek()
-
   }
 
 
@@ -35,6 +34,7 @@ export class GeneralController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "UNAUTHORIZED" })
   async updateEveryday() {
+    // тянет данные за этот промежуток времени
     const date1 = new Date(new Date().getTime() - 8_6400_000 * 60)
     const date2 = new Date()
     // оудалить проекты
