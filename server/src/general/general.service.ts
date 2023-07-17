@@ -87,7 +87,7 @@ export class GeneralService {
       newYProjects = yPtojects.counters
     }
 
-    await this.yandexService.saveProjectsDatabase(newYProjects, date1D, date2D)
+    await this.yandexService.saveProjectsDatabase(newYProjects)
   }
 
   async ckeckProjectsTopvisor() {
@@ -128,10 +128,7 @@ export class GeneralService {
     await this.topvisorService.clearProjects()
   }
 
-  async fetchPositionsTopvisor() {
-
-    const date1 = new Date(new Date().getTime() - 8_6400_000 * 60)
-    const date2 = new Date()
+  async fetchPositionsTopvisor(date1:Date, date2:Date) {
 
     const tProjects = await this.topvisorService.findProjects(new FindProjectsTopvisorDto())
 
@@ -153,11 +150,8 @@ export class GeneralService {
   }
 
   // updateProjects
-  async updateYDashboards() {
+  async updateYDashboards(date1:Date, date2:Date) {
     const yProjects = await this.yandexService.findProjects(new FindProjectsDto())
-    //  one day
-    const date1 = new Date(new Date().getTime() - 8_6400_000 * 1)
-    const date2 = new Date()
 
     // пройтись по вем проектам в бд
     for (let i in yProjects) {

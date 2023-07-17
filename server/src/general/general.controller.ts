@@ -35,11 +35,14 @@ export class GeneralController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "UNAUTHORIZED" })
   async updateEveryday() {
-    // обновить дашборы яндекса
-    // await this.generalService.updateYDashboards()
+    const date1 = new Date(new Date().getTime() - 8_6400_000 * 60)
+    const date2 = new Date()
+    // оудалить проекты
     await this.generalService.clearProjectsYandex()
-    // проверить проекты
+    // проверить проекты, добавить новые
     await this.generalService.ckeckYandexProjects()
+    // сохранить данные графиков
+    await this.generalService.updateYDashboards(date1, date2)
   }
 
 
@@ -49,11 +52,13 @@ export class GeneralController {
   @ApiResponse({ status: HttpStatus.OK, description: "Успешно" })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   async updateEveryweek() {
-    // обновить дашборы яндекса
-    // await this.generalService.updateYDashboards()
+    const date1 = new Date(new Date().getTime() - 8_6400_000 * 60)
+    const date2 = new Date()
+    // удалить проекты топвизора
     await this.generalService.clearProjectsTopvisor()
+    // проверить проекты топвизора, добавить новые
     await this.generalService.ckeckProjectsTopvisor()
     // проверить проекты
-    await this.generalService.fetchPositionsTopvisor()
+    await this.generalService.fetchPositionsTopvisor(date1, date2)
   }
 }

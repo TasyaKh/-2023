@@ -79,26 +79,9 @@ export class YandexService {
     })
 
 
-    // if (res.errors) {
-    //   throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    // }
-
     return res
   }
 
-  // private async checkDelay() {
-  //   this.requestsCount++
-
-  //   if (this.requestsCount >= 30) {
-
-  //     await new Promise((resolve) => {
-  //       setTimeout(resolve, this.delay)
-  //     })
-
-  //     this.requestsCount = 0
-  //   }
-
-  // }
 
   // найти дашборды, временной диапазон
   async fetchDashboardsByTime(findDashboardsYandexDto: FindDashboardsYandexDto) {
@@ -108,8 +91,8 @@ export class YandexService {
     // let date1 = findDashboardsYandexDto.date1
     // let date2 = findDashboardsYandexDto.date2
 
-    const date1 = findDashboardsYandexDto.date1 //.toISOString().substring(0, 10)
-    const date2 = findDashboardsYandexDto.date2 //.toISOString().substring(0, 10)
+    const date1 = findDashboardsYandexDto.date1.toISOString().substring(0, 10)
+    const date2 = findDashboardsYandexDto.date2.toISOString().substring(0, 10)
    
     const params = {
       ...findDashboardsYandexDto,
@@ -138,8 +121,7 @@ export class YandexService {
 
   // database------------------------------------------------------------------------------
   //  save projects
-  async saveProjectsDatabase(projects: any,
-    dateStartDateDashboard: Date, dateEndDateDashboard: Date) {
+  async saveProjectsDatabase(projects: any) {
 
     for (let project in projects) {
 
@@ -148,8 +130,8 @@ export class YandexService {
         id: projects[project].id
       })
       // сохранить данные графиков
-      this.fetchAndSaveGraphics(projects[project].id, dateStartDateDashboard,
-        dateEndDateDashboard)
+      // this.fetchAndSaveGraphics(projects[project].id, dateStartDateDashboard,
+      //   dateEndDateDashboard)
     }
   }
 
@@ -195,10 +177,9 @@ export class YandexService {
 
 
   private async fetchAndSaveGraphic(findDashboardsYandexDto: FindDashboardsYandexDto, dimension_type: string) {
+    
     const dsb = await this.fetchDashboardsByTime(findDashboardsYandexDto)
 
-    // console.log(dsb.data[0])
-    // save dashboards
     if (dsb)
       this.saveDashboardsByTime(dsb, dimension_type)
   }
@@ -280,11 +261,10 @@ export class YandexService {
 
     const dates = dashboard.time_intervals
     const prId: number = dashboard.query.ids[0]
-
-
    
     for (let i in dashboard.data) {
       // console.log(dashboard.data[i])
+      // проверить если данный запрос существует в бд
       let yQuery = await this.getExistQuery(prId, type_dimention)
 
       // Find the YandexProjectEntity object based on the ID
@@ -323,7 +303,6 @@ export class YandexService {
         for (let k = 0; k < metric.length; k++) {
 
           // console.log(name)
-         
 
           let res = await this.yMetricRepository.save({
             metric: metric[k],
@@ -337,6 +316,7 @@ export class YandexService {
     }
   }
 
+  // получить существующщий запрос
   async getExistQuery(project_id: number, type_dimention: string) {
 
     let query = this.yQueryRepository
@@ -365,9 +345,9 @@ export class YandexService {
     return query.getOne()
   }
 
+
   // удалить все проекты
   async clearProjects() {
-
 
     await this.yandexProjectRepository.createQueryBuilder()
       .delete()
@@ -375,14 +355,13 @@ export class YandexService {
       .catch((err) => {
         console.log(err)
       })
-
-
   }
 
 
 
   // other------------------------------------------------------
 
+  // получить последний проект яндекса
   async getYandexLastProject() {
 
     let query = this.yandexProjectRepository
@@ -394,7 +373,5 @@ export class YandexService {
     return newestProject;
 
   }
-
-
 
 }
