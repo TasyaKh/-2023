@@ -10,7 +10,7 @@ import {
     TooltipComponent,
     ToolboxComponent
 } from "echarts/components";
-import { computed, onBeforeMount, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 use([
     ToolboxComponent,

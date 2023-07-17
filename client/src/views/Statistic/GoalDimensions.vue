@@ -64,8 +64,7 @@ function handleTimeChanged(startDate: Date, endDate: Date) {
 
 
     <div class="container">
-        {{ date1.toLocaleString() }} - {{ date2.toLocaleString() }}
-        <TimeRanges :handleTimeChanged="handleTimeChanged" />
+        <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/>
 
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">

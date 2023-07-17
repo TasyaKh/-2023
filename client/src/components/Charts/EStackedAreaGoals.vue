@@ -50,7 +50,7 @@ async function initData() {
     dataLegend.value = salfdy.dataLegend
     series.value = salfdy.series
 
-    dateX.value = getXFromTimeIntervals(props.date1, props.date2)
+    dateX.value = await getXFromTimeIntervals(props.data.metrics)
 }
 
 // получить легенду и данные
@@ -130,16 +130,15 @@ async function getSeriesAndLegend(data: any) {
 }
 
 // получить ось икс из интервалов
-function getXFromTimeIntervals(startDate: Date, endDate: Date) {
-    const dateRange = [];
-    const currentDate = new Date(startDate);
-
-    while (currentDate <= endDate) {
-        dateRange.push((new Date(currentDate)).toLocaleDateString());
-        currentDate.setDate(currentDate.getDate() + 1);
+// получить ось икс
+async function getXFromTimeIntervals(metrics: any) {
+    let dateX = []
+    for (let i = 0; i < metrics.length; i++) {
+        let date = new Date(metrics[i].date).toLocaleDateString()
+        dateX.push(date)
     }
 
-    return dateRange;
+    return dateX
 }
 
 
@@ -207,7 +206,8 @@ function renderChart() {
 </script>
 
 <template>
-    <!-- {{ data }} -->
+  <!-- dateX  {{ dateX }}
+    {{ data }} -->
 
     <div ref="chartContainer" class="chart "></div>
 </template>

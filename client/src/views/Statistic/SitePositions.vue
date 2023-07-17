@@ -81,8 +81,8 @@ async function handleTimeChanged(startDate: Date, endDate: Date) {
    
     <div class="container">
 
-        {{ date1.toLocaleDateString() }} - {{ date2.toLocaleDateString() }}
-        <TimeRanges class="my-4" :handleTimeChanged="handleTimeChanged" />
+        <!-- {{ date1.toLocaleDateString() }} - {{ date2.toLocaleDateString() }} -->
+        <!-- <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/> -->
 
         <!-- в случае ошибки -->
         <div v-if="errResponseMsg != ''" class="alert alert-danger" role="alert">

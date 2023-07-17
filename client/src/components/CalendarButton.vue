@@ -14,24 +14,34 @@ const attrs = ref([
     },
 ]);
 
+const props = defineProps<{
+    handleDateChanged: Function,
+    start: Date,
+    end: Date
+}>()
+
 </script>
 
 <template>
-    <dropdown>
+    <div class="dropdown">
         <input id="toggle1" type="checkbox" unchecked>
-        <label for="toggle1" class="animate">10 июля 2023 - 17 июля 2023</label>
+        <label for="toggle1" class="animate"> {{ start.toLocaleDateString() }} - {{ end.toLocaleDateString() }}</label>
         <ul class="animate">
             <!-- calendar  -->
-            <h1 class="center"></h1>
-            <Calendar color="purple" :attributes="attrs" />
+            <Calendar color="purple" :attributes="attrs" :handleDateChanged="handleDateChanged" :date1="start"
+                :date2="end" />
         </ul>
-    </dropdown>
+    </div>
 </template>
 
 <style scoped lang = "scss">
+.dropdown {
+    position: relative;
+}
+
 // кнопка выбора диапазона дат
-dropdown label,
-dropdown ul li {
+.dropdown label,
+.dropdown ul li {
     padding: 8px 20px;
     background: white;
     border: 1px rgba(61, 61, 61, 0.10) solid; // цвет обводки
@@ -40,43 +50,49 @@ dropdown ul li {
 }
 
 // надпись в кнопке выбора диапазона дат
-dropdown label {
+.dropdown label {
     color: #352958;
     font-size: 14px;
     font-family: Panton;
 }
 
 // hover-кнопка
-dropdown label:hover,
-dropdown ul li:hover {
+.dropdown label:hover,
+.dropdown ul li:hover {
     background: #352958; // фирменный фиолетовый цвет для кнопки
     color: white; // цвет шрифта
     cursor: pointer;
 }
 
 // чтобы не было видно чекбокса (т.к. эта кнопка по сути чекбокс)
-dropdown input {
+.dropdown input {
     display: none;
 }
 
-dropdown input~ul {
-    position: relative;
-    opacity: 0; // для анимации исчезновения календаря
-    top: -20px; // для анимации появления календаря (он появляется чуть выше того расположения, в котором потом оказывается)
+.dropdown input~ul {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0px;
+    right: 0px;
+
+    // opacity: 0; // для анимации исчезновения календаря
+    top: -70px; // для анимации появления календаря (он появляется чуть выше того расположения, в котором потом оказывается)
 }
 
-dropdown input:checked+label {
+.dropdown input:checked+label {
     background: #352958;
     color: white;
 }
 
-dropdown input:checked~ul {
-    visibility: visible;
+.dropdown input:checked~ul {
+    display: block;
     opacity: 1;
-    top: 0;
+    top: 20px;
 }
 
 .animate {
+
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     -ms-transition: all .3s;

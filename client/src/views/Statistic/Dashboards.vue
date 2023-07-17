@@ -2,6 +2,7 @@
 
 import { onBeforeMount, ref } from 'vue';
 import { useYandexStore } from '@/stores/yandex-dashboards';
+import TimeRanges from '@/components/TimeRanges.vue';
 
 // graphics
 import EPie from '@/components/Charts/EPie.vue';
@@ -10,6 +11,8 @@ import EStackedArea from '@/components/Charts/EStackedArea.vue';
 
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
+import Loading from '@/components/Loading.vue';
+import Totals from '@/components/Charts/Totals.vue';
 
 const route = useRoute()
 
@@ -86,6 +89,8 @@ const attrs = ref([
 
 
     <div class="container">
+
+        <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/>
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
