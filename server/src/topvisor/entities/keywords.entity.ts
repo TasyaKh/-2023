@@ -11,6 +11,7 @@ export class TKeywords{
     id: number
 
     @ApiProperty({description:"имя"})
+    @Column()
     name: string
 
     @OneToMany((type) => TPositionsData, (pd) => pd.keyword, { cascade: true })

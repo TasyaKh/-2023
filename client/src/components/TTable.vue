@@ -3,38 +3,46 @@ import { onBeforeMount, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     // data from topvisor
-    data: any
+    sitePositionsData: any
 
 }>()
 
 const amountOfColumns = ref()    //число колонок
 const dates = ref()              //даты
-const projects = ref()           //проекты
+const searchers = ref()           //проекты
 const keywords = ref()           //ключевые слова
+const project = ref()           //ключевые слова
 
 onBeforeMount(() => {
     initData()
 })
 
-watch(() => props.data, () => {
+watch(() => props.sitePositionsData, () => {
     initData()
 })
 
 // инициализировать данные
 function initData() {
-    dates.value = props.data.result.headers.dates
+    dates.value = props.sitePositionsData.header[0].dates
     amountOfColumns.value = dates.value.length + 1
-    projects.value = props.data.result.headers.projects
-    keywords.value = props.data.result.keywords;
+    searchers.value = props.sitePositionsData.header[0].searchers
+    keywords.value = props.sitePositionsData.keyword;
+    project.value = props.sitePositionsData.project
 
 }
 
 // получить данные
-function getPosition(date: any, project_id: any, searcherRegion_index: any, keyword: any) {
+function getPosition(date: any, project_id: any, searcherRegion_index: any, positions_data: any) {
 
-    let qualifiers = `${date}:${project_id}:${searcherRegion_index}`;
-
-    let p = keyword.positionsData[qualifiers].position
+    let qualifiers: string = `${date}:${project_id}:${searcherRegion_index}`;
+    let p = "?"
+    for (let i in positions_data) {
+        const dpr: string = positions_data[i].dpr
+        // const dprArr = dpr.split(":")
+        if (dpr == qualifiers) {
+            p = positions_data[i].position
+        }
+    }
 
     return p
 }
@@ -56,40 +64,35 @@ function getPosition(date: any, project_id: any, searcherRegion_index: any, keyw
 
 
         <tbody>
-
+            <!-- projects{{ sitePositionsData }} -->
             <!-- регионы поисковика -->
-            <template v-for="(project, index) in projects" :key="index">
-                <template v-for="(searcher, index) in project.searchers" :key="index">
+            <!-- <template v-for="(project, index) in projects" :key="index"> -->
+            <template v-for="(searcher, index) in searchers" :key="index">
 
-                    <template v-for="(searcherRegion, index) in searcher.regions" :key="index">
+                <template v-for="(searcherRegion, index) in searcher.region" :key="index">
+                    <tr>
+                        <td :colspan="amountOfColumns" class="project">
+                            Проект {{ project.name }}, {{ searcherRegion.name }}, {{ searcher.name }} {{
+                                searcherRegion.lang }},
+                            {{ searcherRegion.device_name }}";
+                        </td>
+
+                    </tr>
+
+                    <!--ключевые фразы проекта-->
+                    <template v-for="(keyword, index) in keywords" :key="index">
                         <tr>
-                            <td :colspan="amountOfColumns" class="project">
-                                Проект {{ project.name }}, {{ searcherRegion.name }}, {{ searcher.name }} {{
-                                    searcherRegion.lang }},
-                                {{ searcherRegion.device_name }}";
-                            </td>
-
+                            <td class="text-start">{{ keyword.name }}</td>
+                            <!--  найденные даты проверок позиций-->
+                            <template v-for="(date, index) in dates" :key="index">
+                                <td> {{ getPosition(date, project.id, searcherRegion.index, keyword.positions_data) }}</td>
+                            </template>
                         </tr>
-
-                        <!--ключевые фразы проекта-->
-                        <template v-for="(keyword, index) in keywords" :key="index">
-                            <tr>
-                                <td class="text-start">{{ keyword.name }}</td>
-                                <!--  найденные даты проверок позиций-->
-                                <template v-for="(date, index) in dates" :key="index">
-                                    <td> {{ getPosition(date, project.id, searcherRegion.index, keyword) }}</td>
-                                </template>
-                            </tr>
-                        </template>
-
-
                     </template>
+
+
                 </template>
-
             </template>
-
-
-
 
         </tbody>
 

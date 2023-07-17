@@ -4,6 +4,7 @@ import { YandexService } from 'src/yandex/yandex.service';
 import { TopvisorService } from 'src/topvisor/topvisor.service';
 import { FindProjectsTopvisorDto } from 'src/topvisor/dto/find-projects-topvisor.dto';
 import { date1D, date2D } from 'src/yandex/dashboards';
+import { PositionsTopvisorDto } from 'src/topvisor/dto/positions-topvisor.dto';
 
 @Injectable()
 export class GeneralService {
@@ -60,16 +61,12 @@ export class GeneralService {
 
   // data checkers---------------------------------------------
 
-  async ckeckProjects() {
+  async ckeckYandexProjects() {
 
-    const tLastProject = await this.topvisorService.getTopvisorLastProject()
     const yLastProject = await this.yandexService.getYandexLastProject()
 
     let newYProjects = []
-    let newTProjects = []
 
-
- 
     const yPtojects = await this.yandexService.fetchProjects(new FindProjectsDto())
 
     // yandex если последний проект есть
@@ -89,6 +86,14 @@ export class GeneralService {
     } else {
       newYProjects = yPtojects.counters
     }
+
+    await this.yandexService.saveProjectsDatabase(newYProjects, date1D, date2D)
+  }
+
+  async ckeckProjectsTopvisor() {
+
+    const tLastProject = await this.topvisorService.getTopvisorLastProject()
+    let newTProjects = []
 
     const tPtojects = await this.topvisorService.fetchProjects(new FindProjectsTopvisorDto())
 
@@ -110,19 +115,42 @@ export class GeneralService {
       newTProjects = tPtojects.result
     }
 
-
-    this.yandexService.saveProjectsDatabase(newYProjects, date1D, date2D)
-    this.topvisorService.saveProjectsDatabase(newTProjects)
+    await this.topvisorService.saveProjectsDatabase(newTProjects)
   }
 
+
+
   async clearProjectsYandex() {
-   await this.yandexService.clearProjects()
+    await this.yandexService.clearProjects()
   }
 
   async clearProjectsTopvisor() {
     await this.topvisorService.clearProjects()
-   }
- 
+  }
+
+  async fetchPositionsTopvisor() {
+
+    const date1 = new Date(new Date().getTime() - 8_6400_000 * 60)
+    const date2 = new Date()
+
+    const tProjects = await this.topvisorService.findProjects(new FindProjectsTopvisorDto())
+
+    for (let i in tProjects) {
+      const project = tProjects[i]
+      const ptDto = new PositionsTopvisorDto()
+
+      ptDto.project_id = project.id
+      ptDto.regions_indexes = project.regions
+      ptDto.date1 = date1
+      ptDto.date2 = date2
+
+      const positions = await this.topvisorService.fetchPositions(ptDto)
+     
+      const sadevPositions = await this.topvisorService.savePositionDatabase(positions.result)
+
+    }
+
+  }
 
   // updateProjects
   async updateYDashboards() {

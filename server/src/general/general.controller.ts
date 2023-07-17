@@ -20,8 +20,9 @@ export class GeneralController {
   @ApiOperation({ summary: "Очистить проекты" })
   async updateDB() {
     //  очистить проекты
-    await this.generalService.clearProjectsYandex()
-    await this.generalService.ckeckProjects()
+   
+    this.updateEveryweek()
+
   }
 
 
@@ -38,7 +39,21 @@ export class GeneralController {
     // await this.generalService.updateYDashboards()
     await this.generalService.clearProjectsYandex()
     // проверить проекты
-    await this.generalService.ckeckProjects()
+    await this.generalService.ckeckYandexProjects()
   }
 
+  
+  // CHECK and update EVERYWEEK
+  @Cron('0 0 * * 0') // This cron expression runs the job every Sunday at midnight
+  @ApiOperation({ summary: "Обновление топвизор проектов каждую неделю" })
+  @ApiResponse({ status: HttpStatus.OK, description: "Успешно"})
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
+  async updateEveryweek() {
+    // обновить дашборы яндекса
+    // await this.generalService.updateYDashboards()
+    await this.generalService.clearProjectsTopvisor()
+    await this.generalService.ckeckProjectsTopvisor()
+    // проверить проекты
+    await this.generalService.fetchPositionsTopvisor()
+  }
 }

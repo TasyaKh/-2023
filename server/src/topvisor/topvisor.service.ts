@@ -71,8 +71,9 @@ export class TopvisorService {
       ...findProjectsDto,
       include_positions_summary_params: {
         show_dynamics: 0,
-        show_tops: 1
+        show_tops: 1,
       },//показать хедеры
+      fields: ["id", "name", "site", "date"],
       show_searchers_and_regions: 1,
     }
 
@@ -89,7 +90,7 @@ export class TopvisorService {
 
 
   // проверить позиции
-  async checkPositions(positionsTopvisorDto: PositionsTopvisorDto) {
+  async fetchPositions(positionsTopvisorDto: PositionsTopvisorDto) {
 
     const date1 = positionsTopvisorDto.date1.toISOString().substring(0, 10)
     const date2 = positionsTopvisorDto.date2.toISOString().substring(0, 10)
@@ -191,12 +192,16 @@ export class TopvisorService {
 
     // задать проект для поиска в списке
     let ftp = new FindProjectsTopvisorDto()
+
+    // console.log("position.headers.projects")
+    // console.log(position)
+
     ftp.project_id = position.headers.projects[0].id
 
     // find project
     const project: TopvisorProject = (await this.findProjects(ftp))[0]
-    
-    if(project == null){
+
+    if (project == null) {
       throw new HttpException('проекта не существует в базе данных', HttpStatus.BAD_REQUEST)
     }
 
@@ -271,7 +276,7 @@ export class TopvisorService {
 
     for (let i in keywords) {
       let key = keywords[i]
-
+   
       // сохранить ключевое слово
       const keyword = await this.tKeywordsRepository.save(
         {
@@ -320,6 +325,27 @@ export class TopvisorService {
 
 
     query = this.filterProjects(findProjectsTopvisorDto, query)
+
+    return await query.getMany()
+
+  }
+
+  // найти проекты 
+  async findPositions(ptDto: PositionsTopvisorDto) {
+
+    let query = this.tResultRepository
+      .createQueryBuilder("t_result")
+      .leftJoinAndSelect("t_result.keyword", "keyword")
+      .leftJoinAndSelect("t_result.header", "header")
+      .leftJoinAndSelect("t_result.project", "project")
+
+      // ключевые слова
+      .leftJoinAndSelect("keyword.positions_data", "positions_data")
+
+      .leftJoinAndSelect("header.searchers", "searchers")
+      .leftJoinAndSelect("searchers.region", "region")
+      .where("project.id = :project_id", { project_id: ptDto.project_id })
+
 
     return await query.getMany()
 

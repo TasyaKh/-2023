@@ -48,13 +48,14 @@ async function getData() {
 // получить позиции
 async function fetchSitePositions() {
 
-    // const region_indexes = browsers[selectedBrowser.value].regions_indexes
-    sitePositionsData.value = await topvisorStore.getSitePositions(topvisorId, date1.value, date2.value, region_indexes.value).catch((err) => {
+    let res = await topvisorStore.getSitePositions(topvisorId, date1.value, date2.value, region_indexes.value).catch((err) => {
         if (err.response) {
             errResponseMsg.value = err.response.data.message[0]
         }
 
     })
+    // const region_indexes = browsers[selectedBrowser.value].regions_indexes
+    sitePositionsData.value = res[0]
 }
 
 // получить индексы регионов
@@ -77,7 +78,7 @@ async function handleTimeChanged(startDate: Date, endDate: Date) {
 
 <template>
     <NavbarStatistic :yandex-id="yandexId" :topvisor-id="topvisorId" />
-
+   
     <div class="container">
 
         {{ date1.toLocaleDateString() }} - {{ date2.toLocaleDateString() }}
@@ -90,7 +91,7 @@ async function handleTimeChanged(startDate: Date, endDate: Date) {
 
         <!-- {{ sitePositionsData }} -->
         <div class="row-cols-auto ">
-            <TTable v-if="sitePositionsData" :data="sitePositionsData" />
+            <TTable v-if="sitePositionsData" :sitePositionsData="sitePositionsData" />
             <Loading v-else-if="loading" />
         </div>
 
