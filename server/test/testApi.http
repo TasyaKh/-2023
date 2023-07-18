@@ -1,6 +1,8 @@
 # yandex get all users from specific team
 GET http://localhost:3000/api/yandex/dashboards/goal-dimension?date1=2023-07-16&date2=2023-07-16T23:00:00.000Z&ids=12418261
 
+###
+GET http://localhost:3000/api/yandex/dashboards/browsers?date1=2023-06-18&date2=2023-07-17&ids=12418261
 
 
 

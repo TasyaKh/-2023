@@ -17,8 +17,9 @@ export class GeneralController {
 
 
   @Get("update-db")
-  @ApiOperation({ summary: "Очистить проекты" })
+  @ApiOperation({ summary: "Очистить проекты и стянуть по новой" })
   async updateDB() {
+   
     //  очистить проекты
     this.updateEveryday()
     this.updateEveryweek()

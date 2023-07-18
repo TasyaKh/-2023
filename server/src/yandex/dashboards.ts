@@ -52,7 +52,7 @@ export const searchPhraseDashboard = (ids:number, date1:Date = date1D, date2:Dat
     dshbYDto.filters.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchPhrase!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
-    dshbYDto.limit = 10
+    dshbYDto.limit = 100
 
     return dshbYDto
 }
@@ -73,7 +73,7 @@ export const searchEngineDashboard = (ids:number, date1:Date = date1D, date2:Dat
     dshbYDto.filters.push("ym:s:CROSS_DEVICE_LAST_SIGNIFICANTSearchEngineRoot!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
-    dshbYDto.limit = 10
+    dshbYDto.limit = 100
 
     return dshbYDto
 }
@@ -91,7 +91,7 @@ export const browsersDashboard = (ids:number, date1:Date = date1D, date2:Date = 
     dshbYDto.filters.push("ym:s:LastSignSearchEngine!n")
     dshbYDto.group = "day"
     dshbYDto.sort.push("-ym:s:visits")
-    dshbYDto.limit = 10
+    dshbYDto.limit = 100
 
     return dshbYDto
 }

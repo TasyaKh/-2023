@@ -31,7 +31,7 @@ export class TTops {
     @Column({name:"101_10000", nullable:true})
     '101_10000': number
 
-    @ManyToOne((type) => TPositionsSummary, (ps) => ps.id)
+    @ManyToOne((type) => TPositionsSummary, (ps) => ps.id, {onDelete:"CASCADE"})
     @JoinColumn([{ name: "positions_summary_id" }])
     positions_summary: TPositionsSummary
 

@@ -36,7 +36,7 @@ export class TPositionsSummary {
     @JoinColumn([{ name: "tops_id" }])
     tops: TTops[]
 
-    @OneToOne(() => TopvisorProject, tp=>tp.positions_summary, { onDelete: "CASCADE" })
+    @OneToOne(() => TopvisorProject, tp=>tp.positions_summary)
     // @JoinColumn([{ name: "project_id" }])
     project: TopvisorProject
 }

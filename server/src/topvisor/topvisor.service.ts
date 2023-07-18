@@ -276,7 +276,7 @@ export class TopvisorService {
 
     for (let i in keywords) {
       let key = keywords[i]
-   
+
       // сохранить ключевое слово
       const keyword = await this.tKeywordsRepository.save(
         {
@@ -306,6 +306,22 @@ export class TopvisorService {
   // удалить все проекты
   async clearProjects() {
     await this.topvisorProjectRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+
+    // удалить саммари
+    await this.tPositionsSummaryRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+
+    // удалить динамику
+    await this.tDynamicsRepository.createQueryBuilder()
       .delete()
       .execute()
       .catch((err) => {

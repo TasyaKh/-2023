@@ -29,6 +29,6 @@ export class TDynamics {
     @Column({nullable:true})
     down: number
 
-    @OneToOne(() => TPositionsSummary, { onDelete: "CASCADE" })
+    @OneToOne(() => TPositionsSummary)
     ps: TPositionsSummary
 }
