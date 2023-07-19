@@ -37,12 +37,28 @@ const props = defineProps<{
 
 
                 <!-- projects -->
-                <div class="col">
+                <div class="col-auto">
                     <select class="form-select" aria-label="project" v-model="selectedProject">
-                        <option value="1" :selected="selectedProject==1">Проект</option>
+                        <option value="1" :selected="selectedProject==1">БГБ Иркутск</option>
+                        <option value="2" :selected="selectedProject==2">Проект 1</option>
+                        <option value="3" :selected="selectedProject==3">Проект 2</option>
                     </select>
                 </div>
-
+                <div class="col-auto">
+                    <div class="container">
+                        bgazobeton.ru
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="dot">
+                        •   
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="number">
+                        12418261  
+                    </div>
+                </div>
             </div>
 
 
@@ -116,6 +132,69 @@ const props = defineProps<{
             font-weight: bolder;
 
         }
+    }
+
+    .form-select {
+        border: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+
+        color: var(--unnamed, #352958);
+        font-family: "Panton SemiBold";
+        font-size: 21.552px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        
+        &:hover {
+            border-radius: 13px;
+            border: 1px solid var(--unnamed, rgba(61, 61, 61, 0.10));
+        }
+        
+    }
+    .container{
+        display: flex;
+        width: 133px;
+        height: 38px;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--unnamed, #352958);
+        font-family: "Panton";
+        font-size: 21.552px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        text-decoration-line: underline;
+    }
+    .dot{
+        display: flex;
+        width: 10px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--unnamed, #352958);
+        font-family: "Panton";
+        font-size: 21.552px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+    }
+    .number{
+        display: flex;
+        width: 80px;
+        height: 43px;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--unnamed, #352958);
+        font-family: "Panton";
+        font-size: 21.552px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
     }
 }
 
