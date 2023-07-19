@@ -127,7 +127,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
         <div class="row">
             <div class="projects">
                 <table class="table-projects" cellspacing="0">
-                    <thead>
+                    <thead class="text-center">
                         <tr class="">
                             <th>
                                 <div class="row">

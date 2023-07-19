@@ -54,6 +54,10 @@ async function fetchSitePositions() {
         }
 
     })
+
+    if(res[0]==null)errResponseMsg.value = "данных нет"
+    else errResponseMsg.value = ""
+
     // const region_indexes = browsers[selectedBrowser.value].regions_indexes
     sitePositionsData.value = res[0]
 }
@@ -67,12 +71,12 @@ async function getRegionIndexes() {
     region_indexes.value = regionIndexes
 }
 
-async function handleTimeChanged(startDate: Date, endDate: Date) {
-    date1.value = startDate
-    date2.value = endDate
+// async function handleTimeChanged(startDate: Date, endDate: Date) {
+//     date1.value = startDate
+//     date2.value = endDate
 
-    await fetchSitePositions()
-}
+//     await fetchSitePositions()
+// }
 
 </script>
 
@@ -83,6 +87,7 @@ async function handleTimeChanged(startDate: Date, endDate: Date) {
 
         <!-- {{ date1.toLocaleDateString() }} - {{ date2.toLocaleDateString() }} -->
         <!-- <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/> -->
+
 
         <!-- в случае ошибки -->
         <div v-if="errResponseMsg != ''" class="alert alert-danger" role="alert">

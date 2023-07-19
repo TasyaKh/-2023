@@ -21,6 +21,10 @@ export class GeneralController {
   async updateDB() {
    
     //  очистить проекты
+    // await this.generalService.clearProjectsYandex()
+    // await this.generalService.clearProjectsTopvisor()
+
+
     this.updateEveryday()
     this.updateEveryweek()
   }

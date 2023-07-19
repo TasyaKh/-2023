@@ -164,7 +164,7 @@ const attrs = ref([
 
                             <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
                                 :data="searchEngineData.data" />
-                            <Loading v-else />
+                            <Loading  v-else />
                         </div>
                     </div>
                 </div>

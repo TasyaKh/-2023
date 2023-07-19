@@ -32,6 +32,9 @@ const visits = ref()        //все визиты
 
 const loading = ref(false)//загрузка
 
+
+const errResponseMsg = ref("")
+
 onBeforeMount(async () => {
     await fetchGraphics()
 })
@@ -43,6 +46,8 @@ async function fetchGraphics() {
     goalDimensions.value = await yandexlStore
         .goalDmension(yandexId, date1.value, date2.value)
 
+    if (goalDimensions.value.length <= 0) errResponseMsg.value = "данных нет"
+    else errResponseMsg.value = ""
     // визиты
     visits.value = await yandexlStore
         .visits(yandexId, date1.value, date2.value)
@@ -64,14 +69,17 @@ function handleTimeChanged(startDate: Date, endDate: Date) {
 
 
     <div class="container">
-        <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/>
+        <TimeRanges :handleTimeChanged="handleTimeChanged" :date1="date1" :date2="date2" />
 
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
+
             <!-- statistic -->
 
-
             <div class="row">
+                <div v-if="errResponseMsg != ''" class="alert alert-danger" role="alert">
+                    {{ errResponseMsg }}
+                </div>
                 <!-- 6 устройства -->
                 <div class="col-12" v-if="visits && visits.data" v-for="dashboard in goalDimensions.data">
 
@@ -100,7 +108,7 @@ function handleTimeChanged(startDate: Date, endDate: Date) {
 // statistic-----------------------------------------------------------------------------
 .chart-container {
     width: 100%;
-    margin: auto;
+    // margin: auto;
 
 }
 
