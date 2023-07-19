@@ -29,6 +29,7 @@ const date2 = ref(new Date())
 
 const yandexlStore = useYandexStore();
 
+const loading = ref(false)
 // data for graphics ---------------------------------------------------------------
 
 const sourceTraffic = ref()
@@ -44,6 +45,7 @@ onBeforeMount(async () => {
 
 async function fetchGraphics() {
 
+    loading.value = true
     // 3)источники трафика
     sourceTraffic.value = await yandexlStore
         .sourceTraffic(yandexId, date1.value, date2.value)
@@ -64,6 +66,7 @@ async function fetchGraphics() {
     visitsBrowsers.value = await yandexlStore
         .visitsBrowsers(yandexId, date1.value, date2.value)
 
+    loading.value = false
 
 }
 
@@ -90,7 +93,7 @@ const attrs = ref([
 
     <div class="container">
 
-        <TimeRanges :handleTimeChanged="handleTimeChanged"  :date1="date1" :date2="date2"/>
+        <TimeRanges :handleTimeChanged="handleTimeChanged" :date1="date1" :date2="date2" />
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
@@ -164,7 +167,7 @@ const attrs = ref([
 
                             <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
                                 :data="searchEngineData.data" />
-                            <Loading  v-else />
+                            <Loading v-else-if="loading" />
                         </div>
                     </div>
                 </div>

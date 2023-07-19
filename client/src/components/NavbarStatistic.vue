@@ -70,7 +70,7 @@ function changeProject() {
         name: router.currentRoute.value.name ?? "Dashboards",
         params: {
             yandex_id: findedTPr.yandexProject.id,
-            topvisor_id:  findedTPr.topvisorProject.id
+            topvisor_id: findedTPr.topvisorProject.id
         }
     });
 }
@@ -84,7 +84,7 @@ watch(() => route.params, async () => {
 
 <template>
     <nav class="navbar bg-white fixed-top p-2">
-        
+
         <div class="container-fluid">
             <div class="row align-items-center">
 
@@ -103,14 +103,15 @@ watch(() => route.params, async () => {
                     <select class="form-select" aria-label="project" v-model="selectedProject" @click="fetchProjects()"
                         @change="changeProject()">
                         <option v-for="project, i in projects" :value="project.topvisorProject.id"
-                            :selected="selectedProject == project.topvisorProject.id">
-                            #{{ i + 1 }} {{ project.topvisorProject.name }}
+                            :selected="selectedProject == project.topvisorProject.id" :class="[{'selected':selectedProject == project.topvisorProject.id}]">
+                            {{ i + 1 }}. {{ project.topvisorProject.name }}
                         </option>
                     </select>
                 </div>
 
                 <div class="col mx-1" v-if="projectTopvisor && projectTopvisor.site">
-                    {{ projectTopvisor.site }}
+                    <a :href="`https://${projectTopvisor.site}`"> {{ projectTopvisor.site }}</a>
+                   
                 </div>
 
 
@@ -177,6 +178,20 @@ watch(() => route.params, async () => {
 
 
 <style scoped lang="scss">
+// option
+
+option {
+    &:hover {
+        background: rgba(237, 238, 240, 0.4);
+        transition: 0.3s;
+    }
+
+    &.selected{
+        background-color: rgba(80, 68, 114, 1);
+        color: white;
+    }
+}
+
 .navbar {
     font-family: "Panton";
 
