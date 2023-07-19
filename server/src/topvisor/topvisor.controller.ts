@@ -43,7 +43,7 @@ export class TopvisorController {
   async fetchProjects(@Query() findProjectsDto: FindProjectsTopvisorDto) {
     let projects = await this.topvisorService.fetchProjects(findProjectsDto);
     // save projects in database
-    this.topvisorService.saveProjectsDatabase(projects.result)
+    //this.topvisorService.saveProjectsDatabase(projects.result)
 
 
     return projects

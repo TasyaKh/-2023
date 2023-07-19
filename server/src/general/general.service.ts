@@ -128,7 +128,7 @@ export class GeneralService {
     await this.topvisorService.clearProjects()
   }
 
-  async fetchPositionsTopvisor(date1:Date, date2:Date) {
+  async fetchPositionsTopvisor(date1: Date, date2: Date) {
 
     const tProjects = await this.topvisorService.findProjects(new FindProjectsTopvisorDto())
 
@@ -142,15 +142,21 @@ export class GeneralService {
       ptDto.date2 = date2
 
       const positions = await this.topvisorService.fetchPositions(ptDto)
-     
+        .catch((err) => {
+          console.log(err)
+        })
+
       const sadevPositions = await this.topvisorService.savePositionDatabase(positions.result)
+        .catch((err) => {
+          console.log(err)
+        })
 
     }
 
   }
 
   // updateProjects
-  async updateYDashboards(date1:Date, date2:Date) {
+  async updateYDashboards(date1: Date, date2: Date) {
     const yProjects = await this.yandexService.findProjects(new FindProjectsDto())
 
     // пройтись по вем проектам в бд
@@ -159,6 +165,9 @@ export class GeneralService {
 
       // обновить даные для нудных
       const dashboards = await this.yandexService.fetchAndSaveGraphics(id, date1, date2)
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }

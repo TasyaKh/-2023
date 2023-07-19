@@ -45,11 +45,13 @@ export class YandexService {
 
     await axiosYandexInstance.get("/management/v1/counters", { params: params }).then((response) => {
       res = response.data
+    }).catch((err)=>{
+      console.log(err)
     })
 
-    if (res.errors) {
-      throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    }
+    // if (res.errors) {
+    //   throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
+    // }
 
     return res
   }

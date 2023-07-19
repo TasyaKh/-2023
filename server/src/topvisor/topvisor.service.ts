@@ -79,11 +79,13 @@ export class TopvisorService {
 
     await axiosTopvisorInstance.get("/v2/json/get/projects_2/projects", { data: params }).then((response) => {
       res = response.data
+    }).catch((err)=>{
+      console.log(err)
     })
 
-    if (res.errors) {
-      throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    }
+    // if (res.errors) {
+    //   throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
+    // }
 
     return res
   }
@@ -254,15 +256,18 @@ export class TopvisorService {
       for (const io in srch.regions) {
         const rg = srch.regions[io]
         // save region
-        const region = await this.tRegionRepository.save(
-          {
-            name: rg.name,
-            index: rg.index,
-            lang: rg.lang,
-            device_name: rg.device_name,
-            searcher: searcher
-          }
-        )
+        if (rg && rg.index) {
+          const region = await this.tRegionRepository.save(
+            {
+              name: rg.name,
+              index: rg.index,
+              lang: rg.lang,
+              device_name: rg.device_name,
+              searcher: searcher
+            }
+          )
+        }
+
       }
 
 
