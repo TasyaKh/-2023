@@ -101,10 +101,11 @@ function isPositionsSummary(project: any) {
 // перейти на страницу со статистикой
 function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: number) {
     router.push({
-        name: 'Dashboards', params: {
-            yandex_id: yandexProjectId,
-            topvisor_id: topvisorProjectId
-        }
+        path:`/dashboards/${yandexProjectId}/${topvisorProjectId}`
+        // name: 'Dashboards', params: {
+        //     yandex_id: yandexProjectId,
+        //     topvisor_id: topvisorProjectId
+        // }
     });
 }
 
@@ -190,7 +191,7 @@ function navigateToPageStatistic(yandexProjectId: number, topvisorProjectId: num
                                         </div>
                                         <!-- сайт -->
                                         <div class="row project__site">
-                                            <a href="https://{{project.topvisorProject.site}}">
+                                            <a :href="`https://${project.topvisorProject.site}`">
                                                 {{ project.topvisorProject.site }}
                                             </a>
                                         </div>

@@ -28,7 +28,8 @@ const props = defineProps<{ name: string }>()
 
 .time-button:hover
 {
-    background: rgba(237, 238, 240, 0.4)
+    background: rgba(237, 238, 240, 0.4);
+    transition: 0.3s;
 }
 
 .time-button:active

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TOPVISOR_API_URL, YANDEX_API_URL } from "./config";
+import { TOPVISOR_API_URL, YANDEX_API_URL } from "./config copy";
 
 // инициализировать рест штуки, которые обращаются к апи
 // топвизор

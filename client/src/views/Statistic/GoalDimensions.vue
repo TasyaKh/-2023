@@ -119,7 +119,7 @@ function handleTimeChanged(startDate: Date, endDate: Date) {
     border: 2px solid #3D3D3D1A;
     border-radius: 20px;
     padding: 20px;
-    margin: 30px auto 30px auto;
+    margin: 20px auto 20px auto;
     width: fit-content;
     background: white;
 }

@@ -25,7 +25,7 @@ function timeChanged(date1: Date, date2: Date) {
 
 </script>
 <template>
-    <div class="row">
+    <div class="row p-2">
         <!-- ЗДЕСЬ ПРОИСХОДИТ МАГИЯ go to -> Google -->
         <!-- кнопки времени -->
         <div class="col-auto p-0">
@@ -43,7 +43,7 @@ function timeChanged(date1: Date, date2: Date) {
             <TimeButton class="btn-end" name="Месяц"
                 @click="timeChanged(new Date(new Date().getTime() - 8_6400_000 * 30), new Date())" />
         </div>
-        <div class="col-auto">
+        <div class="col-auto p-0 px-lg-2">
             <CalendarButton :handleDateChanged="timeChanged" :start="d1" :end="d2" />
         </div>
 

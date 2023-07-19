@@ -2,11 +2,12 @@
 
 import { useTopvisorStore } from '@/stores/topvisor-dashboards';
 import { useGeneralStore } from '@/stores/general';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 
 const router = useRouter()
+const route = useRoute()
 
 const selectedProject = ref(0)          //выбранный проект
 
@@ -26,6 +27,8 @@ const projects = ref()//проект
 
 onBeforeMount(async () => {
     await getProject()
+    selectedProject.value = projectTopvisor.value.id
+
 })
 
 
@@ -44,49 +47,70 @@ async function fetchProjects() {
     projects.value = p
     loading.value = false
 
-
 }
 
 // изменить проект
 function changeProject() {
-    const tId = projects.value[selectedProject.value].topvisorProject.id
-    const yId = projects.value[selectedProject.value].yandexProject.id
+
+    let findedTPr = null
+
+    // find project
+    for (let i in projects.value) {
+        let pr = projects.value[i]
+        if (selectedProject.value == pr.topvisorProject.id)
+            findedTPr = pr
+    }
+    // const tId = projects.value[selectedProject.value].topvisorProject.id
+    // const yId = projects.value[selectedProject.value].yandexProject.id
+
 
     // обновить страницу
     router.push({
+        // path: `/dashboards/${yId}/${tId}`
         name: router.currentRoute.value.name ?? "Dashboards",
         params: {
-            yandex_id: yId,
-            topvisor_id: tId
+            yandex_id: findedTPr.yandexProject.id,
+            topvisor_id:  findedTPr.topvisorProject.id
         }
     });
 }
 
+watch(() => route.params, async () => {
+    window.location.reload()
+})
+
+
 </script>
 
 <template>
-    <nav class="navbar bg-white fixed-top">
+    <nav class="navbar bg-white fixed-top p-2">
+        
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
 
                 <!-- menu button -->
                 <div class="col-auto">
                     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <span class="navbar-toggler-icon"></span>
+                        <img src="./icons/menu.svg" alt="">
                     </button>
                 </div>
 
 
 
                 <!-- search projects -->
-                <div class="col">
+                <div class="col-auto mx-1">
                     <select class="form-select" aria-label="project" v-model="selectedProject" @click="fetchProjects()"
                         @change="changeProject()">
-                        <option v-for="project, i in projects" :value="i" :selected="selectedProject == i">
+                        <option v-for="project, i in projects" :value="project.topvisorProject.id"
+                            :selected="selectedProject == project.topvisorProject.id">
                             #{{ i + 1 }} {{ project.topvisorProject.name }}
                         </option>
                     </select>
+                </div>
+
+                <div class="col mx-1" v-if="projectTopvisor && projectTopvisor.site">
+                    {{ projectTopvisor.site }}
                 </div>
 
 
@@ -168,5 +192,29 @@ function changeProject() {
 
 .offcanvas {
     max-width: 230px;
+    background: #ECECF8;
+
+
+}
+
+button.navbar-toggler {
+    border: none;
+    margin-left: 50px;
+    padding: 10px;
+
+    &:active,
+    &:focus {
+        border: none;
+        box-shadow: none;
+    }
+
+    &:hover {
+        background-color: #F0F1FF;
+        transition: 0.3s;
+    }
+}
+
+.form-select {
+    cursor: pointer;
 }
 </style>
