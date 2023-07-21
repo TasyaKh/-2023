@@ -4,8 +4,8 @@ import CONNECTION from "./db.connection"
 //@ts-ignore
 const AppDataSource = new DataSource({
     ...CONNECTION,
-    entities:["*/**/*.entity.ts"],
-    migrations:["src/migrations/*.ts"]
+    entities:["*/**/*.entity.ts"],//сущности для бд как искать
+    migrations:["src/migrations/*.ts"]//миграции
 })
 
 AppDataSource.initialize()

@@ -1,64 +1,121 @@
 <script setup lang="ts">
-import { useTopvisorStore } from '@/stores/topvisor-dashboards';
-import { onBeforeMount, ref } from 'vue';
 
-// const selectedItem = ref(1)
-const selectedProject = ref(1)
+import { useTopvisorStore } from '@/stores/topvisor-dashboards';
+import { useGeneralStore } from '@/stores/general';
+import { useRouter, useRoute } from 'vue-router';
+
+import { onBeforeMount, ref, watch } from 'vue';
+
+const router = useRouter()
+const route = useRoute()
+
+const selectedProject = ref(0)          //выбранный проект
 
 const topvisorStore = useTopvisorStore()
+const generalStore = useGeneralStore()
+
+
+const loading = ref(false)  //загрузка
 
 const props = defineProps<{
-    yandexId: number,
-    topvisorId: number,
-    // date1: Date,
-    // date2: Date,
-    // handleEventSelectedItem: Function
+    yandexId: number,//яндекс ид
+    topvisorId: number,//топвизор ид
 }>()
 
+const projectTopvisor = ref()//проект топвизора
+const projects = ref()//проект
+
 onBeforeMount(async () => {
-   await getProject()
+    await getProject()
+    selectedProject.value = projectTopvisor.value.id
+
 })
 
-const projectTopvisor = ref()
-const projects = ref()
 
+// получить текущий проект, нам нужно его имя
 async function getProject() {
-    projectTopvisor.value = await topvisorStore.getProjects(props.topvisorId)
-    projects.value = [{yandexProject:null, topvisorProject:projectTopvisor.value}]
-    selectedProject.value = projectTopvisor.value.result[0].id
+    const p = await topvisorStore.getProjects(props.topvisorId)
+
+    projectTopvisor.value = p[0]
+    projects.value = [{ yandexProject: null, topvisorProject: projectTopvisor.value }]
 }
+
+// получить список проектов
+async function fetchProjects() {
+    loading.value = true
+    const p = await generalStore.getProjects()
+    projects.value = p
+    loading.value = false
+
+}
+
+// изменить проект
+function changeProject() {
+
+    let findedTPr = null
+
+    // find project
+    for (let i in projects.value) {
+        let pr = projects.value[i]
+        if (selectedProject.value == pr.topvisorProject.id)
+            findedTPr = pr
+    }
+    // const tId = projects.value[selectedProject.value].topvisorProject.id
+    // const yId = projects.value[selectedProject.value].yandexProject.id
+
+
+    // обновить страницу
+    router.push({
+        // path: `/dashboards/${yId}/${tId}`
+        name: router.currentRoute.value.name ?? "Dashboards",
+        params: {
+            yandex_id: findedTPr.yandexProject.id,
+            topvisor_id: findedTPr.topvisorProject.id
+        }
+    });
+}
+
+watch(() => route.params, async () => {
+    window.location.reload()
+})
 
 
 </script>
 
 <template>
+    <nav class="navbar bg-white fixed-top p-2">
 
-    
-    <nav class="navbar bg-white fixed-top">
         <div class="container-fluid">
-
-            <div class="row">
+            <div class="row align-items-center">
 
                 <!-- menu button -->
                 <div class="col-auto">
                     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <span class="navbar-toggler-icon"></span>
+                        <img src="./icons/menu.svg" alt="">
                     </button>
                 </div>
 
 
+
                 <!-- search projects -->
-                <div class="col">
-                    <select class="form-select" aria-label="project" v-model="selectedProject">
-                        <option v-for="project in projects" :value="project.topvisorProject.result[0].id" :selected="selectedProject == project.topvisorProject.result[0].id">
-                            {{project.topvisorProject.result[0].name  }}
+                <div class="col-auto mx-1">
+                    <select class="form-select" aria-label="project" v-model="selectedProject" @click="fetchProjects()"
+                        @change="changeProject()">
+                        <option v-for="project, i in projects" :value="project.topvisorProject.id"
+                            :selected="selectedProject == project.topvisorProject.id" :class="[{'selected':selectedProject == project.topvisorProject.id}]">
+                            {{ i + 1 }}. {{ project.topvisorProject.name }}
                         </option>
                     </select>
                 </div>
 
-            </div>
+                <div class="col mx-1" v-if="projectTopvisor && projectTopvisor.site">
+                    <a :href="`https://${projectTopvisor.site}`"> {{ projectTopvisor.site }}</a>
+                   
+                </div>
 
+
+            </div>
 
 
             <!-- выезжающее меню -->
@@ -105,7 +162,8 @@ async function getProject() {
                                 <img src="./icons/percent.svg" alt="">
                             </div>
                             <div class="col">
-                                <a class="nav-link active" aria-current="page" href="#">Конверсии</a>
+                                <a class="nav-link active" aria-current="page"
+                                    :href="`/goal-dimensions/${yandexId}/${topvisorId}`">Конверсии</a>
                             </div>
 
                         </li>
@@ -120,6 +178,20 @@ async function getProject() {
 
 
 <style scoped lang="scss">
+// option
+
+option {
+    &:hover {
+        background: rgba(237, 238, 240, 0.4);
+        transition: 0.3s;
+    }
+
+    &.selected{
+        background-color: rgba(80, 68, 114, 1);
+        color: white;
+    }
+}
+
 .navbar {
     font-family: "Panton";
 
@@ -135,5 +207,29 @@ async function getProject() {
 
 .offcanvas {
     max-width: 230px;
+    background: #ECECF8;
+
+
+}
+
+button.navbar-toggler {
+    border: none;
+    margin-left: 50px;
+    padding: 10px;
+
+    &:active,
+    &:focus {
+        border: none;
+        box-shadow: none;
+    }
+
+    &:hover {
+        background-color: #F0F1FF;
+        transition: 0.3s;
+    }
+}
+
+.form-select {
+    cursor: pointer;
 }
 </style>

@@ -2,6 +2,7 @@
 
 import { onBeforeMount, ref } from 'vue';
 import { useYandexStore } from '@/stores/yandex-dashboards';
+import TimeRanges from '@/components/TimeRanges.vue';
 
 // graphics
 import EPie from '@/components/Charts/EPie.vue';
@@ -10,9 +11,8 @@ import EStackedArea from '@/components/Charts/EStackedArea.vue';
 
 import { useRoute } from 'vue-router';
 import NavbarStatistic from '@/components/NavbarStatistic.vue';
-import TimeButton from '@/components/TimeButton.vue';
-import Totals from '@/components/Charts/Totals.vue';
 import Loading from '@/components/Loading.vue';
+import Totals from '@/components/Charts/Totals.vue';
 
 const route = useRoute()
 
@@ -22,16 +22,14 @@ const topvisorId = Number(route.params.topvisor_id);
 
 // filters-----------------------------------------------------------------  
 //8_6400_000 - one day, 
-// const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
-// // today
-// const date2 = ref(new Date())
-
-const date1 = ref(new Date("2023-06-14"))
+const date1 = ref(new Date(new Date().getTime() - 8_6400_000 * 30))
 // today
-const date2 = ref(new Date("2023-07-14"))
+const date2 = ref(new Date())
+
 
 const yandexlStore = useYandexStore();
 
+const loading = ref(false)
 // data for graphics ---------------------------------------------------------------
 
 const sourceTraffic = ref()
@@ -41,11 +39,13 @@ const dataDeviceCategory = ref()
 const visitsBrowsers = ref()
 
 onBeforeMount(async () => {
+
     await fetchGraphics()
 })
 
 async function fetchGraphics() {
 
+    loading.value = true
     // 3)источники трафика
     sourceTraffic.value = await yandexlStore
         .sourceTraffic(yandexId, date1.value, date2.value)
@@ -54,7 +54,7 @@ async function fetchGraphics() {
     searchEngineData.value = await yandexlStore
         .visitsFromSearchSystems(yandexId, date1.value, date2.value)
 
-    // // 5) доля брендового и небрендового трафика
+    // 5) доля брендового и небрендового трафика
     segmentTrafficData.value = await yandexlStore
         .segmentTraffic(yandexId, date1.value, date2.value)
 
@@ -66,9 +66,25 @@ async function fetchGraphics() {
     visitsBrowsers.value = await yandexlStore
         .visitsBrowsers(yandexId, date1.value, date2.value)
 
+    loading.value = false
 
 }
 
+// при изменени времени
+function handleTimeChanged(startDate: Date, endDate: Date) {
+    date1.value = startDate
+    date2.value = endDate
+
+    fetchGraphics()
+}
+
+// для v-calendar
+const attrs = ref([
+    {
+        highlight: true,
+        dates: new Date(),
+    },
+]);
 </script>
 
 <template>
@@ -76,7 +92,8 @@ async function fetchGraphics() {
 
 
     <div class="container">
-        {{ date1.toLocaleString() }} - {{ date2.toLocaleString() }}
+
+        <TimeRanges :handleTimeChanged="handleTimeChanged" :date1="date1" :date2="date2" />
         <!-- {{ preparedData.deviceCategory }} -->
         <div class="chart-container">
             <!-- statistic -->
@@ -89,8 +106,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'"
-                                :name="'Устройства'" :data="dataDeviceCategory" />
+                            <EPie v-if="dataDeviceCategory" :subtext="'визиты'" :name="'Устройства'"
+                                :data="dataDeviceCategory" />
                             <Loading v-else />
 
                         </div>
@@ -104,8 +121,7 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <Totals v-if="visitsBrowsers" title="Поисковые системы"
-                                :data="visitsBrowsers" />
+                            <Totals v-if="visitsBrowsers" title="Поисковые системы" :data="visitsBrowsers" />
                             <Loading v-else />
 
                         </div>
@@ -135,8 +151,8 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EPie v-if="segmentTrafficData" :subtext="'визиты'"
-                                :name="'Сегментация трафика'" :data="segmentTrafficData" />
+                            <EPie v-if="segmentTrafficData" :subtext="'визиты'" :name="'Сегментация трафика'"
+                                :data="segmentTrafficData" />
                             <Loading v-else />
                         </div>
                     </div>
@@ -149,9 +165,9 @@ async function fetchGraphics() {
 
                         <div class="row d-flex justify-content-center text-center">
 
-                            <EStackedArea v-if="searchEngineData" :title="'Поисковые системы'"
-                                :data="searchEngineData" :time_intervals="searchEngineData.time_intervals" />
-                            <Loading v-else />
+                            <EStackedArea v-if="searchEngineData && searchEngineData.data" :title="'Поисковые системы'"
+                                :data="searchEngineData.data" />
+                            <Loading v-else-if="loading" />
                         </div>
                     </div>
                 </div>
@@ -168,16 +184,17 @@ async function fetchGraphics() {
 
 }
 
-
 // copied from Statistic
 .block-content,
 .block-content-full {
     border: 2px solid #3D3D3D1A;
     border-radius: 20px;
     padding: 20px;
-    margin: 30px auto 30px auto;
-    width: fit-content;
+    margin: 10px auto 10px auto;
+    // width: 50%;
+    flex-wrap: wrap;
     background: white;
+
 }
 
 
@@ -189,6 +206,18 @@ async function fetchGraphics() {
 .container {
     margin-top: 5rem;
 }
+
+.button-group {
+    display: inline-flex;
+    border: 0.1px rgba(61, 61, 61, 0.10) solid;
+    border-radius: 13px;
+    overflow: hidden;
+}
+
+// контейнер для кнопок, связанных с указанием дат
+.container-for-date-element {
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: auto;
+}
 </style>
-
-

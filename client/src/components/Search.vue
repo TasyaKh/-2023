@@ -2,13 +2,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-const searchTxt = ref()
+const searchTxt = ref() //текст для поиска
 
 const props = defineProps<{
+    // передать изменения текста на обработку выше
     handleEventStartSearch: Function,
 }>()
 
+// начать поиск
 function startSearch() {
+    // передать обработку текста
     props.handleEventStartSearch(searchTxt.value)
 }
 
@@ -17,6 +20,7 @@ function startSearch() {
 <template>
     <div class="search-container">
 
+        <!-- поиск -->
         <div class="row">
             <div class="col-auto"> <a href="#" class="search-btn" @click="startSearch()">
                     <img src="./icons/иконка поиска.svg" alt="">
@@ -36,7 +40,6 @@ function startSearch() {
     border: 1px solid #E4DFF0;
     background-color: var(--tc-c-white);
     padding: 8px 20px;
-    // box-shadow: 3px 5px 17px -4px rgba(152, 131, 197, 0.33) inset;
 
     input {
         font-family: "Panton";
@@ -47,8 +50,6 @@ function startSearch() {
         margin: 0 20px;
         cursor: pointer;
     }
-
-
 }
 
 

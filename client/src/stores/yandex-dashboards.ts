@@ -4,6 +4,17 @@ import { defineStore } from 'pinia'
 
 export const useYandexStore = defineStore('yandex', () => {
 
+    // visits
+    function visits(ids: number, date1: Date, date2: Date) {
+        return getDahshboards(ids, date1, date2, 'visits')
+    }
+
+
+    // конверсии
+    function goalDmension(ids: number, date1: Date, date2: Date) {
+        return getDahshboards(ids, date1, date2, 'goal-dimension')
+    }
+
     // 7) Поисковые системы информация о поисковых системах, которые привели посетителей на сайт)
     function visitsBrowsers(ids: number, date1: Date, date2: Date) {
         return getDahshboards(ids, date1, date2, 'browsers')
@@ -31,12 +42,13 @@ export const useYandexStore = defineStore('yandex', () => {
     }
 
     async function getDahshboards(ids: number, date1: Date, date2: Date, typeDashboard: string) {
-
+        // console.log("date1, date2")
+        // console.log(date1.toISOString(), date2.getTime())
         const res = await axios.get('/api/yandex/dashboards/' + typeDashboard, {
             params: {
                 ids: ids,
-                date1: date1.toISOString().substring(0, 10),
-                date2: date2.toISOString().substring(0, 10)
+                date1: date1.toDateString(),
+                date2: date2.toDateString()
             }
         })
 
@@ -51,6 +63,8 @@ export const useYandexStore = defineStore('yandex', () => {
         getDeviceCategory,
         visitsFromSearchSystems,
         segmentTraffic,
-        sourceTraffic
+        sourceTraffic,
+        goalDmension,
+        visits
     }
 })

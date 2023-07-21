@@ -13,8 +13,8 @@
 }
 
 a {
-  color: var(--tc-c-purple);
-  text-decoration: none;
+  color: var(--tc-c-purple) !important;
+  // text-decoration: none !important;
   padding: 0 !important;
 }
 
@@ -31,5 +31,10 @@ a {
     box-shadow: none !important;
   }
 
+}
 
+button {
+  &:hover {
+    transition: 0.3s !important;
+  }
 }

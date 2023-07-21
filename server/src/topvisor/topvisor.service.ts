@@ -9,6 +9,12 @@ import { TopvisorProject } from './entities/topvisor-project.entity';
 import { TTops } from './entities/tops.entity';
 import { TDynamics } from './entities/dynamics.entity';
 import { TPositionsSummary } from './entities/positions_summary.entity';
+import { TResult } from './entities/result.entity';
+import { TSearcher } from './entities/searchers.entity';
+import { TRegion } from './entities/regions.entity';
+import { THeader } from './entities/headers.entity';
+import { TKeywords } from './entities/keywords.entity';
+import { TPositionsData } from './entities/positions-data.entity';
 
 @Injectable()
 export class TopvisorService {
@@ -26,63 +32,81 @@ export class TopvisorService {
     @InjectRepository(TPositionsSummary)
     private readonly tPositionsSummaryRepository: Repository<TPositionsSummary>,
 
+
+
+    // save in my db
+    @InjectRepository(TResult)
+    private readonly tResultRepository: Repository<TResult>,
+
+
+    @InjectRepository(TSearcher)
+    private readonly tSearcherRepository: Repository<TSearcher>,
+
+
+    @InjectRepository(TPositionsData)
+    private readonly tPositionsDataRepository: Repository<TPositionsData>,
+
+
+    @InjectRepository(TRegion)
+    private readonly tRegionRepository: Repository<TRegion>,
+
+    @InjectRepository(THeader)
+    private readonly tHeaderRepository: Repository<THeader>,
+
+    @InjectRepository(TKeywords)
+    private readonly tKeywordsRepository: Repository<TKeywords>,
+
   ) { }
 
 
   // remote api-------------------------------------------------------------
 
+  // получить проекты
   async fetchProjects(findProjectsDto: FindProjectsTopvisorDto) {
 
     let res = null
 
+    // параметры
     const params = {
       ...findProjectsDto,
       include_positions_summary_params: {
         show_dynamics: 0,
-        show_tops: 1
-      },
-      fields: ["id", "name", "site", "date"]
+        show_tops: 1,
+      },//показать хедеры
+      fields: ["id", "name", "site", "date"],
+      show_searchers_and_regions: 1,
     }
 
     await axiosTopvisorInstance.get("/v2/json/get/projects_2/projects", { data: params }).then((response) => {
       res = response.data
+    }).catch((err)=>{
+      console.log(err)
     })
 
-    if (res.errors) {
-      throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
-    }
+    // if (res.errors) {
+    //   throw new HttpException(res.errors, HttpStatus.BAD_REQUEST, { cause: new Error(res.errors) });
+    // }
 
     return res
   }
 
 
+  // проверить позиции
+  async fetchPositions(positionsTopvisorDto: PositionsTopvisorDto) {
 
-  async checkPositions(positionsTopvisorDto: PositionsTopvisorDto) {
+    const date1 = positionsTopvisorDto.date1.toISOString().substring(0, 10)
+    const date2 = positionsTopvisorDto.date2.toISOString().substring(0, 10)
 
-    // console.log(positionsTopvisorDto)
     let res = null
 
     const params = {
       ...positionsTopvisorDto,
       show_headers: 1,
-      show_exists_dates: 1
-      // type_range: 2,
-
+      show_exists_dates: 1,
+      date1: date1,
+      date2: date2,
     }
 
-
-    //       show_exists_dates:1,
-    //  show_headers: 1,
-    // show_top_by_depth: 10,
-    // show_visitors: 1,
-    // positions_fields: ["position", "relevant_url", "snippet_ext", "visitors"]
-    // , orders: [],
-    // group_folder_id_depth: 1,
-    // filter_by_dynamic: [],
-    // filter_by_positions: [],
-    // filters: [],
-
-    // fields: ["name", "positionStatus:88", "volume:63:0:1", "volume:63:0:2", "volume:63:0:3", "volume:63:0:5"]
 
     await axiosTopvisorInstance.get("/v2/json/get/positions_2/history", { data: params })
       .then((response) => {
@@ -99,21 +123,33 @@ export class TopvisorService {
 
 
   // database --------------------------------------------------------------------
+
   //  save projects в базу данных
   async saveProjectsDatabase(projects: any) {
 
-    for (let project in projects.result) {
-      let p = projects.result[project]
+    for (let project in projects) {
+      let p = projects[project]
 
+      let savedDynamic = null
+
+      let regions = []
+
+      for (let searcher in projects[project].searchers) {
+        // console.log(projects[project].searchers[searcher].regions[0].index)
+        regions.push(projects[project].searchers[searcher].regions[0].index)
+
+      }
 
       // сохранить динамику
-      const savedDynamic = await this.tDynamicsRepository.save({
-        ...p.positions_summary.dynamics,
-        id_project: p.id
-      })
+      if (p.positions_summary && p.positions_summary.dynamics) {
+        savedDynamic = await this.tDynamicsRepository.save({
+          ...p.positions_summary.dynamics,
+          id_project: p.id
+        })
+      }
 
 
-
+      // сохранить пощиции
       const savedPosSummary = await this.tPositionsSummaryRepository.save(
         {
           ...p.positions_summary,
@@ -128,7 +164,8 @@ export class TopvisorService {
       const savedProject = await this.topvisorProjectRepository.save(
         {
           ...p,
-          positions_summary: savedPosSummary
+          positions_summary: savedPosSummary,
+          regions: regions
         }
       )
 
@@ -142,13 +179,161 @@ export class TopvisorService {
             id_project: p.id,
             positions_summary: savedPosSummary
           })
-
-
       }
 
 
     }
   }
+
+
+
+
+
+  //  save positions в базу данных in result
+  async savePositionDatabase(position: any) {
+
+    // задать проект для поиска в списке
+    let ftp = new FindProjectsTopvisorDto()
+
+    // console.log("position.headers.projects")
+    // console.log(position)
+
+    ftp.project_id = position.headers.projects[0].id
+
+    // find project
+    const project: TopvisorProject = (await this.findProjects(ftp))[0]
+
+    if (project == null) {
+      throw new HttpException('проекта не существует в базе данных', HttpStatus.BAD_REQUEST)
+    }
+
+    // результат
+    const result = await this.tResultRepository.save(
+      {
+        project: project
+      }
+    )
+
+    // ключевые фразы
+    let keywords = position.keywords
+    //  save keywords, can be async
+    this.saveKeywords(keywords, result)
+
+
+    // хедер
+    const header = await this.tHeaderRepository.save(
+      {
+        result: result,
+        dates: position.headers.dates
+      }
+    )
+
+    // save searchers
+    this.saveSearchers(header, position.headers.projects[0])
+
+  }
+
+
+
+  // save searchers
+  async saveSearchers(header: THeader, project: any) {
+
+    // пройти по проекту
+    for (const i in project.searchers) {
+      const srch = project.searchers[i]
+
+
+      // console.log(project)
+      // save searcher
+      const searcher = await this.tSearcherRepository.save(
+        {
+          name: srch.name,
+          header: header
+        }
+      )
+
+      // go throught regions
+      for (const io in srch.regions) {
+        const rg = srch.regions[io]
+        // save region
+        if (rg && rg.index) {
+          const region = await this.tRegionRepository.save(
+            {
+              name: rg.name,
+              index: rg.index,
+              lang: rg.lang,
+              device_name: rg.device_name,
+              searcher: searcher
+            }
+          )
+        }
+
+      }
+
+
+    }
+
+
+  }
+
+  // сохранить коючевые слова
+  async saveKeywords(keywords: any, result: TResult) {
+
+    for (let i in keywords) {
+      let key = keywords[i]
+
+      // сохранить ключевое слово
+      const keyword = await this.tKeywordsRepository.save(
+        {
+          result: result,
+          name: key.name
+        }
+      )
+
+      let positionsData = key.positionsData
+
+      // пройти по позицям ключевых словам
+      for (const dpr in positionsData) {
+        // сохранить позицию
+        const positionData = await this.tPositionsDataRepository.save(
+          {
+            dpr: dpr,
+            position: positionsData[dpr].position,
+            keyword: keyword
+          }
+        )
+      }
+      //  console.log(p)
+    }
+  }
+
+
+  // удалить все проекты
+  async clearProjects() {
+    await this.topvisorProjectRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+
+    // удалить саммари
+    await this.tPositionsSummaryRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+
+    // удалить динамику
+    await this.tDynamicsRepository.createQueryBuilder()
+      .delete()
+      .execute()
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
 
   // найти проекты 
   async findProjects(findProjectsTopvisorDto: FindProjectsTopvisorDto) {
@@ -166,16 +351,71 @@ export class TopvisorService {
 
   }
 
+  // найти проекты 
+  async findPositions(ptDto: PositionsTopvisorDto) {
+
+    let query = this.tResultRepository
+      .createQueryBuilder("t_result")
+      .leftJoinAndSelect("t_result.keyword", "keyword")
+      .leftJoinAndSelect("t_result.header", "header")
+      .leftJoinAndSelect("t_result.project", "project")
+
+      // ключевые слова
+      .leftJoinAndSelect("keyword.positions_data", "positions_data")
+
+      .leftJoinAndSelect("header.searchers", "searchers")
+      .leftJoinAndSelect("searchers.region", "region")
+      .where("project.id = :project_id", { project_id: ptDto.project_id })
+
+
+    return await query.getMany()
+
+  }
+
+  // фильтровать проекты
   filterProjects(findProjectsDto: FindProjectsTopvisorDto, q: SelectQueryBuilder<TopvisorProject>) {
 
-    console.log(findProjectsDto)
+    // console.log(findProjectsDto)
     let query = findProjectsDto.search_string ? q.andWhere(
       "LOWER(topvisor_projects.name) like :search_string or LOWER(topvisor_projects.site) like :search_string",
       { search_string: `%${findProjectsDto.search_string}%` }) : q
 
+    // find project by id
     query = findProjectsDto.project_id ? query.andWhere("topvisor_projects.id = :id", { id: findProjectsDto.project_id }) : query
 
+    // order by
+    for (let order in findProjectsDto.orders) {
+
+      // sort by
+      switch (findProjectsDto.orders[order].name) {
+        case "date":
+          query = query.orderBy("topvisor_projects.date", findProjectsDto.orders[order].direction == "ASC" ? "ASC" : "DESC")
+          break
+        case "name":
+          query = query.orderBy("topvisor_projects.name", findProjectsDto.orders[order].direction == "ASC" ? "ASC" : "DESC")
+          break
+      }
+
+    }
+
     return query
+  }
+
+
+
+
+  // other------------------------------------------------------
+
+  async getTopvisorLastProject() {
+
+    let query = this.topvisorProjectRepository
+      .createQueryBuilder("topvisor_projects")
+      .orderBy("topvisor_projects.date", "DESC")
+      .take(1);
+
+    const newestProject = await query.getOne();
+    return newestProject;
+
   }
 
 }
