@@ -138,3 +138,14 @@ GET http://localhost:3000/api/general/update-db
 api сервера задокументированы в swagger, зайти http://localhost:3000/documentation на запущенном сервере
 
 Подробное описание см. wiki в гитхабе этого проекта 
+
+# Скрины
+
+![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/948eced6-ab6d-46f8-8ab7-fb43800f49e3)
+
+![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/1fdc20d6-1dc6-4c60-b154-493458d40397)
+
+![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/ae287498-d07f-4349-a2c0-bb9e0295cd0d)
+
+![image](https://github.com/TasyaKh/Praktika-2023/assets/91024491/9225f1c1-9980-44ad-a7bf-8a017f6e1069)
+
